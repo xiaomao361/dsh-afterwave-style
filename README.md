@@ -4,7 +4,7 @@
 
 ## 安装
 
-在 DeepSeek Harness 的终端执行下列命令，然后重启对应的实例。选择当前使用的 profile。
+在终端执行对应的命令，然后重启 DeepSeek Harness。桌面版首次安装前需启动应用一次以初始化 profile，再完全退出应用并使用自带的 CLI。
 
 ```sh
 # Web 版
@@ -13,7 +13,7 @@ dsh plugin --profile web add dsh-afterwave-style
 dsh plugin --profile desktop add dsh-afterwave-style
 ```
 
-卸载时将上面对应的 `add` 改为 `remove`，再重启实例。插件面向使用 Web 界面的 profile，依赖宿主提供会话、对话和主题模块。
+卸载时将对应命令的 `add` 改为 `remove`，再重启 DeepSeek Harness。插件面向使用 Web 界面的 profile，依赖宿主提供会话、对话和主题模块。
 
 ## 功能
 
