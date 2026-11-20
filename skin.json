@@ -1,0 +1,11 @@
+{
+  "id": "afterwave-style",
+  "name": "四号船坞",
+  "tagline": "做旧铸铁与暖灰混凝土的干船坞机甲工作台，工装鲸鱼娘陪你跟进会话。",
+  "accent": "#1b528c",
+  "bodyAttr": "data-dsh-afterwave-style",
+  "package": "dsh-afterwave-style",
+  "wiring": {
+    "id": "ui-skin-afterwave-style"
+  }
+}

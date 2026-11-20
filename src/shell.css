@@ -1,0 +1,247 @@
+/* The layout owns the native macOS wash one element above the sidebar slot.
+   Scope its solid fallback here too, including on platforms with a drawer. */
+body[data-dsh-afterwave-style] div:has(> [data-slot="sidebar"]) {
+  --dsw-specific-sidebar-fill: var(--dsw-specific-sidebar-tint);
+}
+
+body[data-dsh-afterwave-style] [data-slot="sidebar"] {
+  --aw-rail-ink: #eee9e0;
+  --aw-rail-muted: #a9a49a;
+  --aw-rail-line: #31353c;
+  --aw-rail-slot: #1c1f23;
+  --aw-rail-key: #262a30;
+  --aw-rail-selected: #2c3138;
+  --aw-rail-lamp: #e89c28;
+  --aw-rail-amber: #f0a42b;
+  --dsw-alias-bg-base: var(--aw-rail-slot);
+  --dsw-alias-bg-layer-1: var(--aw-rail-slot);
+  --dsw-alias-bg-layer-2: var(--aw-rail-key);
+  --dsw-alias-bg-layer-3: var(--aw-rail-selected);
+  --dsw-alias-bg-module-platform: var(--aw-rail-slot);
+  --dsw-alias-bg-overlay: #181b1f;
+  --dsw-alias-card-fill: var(--aw-rail-key);
+  --dsw-alias-card-fill-hover: var(--aw-rail-selected);
+  --dsw-specific-input-major: var(--aw-rail-key);
+  --dsw-alias-label-primary: var(--aw-rail-ink);
+  --dsw-alias-label-primary-bluish: var(--aw-rail-ink);
+  --dsw-alias-label-primary-dimmed: #d7d2c8;
+  --dsw-alias-label-secondary: #c0bbb1;
+  --dsw-alias-label-caption: var(--aw-rail-muted);
+  --dsw-alias-label-tertiary: var(--aw-rail-muted);
+  --dsw-alias-label-dimmed: #959086;
+  --dsw-alias-label-primary-inverted: var(--aw-rail-slot);
+  --dsw-alias-label-primary-foreground: var(--aw-rail-slot);
+  --dsw-alias-brand-text: var(--aw-rail-ink);
+  --dsw-alias-brand-primary: #f2be66;
+  --dsw-alias-state-business-primary: #f0a42b;
+  --dsw-alias-state-business-tertiary: #3a2e1c;
+  --dsw-alias-button-primary-fill: #e89c28;
+  --dsw-alias-button-primary-hover: #f4b24c;
+  --dsw-alias-button-elevated-fill: var(--aw-rail-key);
+  --dsw-alias-button-floating-fill: var(--aw-rail-key);
+  --dsw-alias-button-floating-hover: #32373f;
+  --dsw-alias-interactive-bg-hover: #25292f;
+  --dsw-alias-interactive-bg-active: var(--aw-rail-selected);
+  --dsw-alias-interactive-bg-hover-solid: var(--aw-rail-key);
+  --dsw-alias-border-l1: #252930;
+  --dsw-alias-border-l2: #353a43;
+  --dsw-alias-border-l3: var(--aw-rail-line);
+  --dsw-alias-border-l4: #565d69;
+  --dsw-specific-sidebar-glass-fill: var(--aw-rail-key);
+  --dsw-specific-sidebar-glass-hover: #32373f;
+  --dsw-specific-sidebar-glass-collapsed-fill: transparent;
+  --dsw-specific-sidebar-glass-collapsed-hover: var(--aw-rail-key);
+  --dsw-specific-sidebar-nav-item-active: var(--aw-rail-selected);
+  --dsw-specific-sidebar-nav-item-active-accent: var(--aw-rail-selected);
+  --dsw-alias-scrollbar-bg-l2: #4c515b;
+  --dsw-alias-scrollbar-hover-l2: #767c87;
+  --dsw-focus-ring-color: #f0a42b;
+  --dsw-specific-menu: #181b1f;
+  --dsw-menu-surface-fill: #181b1f;
+  --dsw-alias-menu-group-header-fill: #181b1f;
+  color: var(--aw-rail-ink);
+}
+
+body[data-dsh-afterwave-style][data-ds-dark-theme] [data-slot="sidebar"] {
+  --aw-rail-slot: #0e1013;
+  --aw-rail-key: #181b20;
+  --aw-rail-selected: #23272e;
+}
+
+/* The native brand seat remains a draggable nameplate on macOS. */
+body[data-dsh-afterwave-style] [data-slot="sidebar"] [data-window-drag]:has([data-slot="sidebar.brand.name"]) {
+  position: relative;
+  background:
+    radial-gradient(circle at 8px 50%, rgb(208 164 96 / 45%) 1.5px, transparent 2px),
+    radial-gradient(circle at calc(100% - 8px) 50%, rgb(208 164 96 / 45%) 1.5px, transparent 2px),
+    linear-gradient(180deg, rgb(255 240 212 / 4%), rgb(0 0 0 / 14%));
+  box-shadow: inset 0 1px rgb(255 236 200 / 8%), inset 0 -1px rgb(208 164 96 / 26%);
+}
+
+body[data-dsh-afterwave-style] [data-slot="sidebar.brand.mark"] {
+  color: #f2be66;
+}
+
+body[data-dsh-afterwave-style] [data-slot="sidebar.brand.name"] {
+  color: var(--aw-rail-ink);
+}
+
+body[data-dsh-afterwave-style] [data-slot="sidebar"] > div:has([data-sidebar-scrollport]) [data-slot="sidebar.session.action"] button[aria-label] {
+  border: 1px solid rgb(232 156 40 / 34%);
+  border-radius: 7px;
+  background: linear-gradient(180deg, var(--aw-rail-key), var(--aw-rail-slot));
+  color: var(--aw-rail-ink);
+  box-shadow: inset 0 1px rgb(255 232 190 / 14%), 0 2px 8px rgb(0 0 0 / 34%);
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  body[data-dsh-afterwave-style] [data-slot="sidebar"] > div:has([data-sidebar-scrollport]) [data-slot="sidebar.session.action"] button[aria-label]:hover {
+    border-color: rgb(240 164 43 / 64%);
+    box-shadow: inset 0 1px rgb(255 232 190 / 20%), 0 0 12px rgb(240 164 43 / 18%);
+  }
+}
+
+body[data-dsh-afterwave-style] [data-slot="sidebar"] > div:has([data-sidebar-scrollport]) [data-slot="sidebar.session.action"] button[aria-label]:active {
+  background: #14161a;
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / 55%);
+}
+
+body[data-dsh-afterwave-style] [data-sidebar-scrollport] [data-sidebar-workspace-header] {
+  box-shadow: inset 0 1px rgb(255 245 228 / 10%);
+}
+
+body[data-dsh-afterwave-style] [data-sidebar-scrollport] [data-sidebar-workspace-header] > span:first-child {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .055em;
+  color: var(--aw-rail-muted);
+}
+
+body[data-dsh-afterwave-style] [data-sidebar-scrollport] [data-row-key^="workspace:"] {
+  color: #e6e0d6;
+  font-weight: 560;
+}
+
+body[data-dsh-afterwave-style] [data-sidebar-scrollport] nav button[aria-current="page"],
+body[data-dsh-afterwave-style] [data-sidebar-scrollport] [role="treeitem"][aria-selected="true"] {
+  border-radius: 5px;
+  background-color: var(--aw-rail-selected);
+  background-image: linear-gradient(var(--aw-rail-lamp), var(--aw-rail-lamp));
+  background-repeat: no-repeat;
+  background-size: 3px 60%;
+  background-position: left center;
+  box-shadow: inset 3px 0 8px -2px rgb(232 156 40 / 48%);
+  color: var(--aw-rail-ink);
+}
+
+body[data-dsh-afterwave-style] [data-slot="sidebar"] div:has(> [data-slot="sidebar.settings"]) {
+  box-shadow: inset 0 1px rgb(255 245 228 / 10%);
+}
+
+body[data-dsh-afterwave-style] [data-slot="sidebar"] :is(button, [role="treeitem"]):focus-visible {
+  outline: 2px solid var(--dsw-focus-ring-color);
+  outline-offset: -2px;
+}
+
+body[data-dsh-afterwave-style] header[data-window-drag]:has([data-conversation-tabs]) {
+  background: var(--dsw-alias-bg-base);
+  border-bottom-color: var(--dsw-alias-border-l3);
+}
+
+body[data-dsh-afterwave-style] [data-conversation-tabs] [role="tab"][aria-selected="true"] {
+  font-weight: 650;
+}
+
+body[data-dsh-afterwave-style] [data-conversation-content] [data-turn-trigger] {
+  border-color: var(--dsw-alias-border-l2);
+  border-radius: 7px;
+  box-shadow: inset 2px 0 var(--dsw-alias-state-business-primary);
+}
+
+body[data-dsh-afterwave-style] [data-turn-trigger] time {
+  font-variant-numeric: tabular-nums;
+}
+
+body[data-dsh-afterwave-style] [data-composer-card] {
+  --dsw-radius-panel: 9px;
+  --dsw-specific-input-major: #eee9e0;
+  box-sizing: border-box;
+  border: 1.5px solid #9c9486;
+  border-bottom-width: 2px;
+  border-radius: var(--dsw-radius-panel);
+  background: var(--dsw-specific-input-major);
+  box-shadow: inset 0 2px 5px rgb(28 24 18 / 8%), 0 0 0 3px rgb(168 160 146 / 38%), 0 6px 16px -8px rgb(22 20 16 / 22%);
+}
+
+body[data-dsh-afterwave-style][data-ds-dark-theme] [data-composer-card] {
+  --dsw-specific-input-major: #1b1e23;
+  border-color: #3c414b;
+  box-shadow: inset 0 1px rgb(255 240 214 / 8%), 0 0 0 3px rgb(42 46 54 / 58%), 0 8px 18px -8px rgb(0 0 0 / 50%);
+}
+
+body[data-dsh-afterwave-style] [data-composer-card]:focus-within {
+  border-color: #1b528c;
+  box-shadow: inset 0 -2px rgb(27 82 140 / 55%), 0 0 0 3px rgb(27 82 140 / 16%), 0 6px 16px -8px rgb(22 20 16 / 20%);
+}
+
+body[data-dsh-afterwave-style][data-ds-dark-theme] [data-composer-card]:focus-within {
+  border-color: #f0a42b;
+  box-shadow: inset 0 1px rgb(255 210 130 / 26%), 0 0 0 3px rgb(240 164 43 / 15%), 0 0 18px -6px rgb(240 164 43 / 32%);
+}
+
+body[data-dsh-afterwave-style] [data-conversation-content] [data-composer-card] button[aria-busy] {
+  border-radius: 7px;
+  box-shadow: inset 0 1px rgb(255 248 235 / 26%), 0 2px 8px rgb(158 72 25 / 24%);
+}
+
+/* The host's send, pending and stop icons all consume currentColor. Override
+   only their local fill/ink tokens, preserving opacity and progress handling. */
+body[data-dsh-afterwave-style][data-ds-dark-theme] [data-composer-card] button[aria-busy] {
+  --dsw-alias-button-info-fill: #f0a42b;
+  --dsw-alias-button-info-hover: #f7b955;
+  --dsw-alias-label-on-color: #171410;
+  box-shadow: inset 0 1px rgb(255 248 235 / 45%), 0 1px 10px rgb(240 164 43 / 24%);
+}
+
+body[data-dsh-afterwave-style] [data-aw-hero-replacement] + div:has(> span > [data-slot="conversation.hero.brand.mark"]) {
+  display: none;
+}
+
+/* Both pieces of the welcome stack share the host composer's side clearance. */
+body[data-dsh-afterwave-style] [data-composer-seat] div:has(> div > [data-aw-hero-replacement]) {
+  padding-inline: var(--dsh-composer-side-clearance, 16px);
+}
+
+body[data-dsh-afterwave-style] div:has(> [data-aw-hero-replacement]) {
+  row-gap: 0;
+}
+
+/* Limit transitions to painted chrome. The editor and streaming text stay
+   on the host's normal input and layout paths. */
+@media (prefers-reduced-motion: no-preference) {
+  body[data-dsh-afterwave-style] :is(
+    [data-slot="sidebar"] button, [data-sidebar-scrollport] [role="treeitem"],
+    [data-conversation-tabs] [role="tab"], [data-composer-card],
+    [data-composer-card] button, [data-composer-dock] button, header[data-window-drag]
+  ) {
+    transition: background-color 160ms ease-out, border-color 160ms ease-out,
+      color 120ms ease-out, box-shadow 180ms ease-out;
+  }
+  body[data-dsh-afterwave-style] [role="dialog"]:is([style*="--dsh-stat-"], [style*="--dsh-context-"]) {
+    animation: aw-open-reading 150ms ease-out both;
+  }
+  @keyframes aw-open-reading {
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@media (forced-colors: active) {
+  body[data-dsh-afterwave-style] [data-sidebar-scrollport] :is([role="treeitem"][aria-selected="true"],button[aria-current="page"]) {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  body[data-dsh-afterwave-style] [data-composer-card] { outline: 1px solid CanvasText; }
+  body[data-dsh-afterwave-style] [data-composer-card]:focus-within { outline: 2px solid Highlight; }
+}

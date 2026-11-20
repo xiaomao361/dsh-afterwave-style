@@ -1,0 +1,151 @@
+.aw-timer-pill {
+  position: fixed;
+  z-index: 108;
+  right: 22px;
+  top: 52px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  padding: 4px 10px;
+  border: 1px solid #8a6c3e;
+  border-bottom: 2px solid #4a381d;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #2a2e35, #1b1e24);
+  color: #f3ece0;
+  box-shadow: inset 0 1px rgb(255 236 196 / 14%), 0 6px 16px -6px rgb(0 0 0 / 48%);
+  font: 650 12px/1.2 ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.aw-timer-pill[hidden], .aw-timer-panel[hidden] { display: none !important; }
+.aw-timer-pill-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #f0a42b;
+  box-shadow: 0 0 6px #f0a42b;
+}
+.aw-timer-pill[data-running='false'] .aw-timer-pill-dot { background: #8f8a80; box-shadow: none; }
+.aw-timer-pill-bar {
+  position: absolute; left: 0; bottom: 0; height: 2px;
+  background: linear-gradient(90deg, #4ea6ff, #f0a42b);
+  transition: width 300ms linear;
+}
+
+.aw-timer-panel {
+  position: fixed;
+  z-index: 122;
+  right: 22px;
+  top: 86px;
+  width: min(326px, calc(100vw - 24px));
+  padding: 12px;
+  border: 1.5px solid #8a6c3e;
+  border-bottom: 2.5px solid #4a381d;
+  border-radius: 8px;
+  background: linear-gradient(170deg, #272b32, #181b20);
+  color: #eee9e0;
+  box-shadow: inset 0 1px rgb(255 238 206 / 12%), 0 18px 42px -12px rgb(0 0 0 / 68%);
+  font: 12.5px/1.45 -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+.aw-tm-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.aw-tm-title { font-size: 13.5px; font-weight: 700; letter-spacing: .04em; }
+.aw-tm-mode {
+  margin-inline-start: auto;
+  padding: 1px 6px;
+  border: 1px solid #8a6c3e;
+  border-radius: 3px;
+  background: #332a1d;
+  color: #f3c274;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.aw-tm-mode[data-break='true'] { border-color: #3d6b99; background: #1a2d42; color: #9bc8f5; }
+.aw-tm-close {
+  width: 24px; height: 24px; border: 0; border-radius: 4px;
+  background: transparent; color: inherit; font-size: 16px; cursor: pointer;
+}
+.aw-tm-close:hover { background: rgb(255 255 255 / 10%); }
+.aw-tm-dial {
+  padding: 10px 12px;
+  border: 1px solid #3f444f;
+  border-radius: 6px;
+  background: rgb(9 11 15 / 72%);
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 65%);
+  text-align: center;
+}
+.aw-tm-clock {
+  font: 700 34px/1.1 ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+  color: #f7f1e6;
+  text-shadow: 0 0 14px rgb(240 164 43 / 26%);
+}
+.aw-tm-track {
+  height: 5px; margin-top: 8px; border-radius: 999px;
+  background: rgb(255 255 255 / 10%); overflow: hidden;
+}
+.aw-tm-fill {
+  display: block; height: 100%; width: 0;
+  background: linear-gradient(90deg, #4ea6ff, #f0a42b);
+  transition: width 300ms linear;
+}
+.aw-tm-task {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 8px;
+  padding: 5px 8px;
+  border: 1px solid #3d424c;
+  border-radius: 4px;
+  background: #14171c;
+  color: #eee9e0;
+  font: 12px/1.4 inherit;
+}
+.aw-tm-presets {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 8px;
+}
+.aw-tm-preset, .aw-tm-btn {
+  padding: 4px 6px;
+  border: 1px solid #484e5a;
+  border-radius: 4px;
+  background: #23272f;
+  color: #eee9e0;
+  font: 500 11.5px/1.35 inherit;
+  cursor: pointer;
+}
+.aw-tm-preset:hover, .aw-tm-btn:hover { border-color: #f0a42b; color: #ffd48a; }
+.aw-tm-custom {
+  display: flex; align-items: center; gap: 6px; margin-top: 7px;
+}
+.aw-tm-minutes {
+  width: 60px; padding: 4px 6px;
+  border: 1px solid #484e5a; border-radius: 4px;
+  background: #14171c; color: #eee9e0;
+  font: 600 12px/1.3 ui-monospace, monospace;
+}
+.aw-tm-unit { font-size: 11.5px; opacity: .75; }
+.aw-tm-controls {
+  display: flex; align-items: center; gap: 6px; margin-top: 9px;
+}
+.aw-tm-primary {
+  background: linear-gradient(180deg, #f0a42b, #c97f14);
+  border-color: #f5bf66;
+  color: #171410;
+  font-weight: 700;
+}
+.aw-tm-primary:hover { color: #171410; filter: brightness(1.08); }
+.aw-tm-auto {
+  margin-inline-start: auto;
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; opacity: .86; cursor: pointer;
+}
+.aw-tm-stats {
+  margin-top: 8px; padding-top: 7px;
+  border-top: 1px solid rgb(255 240 212 / 10%);
+  font: 500 11px/1.3 ui-monospace, 'SFMono-Regular', monospace;
+  color: #b8b2a6;
+}
+@media (forced-colors: active) {
+  .aw-timer-pill, .aw-timer-panel { background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; }
+}

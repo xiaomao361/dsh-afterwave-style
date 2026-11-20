@@ -1,0 +1,55 @@
+.aw-chat-tools { display: inline-flex; align-items: center; gap: 2px; -webkit-app-region: no-drag; }
+.aw-chat-tools[hidden], .aw-chat-nav[hidden], .aw-chat-nav-compact[hidden], .aw-export-menu[hidden] { display: none; }
+.aw-chat-nav, .aw-export-menu, .aw-export-feedback:not(:empty) {
+  color: var(--dsw-alias-label-primary);
+  background: var(--dsw-alias-bg-overlay);
+  background: color-mix(in srgb, var(--dsw-alias-bg-overlay) 94%, transparent);
+  border: 1px solid var(--dsw-alias-border-l2);
+  box-shadow: 0 6px 20px -6px rgb(10 23 43 / 22%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.aw-chat-nav {
+  position: fixed; z-index: 4;
+  display: flex; flex-direction: column; align-items: center;
+  width: 32px; box-sizing: border-box; padding: 3px 0;
+  border-radius: 16px; transform: translateY(-50%);
+  animation: aw-nav-in .18s ease-out both;
+}
+.aw-chat-nav button, .aw-export button, .aw-chat-nav-compact {
+  display: inline-grid; place-items: center;
+  min-width: 0; padding: 0; border: 0; color: var(--dsw-alias-label-secondary);
+  background: transparent; cursor: pointer; font: inherit;
+  transition: background-color .16s ease, color .16s ease;
+}
+.aw-chat-nav button { width: 26px; height: 29px; border-radius: 10px; font: 17px/1 system-ui, sans-serif; }
+.aw-chat-nav button:disabled { color: var(--dsw-alias-label-caption); opacity: .4; cursor: default; }
+.aw-export, .aw-chat-nav-compact { position: relative; }
+.aw-export { display: inline-flex; }
+.aw-export .aw-export-trigger, .aw-chat-nav-compact { width: 30px; height: 30px; border-radius: 7px; }
+.aw-chat-nav-compact select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.aw-chat-nav button:enabled:hover, .aw-export button:hover, .aw-chat-nav-compact:hover, .aw-export-trigger[aria-expanded="true"] {
+  color: var(--dsw-alias-brand-text); background: var(--dsw-alias-interactive-bg-hover);
+}
+.aw-chat-nav button:focus-visible, .aw-export button:focus-visible, .aw-chat-nav-compact:focus-within {
+  outline: 2px solid var(--dsw-focus-ring-color); outline-offset: -2px;
+}
+.aw-export-menu, .aw-export-feedback {
+  position: absolute; z-index: 12; inset-inline-end: 0; top: calc(100% + 5px);
+  border-radius: 9px; width: max-content; max-width: min(260px, 78vw);
+}
+.aw-export-menu { display: grid; min-width: 158px; padding: 5px; animation: aw-nav-in .16s ease-out both; }
+.aw-export-menu small { padding: 5px 8px 6px; color: var(--dsw-alias-label-caption); font: 11px/1.4 system-ui, sans-serif; }
+.aw-export-menu button { display: block; padding: 6px 8px; border-radius: 5px; text-align: start; font: 13px/1.45 system-ui, sans-serif; }
+.aw-export-menu[popover], .aw-export-feedback[popover] { position: fixed; margin: 0; inset: auto; }
+.aw-export-menu[popover]:not(:popover-open), .aw-export-feedback[popover]:not(:popover-open) { display: none; }
+.aw-export-feedback { pointer-events: none; }
+.aw-export-feedback:not(:empty) { padding: 5px 9px; font: 12px/1.5 system-ui, sans-serif; }
+@keyframes aw-nav-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .aw-chat-nav, .aw-export-menu, .aw-chat-nav button, .aw-export button, .aw-chat-nav-compact { animation: none; transition: none; }
+}
+@media (forced-colors: active) {
+  .aw-chat-nav, .aw-export-menu, .aw-export-feedback:not(:empty) { background: Canvas; border-color: CanvasText; box-shadow: none; }
+  .aw-chat-nav button:disabled { color: GrayText; opacity: 1; }
+}

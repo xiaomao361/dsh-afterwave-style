@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>四号船坞 · 离线预览</title>
+  <!-- host-style -->
+</head>
+<body>
+  <div class="shell">
+    <div class="rail-surface">
+      <aside data-slot="sidebar" aria-label="会话与样例设置">
+        <div class="rail">
+          <header data-window-drag class="brand">
+            <span id="brand-mark" data-slot="sidebar.brand.mark"></span><span id="brand-name" data-slot="sidebar.brand.name"></span>
+          </header>
+          <div data-sidebar-scrollport class="rail-navigation">
+            <nav aria-label="新建会话">
+              <div data-slot="sidebar.session.action"><button id="home" aria-label="新会话" type="button"><span aria-hidden="true">＋</span> 新会话</button></div>
+            </nav>
+            <div data-sidebar-workspace-header><span>工作区</span></div>
+            <div role="tree" aria-label="工作区会话">
+              <div class="tree-folder" role="treeitem" aria-expanded="true" data-row-key="workspace:preview">
+                <span class="folder-icon" aria-hidden="true"></span><span id="rail-workspace"></span>
+                <div role="group" id="session-list"></div>
+              </div>
+            </div>
+          </div>
+          <div class="preview-settings">
+            <div data-slot="sidebar.settings">
+              <div class="settings-title">离线样例 · 模拟数据</div>
+              <label>外观<select id="appearance"><option value="light">浅色</option><option value="dark">深色</option></select></label>
+              <label id="task-label" hidden>任务状态<select id="signal">
+                <option value="idle">待机</option><option value="thinking">思考</option><option value="working">输出</option>
+                <option value="tool">调用工具</option><option value="busy">进行中</option><option value="waiting">等待操作</option><option value="error">出错</option>
+              </select></label>
+              <label id="fuel-label" hidden>上下文占用<select id="fuel"><option value="8">8%</option><option value="78">78%</option><option value="92">92%</option></select></label>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <main data-slot="main.conversation">
+      <div id="panel" data-phase="hero">
+        <div data-slot="conversation.header" id="chat-header" hidden>
+          <header data-window-drag class="chat-top">
+            <strong id="chat-title"></strong>
+            <div class="header-right" data-slot="conversation.session.header.utilities" id="meter-seat"></div>
+          </header>
+        </div>
+        <div data-conversation-content class="content aw-home-frame" id="frame">
+          <div id="thread" data-conversation-scroll tabindex="0" aria-label="离线对话记录" hidden>
+            <article></article>
+          </div>
+          <div data-composer-seat class="composer-seat">
+            <div class="composer-column">
+              <div id="home-seat"></div>
+              <div id="workspace" class="workspace">
+                <span class="folder-icon" aria-hidden="true"></span>
+                <select id="workspace-picker" aria-label="样例工作区"><option value="lab">沿岸观测站</option><option value="notes">个人草稿</option></select>
+                <span>标准模式</span>
+              </div>
+              <form id="composer" data-composer-card>
+                <textarea id="draft" data-composer-input aria-label="离线样例输入" rows="2" placeholder="描述你想要构建的内容…"></textarea>
+                <div class="composer-tools"><span id="typing-seat" class="aw-tw-seat"></span><button id="send" aria-label="加入离线对话" title="加入离线对话" aria-busy="false" disabled>↑</button></div>
+              </form>
+              <div data-composer-dock id="readings" aria-label="模拟会话统计" hidden>
+                <div data-composer-stat="activity"><button type="button" aria-haspopup="dialog" id="count-reading"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 12a6 6 0 1 1 12 0M8 10l3-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span></span></button></div>
+                <div data-composer-stat="usage"><button type="button" aria-haspopup="dialog" id="usage-reading"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><g fill="none" stroke="currentColor"><ellipse cx="8" cy="4" rx="5" ry="2"/><path d="M3 4v8c0 3 10 3 10 0V4M3 8c0 3 10 3 10 0"/></g></svg><span></span></button></div>
+                <span style="--dsh-context-fill: currentColor"><button type="button" aria-haspopup="dialog" id="context-reading"><span aria-hidden="true">◴</span> <span class="context-value"></span></button></span>
+                <span class="aw-reading-tools" id="reading-tools"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+            <template id="tidal-report">
+              <p class="user-message">帮我整理一下今天的潮位记录，明早交给下一班。</p>
+              <h2>沿岸观测摘要</h2>
+              <p>上午水位逐步回落，港内风浪小。下午两次读数都高于上午，观测位置均为东堤标尺。</p>
+              <table><thead><tr><th>观测时间</th><th>水位</th><th>备注</th></tr></thead>
+                <tbody><tr><td>08:00</td><td>1.4 m</td><td>上午初测</td></tr><tr><td>12:00</td><td>0.9 m</td><td>标尺露出</td></tr><tr><td>16:00</td><td>1.6 m</td><td>涨潮</td></tr><tr><td>20:00</td><td>1.8 m</td><td>晚间复测</td></tr></tbody>
+              </table>
+              <p>四次读数里，最低出现在中午，最高出现在晚间。两次观测的差值为 <code>0.9 m</code>。</p>
+              <p class="user-message">记录中少了一次 18 点的数据，怎么标？</p>
+              <p>在对应时段填入「缺测」，同时留空水位栏。这样下一班就能区分缺失值和实测的零值。</p>
+              <pre><code class="language-csv">时间,水位(m),状态
+16:00,1.6,实测
+18:00,,缺测
+20:00,1.8,实测</code></pre>
+              <p class="user-message">交班时我想一句话就能说明白。</p>
+              <p>东堤标尺今晚八点读数为 1.8 米，较下午四点上升 0.2 米。傍晚六点缺测，记录表中已留空。</p>
+              <p class="user-message">下一班如果找回了缺测的原始照片，该怎么补录？</p>
+              <p>先核对照片拍摄时间和标尺位置，再补登记。原表保留「缺测」，复核表新增一行，填入读数、照片编号和复核人，交接时就能分清哪些数据是后来补的。</p>
+              <p class="user-message">把明早第一轮复核列成清单。</p>
+              <ul><li>核对东堤标尺编号与整点时间。</li><li>用原始照片复查 18:00 记录。</li><li>将新增读数和复核人写入交接表。</li></ul>
+            </template>
+  <dialog id="reading-details" aria-labelledby="reading-heading" style="--dsh-stat-surface:var(--dsw-alias-bg-layer-2)">
+    <h2 id="reading-heading"></h2><p id="reading-body"></p>
+    <form method="dialog"><button>关闭</button></form>
+  </dialog>
+  <!-- client-script -->
+</body>
+</html>

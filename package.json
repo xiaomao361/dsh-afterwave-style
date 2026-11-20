@@ -1,0 +1,60 @@
+{
+  "name": "dsh-afterwave-style",
+  "version": "0.6.1",
+  "description": "四号船坞是 DeepSeek Harness 的干船坞主题，提供工作区概览、会话状态挂件、草稿恢复与 Markdown 导出。",
+  "type": "module",
+  "license": "CC0-1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xiaomao361/dsh-afterwave-style.git"
+  },
+  "homepage": "https://github.com/xiaomao361/dsh-afterwave-style#readme",
+  "bugs": "https://github.com/xiaomao361/dsh-afterwave-style/issues",
+  "main": "./index.js",
+  "icon": "icon.png",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json",
+    "./icon": "./icon.png"
+  },
+  "files": [
+    "index.js",
+    "lib/client.js",
+    "icon.png",
+    "skin.json",
+    "cordis.patch.yml"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-chat",
+        "@deepseek-ai/dsh-client-ui-theme"
+      ]
+    }
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "dsh-skin",
+    "theme",
+    "afterwave"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "npm run build && node --test",
+    "prepare": "npm run build",
+    "preview": "node scripts/preview.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.27.3",
+    "jsdom": "26.1.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

@@ -1,0 +1,67 @@
+.aw-controls {
+  position: fixed;
+  z-index: 1000;
+  box-sizing: border-box;
+  width: min(290px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: var(--dsw-alias-label-primary);
+  background: var(--dsw-alias-bg-layer-2);
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 42px rgb(9 20 38 / 22%);
+  font: 13px/1.45 -apple-system, "PingFang SC", sans-serif;
+}
+html[data-aw-glass="on"] .aw-controls {
+  background: color-mix(in srgb, var(--dsw-alias-bg-layer-2) 94%, transparent);
+  backdrop-filter: blur(12px);
+}
+.aw-controls-head, .aw-ctrl-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.aw-controls-head { margin-bottom:5px; padding-bottom:8px; border-bottom:1px solid var(--dsw-alias-border-l1); }
+.aw-controls-head h2 { margin:0; font-size:16px; font-weight:680; }
+.aw-controls button { cursor:pointer; color:var(--dsw-alias-label-secondary); background:transparent; font:inherit; }
+.aw-controls button:hover { color:var(--dsw-alias-brand-text); background:var(--dsw-alias-interactive-bg-hover); }
+.aw-controls .aw-ctrl-close { font:20px/1 system-ui; width:26px; height:26px; border:0; border-radius:5px; }
+.aw-controls .aw-ctrl-reset-dock {
+  display: block; margin: -2px 0 6px; padding: 2px 6px; font-size: 12px;
+  border: 1px solid var(--dsw-alias-border-l2); border-radius: 4px;
+}
+.aw-controls .aw-ctrl-reset-dock[hidden] { display: none; }
+.aw-ctrl-row { min-height:33px; cursor:pointer; }
+.aw-ctrl-toggle { appearance:none; cursor:pointer; width:29px; height:17px; border-radius:12px; margin:0; border:1px solid var(--dsw-alias-border-l3); background:var(--dsw-alias-bg-module-platform); }
+.aw-ctrl-toggle::before { content:""; display:block; width:9px; height:9px; margin:3px; border-radius:50%; background:var(--dsw-alias-label-caption); }
+.aw-ctrl-toggle:checked { border-color:var(--dsw-alias-brand-primary); background:var(--dsw-alias-brand-primary); }
+.aw-ctrl-toggle:checked::before { transform:translateX(12px); background:var(--dsw-alias-label-primary-foreground); }
+.aw-ctrl-opacity { display:grid; grid-template-columns:1fr auto; gap:7px; padding-block:12px 9px; border-top:1px solid var(--dsw-alias-border-l1); margin-top:5px; }
+.aw-ctrl-opacity input { grid-column:1/-1; width:100%; margin:0; accent-color:var(--dsw-alias-brand-primary); }
+.aw-ctrl-opacity output { font-variant-numeric:tabular-nums; color:var(--dsw-alias-label-caption); }
+.aw-ctrl-art { display:flex; flex-wrap:wrap; gap:7px; }
+.aw-ctrl-art button { border:1px solid var(--dsw-alias-border-l2); border-radius:5px; padding:4px 9px; }
+.aw-controls button:disabled { opacity:.55; cursor:default; }
+.aw-controls :focus-visible { outline:2px solid var(--dsw-focus-ring-color); outline-offset:2px; }
+.aw-controls-note { margin:8px 0 0; color:var(--dsw-alias-label-secondary); }
+.aw-controls-note:empty { display:none; }
+@media (prefers-reduced-motion:no-preference) {
+  .aw-controls { animation:aw-control-in 140ms ease-out; }
+  .aw-ctrl-toggle::before { transition:transform 130ms ease-out; }
+}
+@keyframes aw-control-in { from { opacity:0; transform:translateY(3px); } }
+@media (forced-colors:active) {
+  .aw-controls { background:Canvas; border-color:CanvasText; box-shadow:none; }
+  .aw-ctrl-toggle { appearance:auto; }
+  .aw-ctrl-toggle::before { display:none; }
+}
+/* Turn off every blur introduced by this theme, including the native usage
+   surfaces that receive a translucent background from readings.css. */
+html[data-aw-glass="off"] body[data-dsh-afterwave-style] :is(
+  .aw-controls, .aw-tw-panel, .aw-chat-nav, .aw-export-menu, .aw-export-feedback:not(:empty),
+  [data-composer-dock]:has([data-composer-stat], [style*="--dsh-context-"] button),
+  [role="dialog"]:is([style*="--dsh-stat-"], [style*="--dsh-context-"])
+) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--dsw-alias-bg-overlay);
+}
+html[data-aw-focus="on"] .aw-panel::before { display: none; }

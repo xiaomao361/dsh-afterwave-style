@@ -1,0 +1,264 @@
+.aw-brand-mark {
+  --aw-mark-size: 24px;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: calc(var(--aw-mark-size) + 4px);
+  height: calc(var(--aw-mark-size) + 4px);
+  background: transparent;
+  vertical-align: middle;
+}
+.aw-brand-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 52%));
+}
+.aw-brand-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #f3ece0;
+  font: 700 16px/1.25 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  letter-spacing: .12em;
+  text-shadow: 0 1px 1px rgb(0 0 0 / 65%);
+  white-space: nowrap;
+}
+.aw-brand-name::after {
+  content: 'BAY·04';
+  display: inline-block;
+  padding: 2px 5px;
+  border: 1px solid #8a6c3e;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #3c3326, #262018);
+  box-shadow: inset 0 1px rgb(255 232 180 / 18%), 0 1px 2px rgb(0 0 0 / 45%);
+  color: #f0be6a;
+  font: 700 9px/1.1 ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  letter-spacing: .08em;
+  text-shadow: none;
+}
+.aw-home-frame { display: contents; }
+
+/* Weathered concrete grain + wide drydock structural grid + hull draft marks. */
+.aw-paper-field {
+  --aw-grid: rgb(56 48 38 / 5.5%);
+  --aw-grid-axis: rgb(56 48 38 / 10.5%);
+  --aw-field-signal: #5c5346;
+  --aw-field-rust: #9e4819;
+  --aw-rail-opacity: .28;
+  --aw-draft-opacity: .34;
+  --aw-concrete-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23c)' opacity='.065'/%3E%3C/svg%3E");
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--aw-field-signal);
+  background:
+    var(--aw-concrete-noise),
+    radial-gradient(ellipse 55% 40% at 0% 100%, rgb(138 66 24 / 7%), transparent 70%),
+    radial-gradient(ellipse 48% 35% at 100% 100%, rgb(28 32 38 / 7%), transparent 70%),
+    linear-gradient(90deg, var(--aw-grid-axis) 1px, transparent 1px) 0 0 / 224px 224px,
+    linear-gradient(var(--aw-grid-axis) 1px, transparent 1px) 0 0 / 224px 224px,
+    linear-gradient(90deg, var(--aw-grid) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(var(--aw-grid) 1px, transparent 1px) 0 0 / 56px 56px;
+}
+body[data-ds-dark-theme] .aw-paper-field {
+  --aw-grid: rgb(232 216 190 / 3.5%);
+  --aw-grid-axis: rgb(232 216 190 / 7.5%);
+  --aw-field-signal: #9e9688;
+  --aw-field-rust: #d86e34;
+  --aw-draft-opacity: .26;
+  --aw-rail-opacity: .24;
+  background:
+    var(--aw-concrete-noise),
+    radial-gradient(ellipse 55% 40% at 0% 100%, rgb(216 110 52 / 7%), transparent 70%),
+    radial-gradient(ellipse 50% 38% at 100% 0%, rgb(48 84 128 / 8%), transparent 70%),
+    linear-gradient(90deg, var(--aw-grid-axis) 1px, transparent 1px) 0 0 / 224px 224px,
+    linear-gradient(var(--aw-grid-axis) 1px, transparent 1px) 0 0 / 224px 224px,
+    linear-gradient(90deg, var(--aw-grid) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(var(--aw-grid) 1px, transparent 1px) 0 0 / 56px 56px;
+}
+.aw-draft-mark {
+  position: absolute;
+  bottom: 24px;
+  right: 16px;
+  display: grid;
+  grid-template-rows: repeat(3, 48px) 1px;
+  width: 47px;
+  border-right: 2px solid var(--aw-field-rust);
+  background:
+    repeating-linear-gradient(to bottom, currentColor 0 1px, transparent 1px 8px) right / 5px 100% no-repeat,
+    repeating-linear-gradient(to bottom, currentColor 0 1px, transparent 1px 24px) right / 9px 100% no-repeat;
+  opacity: var(--aw-draft-opacity);
+}
+.aw-draft-mark span {
+  position: relative;
+  display: block;
+  align-self: start;
+  margin-right: 18px;
+  text-align: right;
+  font: 600 10px/1 ui-monospace, 'SFMono-Regular', monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+  transform: translateY(-45%);
+}
+.aw-draft-mark span::after {
+  content: '';
+  position: absolute;
+  left: calc(100% + 4px);
+  top: 50%;
+  width: 14px;
+  border-top: 1px solid currentColor;
+}
+.aw-paper-track {
+  position: absolute;
+  right: 74px;
+  bottom: 26px;
+  width: min(34%, 340px);
+  height: 15px;
+  opacity: var(--aw-rail-opacity);
+  mask-image: linear-gradient(90deg, transparent, #000 23%, #000 92%, transparent);
+}
+.aw-paper-belt {
+  position: absolute;
+  inset: 0 -40px;
+  border-block: 1px solid currentColor;
+  background:
+    repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 6px) left bottom / 100% 4px no-repeat,
+    repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 36px) left bottom / 100% 9px no-repeat;
+}
+.aw-tape-holes {
+  position: absolute;
+  inset: 3px 0 auto;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, currentColor 0 12px, transparent 12px 36px);
+}
+.aw-tape-head {
+  position: absolute;
+  top: -1px;
+  right: 32%;
+  width: 7px;
+  height: 5px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: currentColor;
+}
+.aw-fastener-seat { display: contents; }
+.aw-fastener-zone {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  container: aw-fastener-zone / size;
+}
+.aw-dock-fastener {
+  --aw-alloy-glint: #ecf2f7;
+  --aw-alloy-mid: #a0b0be;
+  --aw-alloy-edge: #667888;
+  --aw-alloy-slot: #354452;
+  --aw-brass-glint: #f0d6a1;
+  --aw-brass-mid: #c6a264;
+  --aw-brass-edge: #826642;
+  appearance: none;
+  box-sizing: border-box;
+  position: absolute;
+  left: 18px;
+  bottom: 14px;
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  width: 162px;
+  height: 68px;
+  background: transparent;
+  line-height: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+body[data-ds-dark-theme] .aw-dock-fastener {
+  --aw-alloy-glint: #a6b7c9;
+  --aw-alloy-mid: #5d7086;
+  --aw-alloy-edge: #334356;
+  --aw-alloy-slot: #17212c;
+  --aw-brass-glint: #ddbd86;
+  --aw-brass-mid: #ae8b58;
+  --aw-brass-edge: #634c32;
+}
+.aw-dock-fastener svg,
+.aw-fastener-art {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 4px rgb(24 20 14 / 26%));
+}
+.aw-fastener-art {
+  transform-origin: 50% 60%;
+  transform: rotate(calc(sin(var(--aw-fastener-turns, 0) * 1.5708) * 3deg)) translateX(calc(sin(var(--aw-fastener-turns, 0) * 1.5708) * 2px));
+}
+.aw-fastener-main, .aw-fastener-brass { transform-box: fill-box; transform-origin: center; }
+.aw-fastener-main { transform: rotate(calc(var(--aw-fastener-turns, 0) * 60deg)); }
+.aw-fastener-brass { transform: rotate(calc(var(--aw-fastener-turns, 0) * -90deg + var(--aw-nut-hover, 0deg))); }
+.aw-fastener-zone[data-covered] .aw-dock-fastener { visibility: hidden; }
+.aw-dock-fastener:focus-visible { outline: 2px solid var(--dsw-focus-ring-color); outline-offset: 2px; }
+.aw-dock-fastener:active .aw-fastener-art { filter: drop-shadow(0 2px 3px rgb(24 20 14 / 42%)) brightness(.96); }
+@media (hover: hover) {
+  .aw-dock-fastener:hover :is(svg, .aw-fastener-art) { filter: drop-shadow(0 5px 8px rgb(24 20 14 / 42%)) brightness(1.07); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .aw-fastener-main, .aw-fastener-brass, .aw-fastener-art { transition: transform 320ms cubic-bezier(.34, 1.56, .64, 1), filter 140ms ease; }
+  .aw-dock-fastener svg { transition: filter 140ms ease; }
+  @media (hover: hover) { .aw-dock-fastener:hover { --aw-nut-hover: 6deg; } }
+}
+@media (width < 600px), (height < 520px) { .aw-fastener-zone { display: none; } }
+@container aw-fastener-zone (width < 600px) or (height < 480px) { .aw-dock-fastener { display: none; } }
+@media (height < 520px) { .aw-draft-mark, .aw-paper-track { display: none; } }
+
+/* The scan layer is pointer-transparent and never takes up any layout space. */
+@media (prefers-reduced-motion: no-preference) {
+  body[data-dsh-afterwave-style][data-aw-power-on]::after {
+    content: '';
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 2px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, #4ea6ff 55%, #fff 78%, #f5a623 90%, transparent);
+    box-shadow: 0 0 12px rgb(77 163 255 / 70%);
+    animation: aw-power-scan 760ms cubic-bezier(.32,.67,.3,1) both;
+  }
+  body[data-dsh-afterwave-style][data-aw-power-on] .aw-brand-mark img {
+    animation: aw-scope-start 440ms ease-out both;
+  }
+  body[data-dsh-afterwave-style][data-aw-power-on] .aw-panel,
+  .aw-home-frame[data-aw-first-home] .aw-panel {
+    animation: aw-panel-start 360ms cubic-bezier(.2,.7,.25,1) backwards;
+  }
+}
+@keyframes aw-power-scan {
+  0% { opacity: 0; transform: translateX(-98%); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(99%); }
+}
+@keyframes aw-scope-start {
+  from { opacity: .35; transform: translateY(8%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes aw-panel-start {
+  from { opacity: .4; filter: brightness(.72); transform: translateY(6px) scale(.99); }
+  to { opacity: 1; filter: brightness(1); transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* This also stops visible movement if the setting changes mid-sweep. */
+  .aw-paper-belt { transform: none !important; }
+}
+@media (forced-colors: active) {
+  .aw-brand-mark { outline: 1px solid CanvasText; }
+  .aw-paper-field, .aw-fastener-zone, body[data-dsh-afterwave-style][data-aw-power-on]::after { display: none; }
+}
+html[data-aw-focus="on"] :is(.aw-paper-field,.aw-fastener-zone), .aw-paper-field[hidden], .aw-fastener-zone[hidden] { display: none; }
