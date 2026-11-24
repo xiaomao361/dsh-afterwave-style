@@ -1,6 +1,6 @@
 {
   "name": "dsh-afterwave-style",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "description": "四号船坞是 DeepSeek Harness 的干船坞主题，提供工作区概览、会话状态挂件、草稿恢复与 Markdown 导出。",
   "type": "module",
   "license": "CC0-1.0",

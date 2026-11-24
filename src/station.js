@@ -11,13 +11,14 @@ const phases = {
   loading: '正在读取会话…', unavailable: '暂时无法读取会话', unselected: '请选择工作区',
 }
 const flagLabels = { waiting: '待处理', running: '运行中', pinned: '置顶' }
+const scopes = [['all', '全部'], ['waiting', '待处理'], ['running', '运行中'], ['pinned', '置顶']]
 const number = new Intl.NumberFormat('zh-CN')
-const sessionTrendTitle = '会话最近更新时间分布 · 近 12 周'
-let searchPanelId = 0
+const VISIBLE_LIMIT = 20
+const quips = ['扳手就位，今天准备修哪块代码？', '图纸铺好了，开工吧！', '螺丝都拧紧了，随时可以出航。', '别戳护目镜啦，会留指纹的！']
 
 function node(doc, tag, className, text = '') {
   const el = doc.createElement(tag)
-  el.className = className
+  if (className) el.className = className
   el.textContent = text
   return el
 }
@@ -28,70 +29,155 @@ function button(doc, className, text) {
   return el
 }
 
+// Relative times read faster than dates in a short work list. Older entries
+// fall back to a calendar day so the label never grows unbounded.
+export function relativeTime(at, now = Date.now()) {
+  if (!Number.isFinite(at) || at <= 0) return ''
+  const diff = Math.max(0, now - at)
+  const minute = 60000
+  if (diff < minute) return '刚刚'
+  if (diff < 60 * minute) return Math.floor(diff / minute) + ' 分钟前'
+  const today = new Date(now).setHours(0, 0, 0, 0)
+  if (at >= today) return Math.floor(diff / (60 * minute)) + ' 小时前'
+  const days = Math.ceil((today - at) / 86400000)
+  if (days <= 1) return '昨天'
+  if (days < 7) return days + ' 天前'
+  const date = new Date(at)
+  return (date.getMonth() + 1) + '月' + date.getDate() + '日'
+}
+
+// Waiting sessions need a decision, so they lead the full list. The rest
+// keep the catalog's recency order.
+function rank(sessions, scope) {
+  const rows = sessions.filter(row => scope === 'all' || row[scope])
+  if (scope !== 'all') return rows
+  return [...rows.filter(row => row.waiting), ...rows.filter(row => !row.waiting)]
+}
+
+export function crewLine(activity) {
+  if (activity?.phase !== 'ready') return phases[activity?.phase] ?? phases.loading
+  const waiting = activity.sessions.filter(row => row.waiting).length
+  if (waiting) return `有 ${waiting} 个会话等你确认，黄条那几条先看。`
+  if (activity.running) return `${activity.running} 个会话正在运转，我盯着呢。`
+  if (activity.today) return `今天动过 ${activity.today} 个会话，手感不错。`
+  if (activity.sessions.length) return '船坞整备完毕，接着上次的活儿？'
+  return '船坞空着，开个新会话吧。'
+}
+
 function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showControls }) {
+  const win = doc.defaultView
   const panel = node(doc, 'section', 'aw-panel')
   panel.setAttribute('aria-label', '工作区概览')
-  const hardware = node(doc, 'div', 'aw-panel-hardware')
-  hardware.setAttribute('aria-hidden', 'true')
-  for (const corner of ['nw', 'ne', 'sw', 'se']) {
-    const screw = node(doc, 'i', 'aw-screw')
-    screw.dataset.corner = corner
-    hardware.append(screw)
-  }
-  const head = node(doc, 'div', 'aw-overview-head')
+
+  // Header: identity on the left, one toolbar for every workbench tool.
+  const head = node(doc, 'header', 'aw-head')
+  const titles = node(doc, 'div', 'aw-titles')
+  const kicker = node(doc, 'span', 'aw-kicker', 'No.04 · 船坞调度台')
+  kicker.setAttribute('aria-hidden', 'true')
+  const titleRow = node(doc, 'div', 'aw-title-row')
   const title = node(doc, 'h1', 'aw-heading', '工作区概览')
   const workspaceChip = node(doc, 'span', 'aw-ws-chip')
   workspaceChip.hidden = true
-  const searchToggle = button(doc, 'aw-find', '查找会话')
-  searchToggle.prepend(icon(doc, 'search', 13))
-  searchToggle.setAttribute('aria-expanded', 'false')
-  const pending = button(doc, 'aw-pending aw-home-pending', '')
-  pending.hidden = true
-  const isMac = /Mac|iPhone|iPad/i.test(doc.defaultView?.navigator?.platform || '')
-  const paletteBtn = button(doc, 'aw-tool-btn', '')
-  paletteBtn.append(icon(doc, 'command', 13), node(doc, 'span', 'aw-btn-kbd', isMac ? '⌘K' : 'Ctrl+K'))
-  paletteBtn.title = `打开四号船坞指令台（${isMac ? '⌘K' : 'Ctrl+K'}）`
-  paletteBtn.setAttribute('aria-label', paletteBtn.title)
-  paletteBtn.addEventListener('click', () => showPalette(doc.defaultView, paletteBtn))
-  const padBtn = button(doc, 'aw-tool-btn', '')
-  padBtn.append(icon(doc, 'notes', 13), node(doc, 'span', '', '便签'))
-  padBtn.title = '打开堆叠随手便签'
-  padBtn.setAttribute('aria-label', padBtn.title)
-  padBtn.addEventListener('click', () => toggleScratchpad(doc.defaultView, padBtn))
-  const timerBtn = button(doc, 'aw-tool-btn', '')
-  const timerLabel = node(doc, 'span', '', '番茄')
-  timerBtn.append(icon(doc, 'timer', 13), timerLabel)
-  timerBtn.title = '打开值班番茄钟'
-  timerBtn.setAttribute('aria-label', timerBtn.title)
-  const dockTimer = getDockTimer(doc.defaultView)
-  timerBtn.addEventListener('click', () => dockTimer.openPanel(timerBtn))
+  titleRow.append(title, workspaceChip)
+  titles.append(kicker, titleRow)
+
+  const isMac = /Mac|iPhone|iPad/i.test(win?.navigator?.platform || '')
+  const shortcut = isMac ? '⌘K' : 'Ctrl+K'
+  const toolbar = node(doc, 'div', 'aw-toolbar')
+  toolbar.setAttribute('role', 'toolbar')
+  toolbar.setAttribute('aria-label', '船坞工具')
+  function tool(name, text, label) {
+    const el = button(doc, 'aw-tool', '')
+    const caption = node(doc, 'span', 'aw-tool-text', text)
+    el.append(icon(doc, name, 14), caption)
+    el.title = label
+    el.setAttribute('aria-label', label)
+    toolbar.append(el)
+    return { el, caption }
+  }
+  const palette = tool('command', shortcut, `打开指令台（${shortcut}）`)
+  palette.caption.classList.add('aw-kbd')
+  palette.el.addEventListener('click', () => showPalette(win, palette.el))
+  const pad = tool('notes', '便签', '打开堆叠便签')
+  pad.el.addEventListener('click', () => toggleScratchpad(win, pad.el))
+  const timer = tool('timer', '番茄', '打开值班番茄钟')
+  const dockTimer = getDockTimer(win)
+  timer.el.addEventListener('click', () => dockTimer.openPanel(timer.el))
   const stopTimerSub = dockTimer.subscribe(snap => {
-    timerLabel.textContent = snap.running ? formatClock(snap.remaining) : '番茄'
+    timer.caption.textContent = snap.running ? formatClock(snap.remaining) : '番茄'
+    timer.caption.classList.toggle('aw-kbd', Boolean(snap.running))
+    timer.el.dataset.running = String(Boolean(snap.running))
   })
-  const settings = button(doc, 'aw-settings', '')
+  const settings = button(doc, 'aw-tool aw-settings', '')
   settings.append(icon(doc, 'wrench', 14))
   settings.title = '工装设置'
   settings.setAttribute('aria-label', settings.title)
   settings.hidden = !showControls
-  settings.addEventListener('click', () => { playMechanicalClick(doc.defaultView, prefs); showControls?.(settings) })
-  const toolWell = node(doc, 'div', 'aw-tool-well')
-  toolWell.append(paletteBtn, padBtn, timerBtn)
-  const tools = node(doc, 'div', 'aw-head-tools')
-  tools.append(toolWell, searchToggle, settings)
-  head.append(title, workspaceChip, tools)
+  settings.addEventListener('click', () => { playMechanicalClick(win, prefs); showControls?.(settings) })
+  toolbar.append(settings)
+  head.append(titles, toolbar)
 
-  const face = node(doc, 'div', 'aw-face')
+  // Work orders: an always-visible filter over the workspace index.
+  const body = node(doc, 'div', 'aw-body')
+  const orders = node(doc, 'div', 'aw-orders')
+  const filterRow = node(doc, 'div', 'aw-filter')
+  const queryWrap = node(doc, 'label', 'aw-query-wrap')
+  const query = node(doc, 'input', 'aw-query')
+  query.type = 'search'
+  query.autocomplete = 'off'
+  query.spellcheck = false
+  query.placeholder = '筛选会话标题…'
+  query.setAttribute('aria-label', '筛选当前工作区的会话标题')
+  queryWrap.append(icon(doc, 'search', 14), query)
+  const scopeBar = node(doc, 'div', 'aw-scopes')
+  scopeBar.setAttribute('role', 'group')
+  scopeBar.setAttribute('aria-label', '会话范围')
+  let scope = 'all'
+  const scopeButtons = new Map(scopes.map(([value, label]) => {
+    const el = button(doc, 'aw-scope', '')
+    el.dataset.scope = value
+    const name = node(doc, 'span', '', label)
+    const count = node(doc, 'span', 'aw-scope-count', '0')
+    el.append(name, count)
+    el.setAttribute('aria-pressed', String(value === scope))
+    el.addEventListener('click', () => setScope(value === scope && value !== 'all' ? 'all' : value))
+    scopeBar.append(el)
+    return [value, { el, count, label }]
+  }))
+  filterRow.append(queryWrap, scopeBar)
+
+  const list = node(doc, 'ol', 'aw-list')
+  list.setAttribute('aria-label', '会话列表')
+  const notice = node(doc, 'p', 'aw-list-note')
+  notice.setAttribute('role', 'status')
+  orders.append(filterRow, list, notice)
+
+  // Crew corner: the mascot carries the workspace summary in words.
+  const crew = node(doc, 'aside', 'aw-crew')
+  crew.setAttribute('aria-label', '值班概况')
+  const stage = button(doc, 'aw-mascot-stage', '')
+  stage.setAttribute('aria-label', '换一句值班台词')
+  const hero = node(doc, 'img', 'aw-mascot-art')
+  hero.alt = ''
+  hero.draggable = false
+  stage.append(hero)
+  const speech = node(doc, 'p', 'aw-speech')
+  speech.setAttribute('aria-live', 'polite')
   const metrics = node(doc, 'dl', 'aw-metrics')
-  const values = ['工作区会话', '今日更新', '运行中'].map(label => {
+  const values = ['会话', '今日更新', '运行中'].map(label => {
     const cell = node(doc, 'div', 'aw-metric')
     const value = node(doc, 'dd', 'aw-readout', '—')
     cell.append(node(doc, 'dt', 'aw-measure-label', label), value)
     metrics.append(cell)
     return value
   })
+  crew.append(stage, speech, metrics)
+  body.append(orders, crew)
+
+  // Logbook: the activity heatmap spans the bottom edge.
   const figure = node(doc, 'figure', 'aw-trend')
   const trendHead = node(doc, 'div', 'aw-trend-head')
-  const trendTitle = node(doc, 'figcaption', 'aw-trend-title', '会话最近更新时间分布 · 近 20 周')
+  const trendTitle = node(doc, 'figcaption', 'aw-trend-title', '航行日志 · 会话更新 · 近 20 周')
   const modeSwitch = node(doc, 'div', 'aw-trend-modes')
   modeSwitch.setAttribute('role', 'group')
   modeSwitch.setAttribute('aria-label', '热力图视图')
@@ -107,7 +193,7 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
     btn.addEventListener('click', () => {
       if (heatMode === mode) return
       heatMode = mode
-      playMechanicalClick(doc.defaultView, prefs)
+      playMechanicalClick(win, prefs)
       for (const [m, b] of modeButtons) b.setAttribute('aria-pressed', String(m === heatMode))
       renderHeatmap()
     })
@@ -121,15 +207,14 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
   for (const label of ['一', '', '三', '', '五', '', '日']) weekdays.append(node(doc, 'span', '', label))
   const heatmapGrid = node(doc, 'ol', 'aw-heatmap')
   const cells = Array.from({ length: 140 }, (_, idx) => {
-    const isLast7 = idx >= 133
-    const cell = node(doc, 'li', isLast7 ? 'aw-heat-cell aw-column' : 'aw-heat-cell')
+    const cell = node(doc, 'li', idx >= 133 ? 'aw-heat-cell aw-column' : 'aw-heat-cell')
     cell.dataset.level = '0'
     heatmapGrid.append(cell)
     return cell
   })
   heatBody.append(weekdays, heatmapGrid)
   const heatFoot = node(doc, 'div', 'aw-heat-foot')
-  const heatSummary = node(doc, 'span', 'aw-heat-summary', 'BLUEPRINT // 20W')
+  const heatSummary = node(doc, 'span', 'aw-heat-summary', '')
   const heatTip = node(doc, 'div', 'aw-heat-tip')
   heatTip.hidden = true
   heatTip.setAttribute('aria-hidden', 'true')
@@ -144,7 +229,7 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
   legend.append(node(doc, 'span', '', '多'))
   heatFoot.append(heatSummary, legend)
   figure.append(trendHead, heatBody, heatFoot, heatTip)
-  let defaultSummary = 'BLUEPRINT // 20W'
+  let defaultSummary = ''
   for (const cell of cells) {
     cell.addEventListener('pointerenter', () => {
       const text = cell.dataset.tip || cell.title
@@ -156,9 +241,8 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
       const cellRect = cell.getBoundingClientRect()
       if (figRect.width > 0 && cellRect.width > 0) {
         const cx = cellRect.left - figRect.left + cellRect.width / 2
-        const top = cellRect.top - figRect.top - 26
         heatTip.style.left = Math.max(8, Math.min(cx, figRect.width - 8)) + 'px'
-        heatTip.style.top = Math.max(4, top) + 'px'
+        heatTip.style.top = Math.max(4, cellRect.top - figRect.top - 28) + 'px'
       }
     })
   }
@@ -166,22 +250,19 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
     heatTip.hidden = true
     heatSummary.textContent = defaultSummary
   })
-  const telemetry = node(doc, 'div', 'aw-dashboard-readings')
-  telemetry.append(metrics, figure)
-  const stage = button(doc, 'aw-mascot-stage', '')
-  stage.setAttribute('aria-label', '听听工装伙伴的值班提示')
-  const hero = node(doc, 'img', 'aw-mascot-art')
-  hero.alt = ''
-  hero.draggable = false
-  const bubble = node(doc, 'span', 'aw-hero-bubble')
-  bubble.hidden = true
-  bubble.setAttribute('role', 'status')
-  stage.append(hero, bubble)
-  face.append(telemetry, stage)
-  let hideBubble
-  stage.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && !bubble.hidden) { bubble.hidden = true; event.stopPropagation() }
-  })
+
+  panel.append(head, body, figure)
+
+  // ---- State ------------------------------------------------------------
+  let current
+  let workspace
+  let quipIndex = -1
+  let quipTimer
+  const ready = () => current?.phase === 'ready'
+  function open(id) {
+    if (panel.isConnected && ready() && current.sessions.some(session => session.id === id)) openSession?.(id)
+  }
+
   function applyPrefs() {
     const stored = prefs.get('portrait')
     const local = typeof stored === 'string' && /^data:image\/(?:png|webp);base64,[A-Za-z0-9+/]+=*$/.test(stored)
@@ -195,136 +276,128 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
     if (key === null || key === 'typing.stats' || key === 'token.stats') renderHeatmap()
   })
   applyPrefs()
-  let phraseIndex = Math.floor(Math.random() * 3)
+
   stage.addEventListener('click', () => {
-    const count = current?.sessions?.filter(s => s.waiting).length || 0
-    const hints = ['扳手就位，今天准备修哪块代码？', '图纸铺好了，开工吧！',
-      count ? '有 ' + count + ' 个会话等你确认哦！' : '巡检完毕，审批单都收齐啦！']
-    bubble.textContent = hints[phraseIndex++ % hints.length]
-    bubble.hidden = false
-    doc.defaultView.clearTimeout(hideBubble)
-    hideBubble = doc.defaultView.setTimeout(() => { bubble.hidden = true }, 2500)
+    quipIndex = (quipIndex + 1) % quips.length
+    speech.textContent = quips[quipIndex]
+    speech.dataset.quip = 'true'
+    win.clearTimeout(quipTimer)
+    // A quip yields back to the live summary; the summary is the real content.
+    quipTimer = win.setTimeout(() => { delete speech.dataset.quip; speech.textContent = crewLine(current) }, 4000)
   })
 
-  const foot = node(doc, 'div', 'aw-overview-foot')
-  const footLabel = node(doc, 'span', 'aw-last-label', '上次会话')
-  const resume = button(doc, 'aw-resume', '')
-  const latestTitle = node(doc, 'span', 'aw-last-title')
-  const arrow = node(doc, 'span', 'aw-arrow', '↗')
-  arrow.setAttribute('aria-hidden', 'true')
-  resume.append(latestTitle, arrow)
-  const empty = node(doc, 'span', 'aw-last-empty')
-  const stamp = node(doc, 'span', 'aw-stencil', 'DRYDOCK-04 // HULL-A2')
-  stamp.setAttribute('aria-hidden', 'true')
-  foot.append(pending, footLabel, resume, empty, stamp)
-
-  const drawer = node(doc, 'div', 'aw-session-search')
-  drawer.id = `aw-session-search-${++searchPanelId}`
-  drawer.hidden = true
-  for (const trigger of [searchToggle, pending]) trigger.setAttribute('aria-controls', drawer.id)
-  const controls = node(doc, 'div', 'aw-query-controls')
-  const query = node(doc, 'input', 'aw-query')
-  query.type = 'search'
-  query.autocomplete = 'off'
-  query.placeholder = '输入会话标题…'
-  query.setAttribute('aria-label', '搜索当前工作区的会话标题')
-  const select = node(doc, 'select', 'aw-scope')
-  select.setAttribute('aria-label', '筛选会话')
-  for (const [value, label] of [['all', '全部'], ['pinned', '已置顶'], ['waiting', '待处理'], ['running', '运行中']]) {
-    const option = node(doc, 'option', '', label)
-    option.value = value
-    select.append(option)
-  }
-  const results = node(doc, 'div', 'aw-found')
-  results.setAttribute('aria-label', '搜索结果')
-  const notice = node(doc, 'p', 'aw-no-match')
-  notice.setAttribute('role', 'status')
-  controls.append(query, select)
-  drawer.append(controls, results, notice)
-  panel.append(hardware, head, foot, drawer, face)
-
-  let current
-  let workspace
-  let waiting = []
-  let searchAnchor
-  const ready = () => current?.phase === 'ready'
-  function open(id) {
-    if (panel.isConnected && ready() && current.sessions.some(session => session.id === id)) openSession?.(id)
-  }
-  pending.addEventListener('click', () => {
-    if (waiting.length === 1) open(waiting[0].id)
-    else if (waiting.length > 1) showSearch(searchAnchor === pending ? undefined : pending)
-  })
-  resume.addEventListener('click', () => open(current?.sessions?.[0]?.id))
-
-  function syncSearchTriggers() {
-    searchToggle.setAttribute('aria-expanded', String(searchAnchor === searchToggle))
-    searchToggle.lastChild.textContent = searchAnchor === searchToggle ? '收起' : '查找会话'
-    if (waiting.length > 1 || searchAnchor === pending) {
-      pending.setAttribute('aria-expanded', String(searchAnchor === pending))
-    } else pending.removeAttribute('aria-expanded')
+  function setScope(value) {
+    scope = value
+    for (const [key, { el }] of scopeButtons) el.setAttribute('aria-pressed', String(key === scope))
+    renderList()
   }
 
-  function showSearch(anchor) {
-    if (anchor === pending || searchAnchor === pending) {
-      query.value = ''
-      select.value = anchor === pending ? 'waiting' : 'all'
-    }
-    searchAnchor = anchor
-    face.hidden = Boolean(anchor)
-    drawer.hidden = !anchor
-    syncSearchTriggers()
-    if (anchor) {
-      updateMatches()
-      query.focus()
-    }
+  function rows() { return [...list.querySelectorAll('.aw-row')] }
+  function focusRow(index) {
+    const all = rows()
+    if (!all.length) return
+    const target = all[Math.max(0, Math.min(index, all.length - 1))]
+    for (const row of all) row.tabIndex = row === target ? 0 : -1
+    target.focus()
   }
-  searchToggle.addEventListener('click', () => showSearch(searchAnchor === searchToggle ? undefined : searchToggle))
-  drawer.addEventListener('keydown', event => {
+
+  query.addEventListener('input', renderList)
+  query.addEventListener('keydown', event => {
     if (event.isComposing || event.keyCode === 229) return
-    if (event.key === 'Escape') {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      list.querySelector('.aw-row')?.click()
+    } else if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      focusRow(0)
+    } else if (event.key === 'Escape' && (query.value || scope !== 'all')) {
       event.preventDefault()
       event.stopPropagation()
-      const trigger = searchAnchor?.hidden ? searchToggle : searchAnchor
-      showSearch()
-      trigger?.focus()
-    } else if (event.key === 'Enter' && event.target === query) {
-      event.preventDefault()
-      results.querySelector('button')?.click()
+      query.value = ''
+      setScope('all')
     }
   })
+  list.addEventListener('keydown', event => {
+    const all = rows()
+    const index = all.indexOf(doc.activeElement)
+    if (index < 0) return
+    let next
+    if (event.key === 'ArrowDown') next = index + 1
+    else if (event.key === 'ArrowUp') next = index - 1
+    else if (event.key === 'Home') next = 0
+    else if (event.key === 'End') next = all.length - 1
+    else if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); query.focus(); return }
+    else return
+    event.preventDefault()
+    if (next < 0) { query.focus(); return }
+    focusRow(next)
+  })
 
-  function updateMatches() {
+  function renderList() {
+    const available = ready()
+    const sessions = available ? current.sessions : []
+    const latestId = sessions[0]?.id
+    const now = Date.now()
+    for (const [key, { el, count, label }] of scopeButtons) {
+      const n = key === 'all' ? sessions.length : sessions.filter(row => row[key]).length
+      count.textContent = number.format(n)
+      el.dataset.count = String(n)
+      el.disabled = !available || (key !== 'all' && !n && scope !== key)
+      el.setAttribute('aria-label', `${label}，${n} 个`)
+    }
     const term = query.value.trim().toLocaleLowerCase()
-    const filter = select.value
-    const matches = (current?.sessions ?? []).filter(s =>
-      (filter === 'all' || s[filter]) && s.title.toLocaleLowerCase().includes(term))
-    // Searches use the full index. Keep a short, keyboard-reachable result list.
-    const rows = matches.slice(0, 20)
-    const old = new Map([...results.children].map(el => [el.dataset.id, el]))
-    for (const [index, session] of rows.entries()) {
+    const matches = rank(sessions, scope).filter(row => row.title.toLocaleLowerCase().includes(term))
+    const shown = matches.slice(0, VISIBLE_LIMIT)
+    const old = new Map([...list.children].map(el => [el.dataset.id, el]))
+    const focusedId = list.contains(doc.activeElement) ? doc.activeElement.dataset.id : undefined
+    for (const [index, session] of shown.entries()) {
       const id = String(session.id)
-      const row = old.get(id) ?? button(doc, 'aw-result', '')
+      let item = old.get(id)
       old.delete(id)
-      if (!row.dataset.id) {
+      if (!item) {
+        item = node(doc, 'li', 'aw-item')
+        item.dataset.id = id
+        const row = button(doc, 'aw-row', '')
         row.dataset.id = id
         row.addEventListener('click', () => open(session.id))
-        row.append(node(doc, 'span', 'aw-result-name'), node(doc, 'span', 'aw-result-flag'))
+        row.append(node(doc, 'span', 'aw-row-lamp'), node(doc, 'span', 'aw-row-title'),
+          node(doc, 'span', 'aw-row-flag'), node(doc, 'span', 'aw-row-time'))
+        item.append(row)
       }
-      row.firstElementChild.textContent = session.title
+      const row = item.firstElementChild
+      const [, name, flagEl, timeEl] = row.children
       const flag = session.waiting ? 'waiting' : session.running ? 'running' : session.pinned ? 'pinned' : ''
-      row.lastElementChild.dataset.flag = flag
-      row.lastElementChild.textContent = flagLabels[flag] ?? ''
-      row.lastElementChild.hidden = !flag
-      if (row !== results.children[index]) results.insertBefore(row, results.children[index] ?? null)
+      row.dataset.flag = flag
+      name.textContent = session.title
+      name.title = session.title
+      flagEl.dataset.flag = flag
+      flagEl.textContent = flagLabels[flag] ?? ''
+      flagEl.hidden = !flag
+      const when = id === String(latestId) ? '上次' : relativeTime(session.updatedAt, now)
+      timeEl.textContent = when
+      timeEl.dataset.latest = String(id === String(latestId))
+      row.setAttribute('aria-label', [session.title, flagLabels[flag], when].filter(Boolean).join('，'))
+      row.tabIndex = -1
+      if (item !== list.children[index]) list.insertBefore(item, list.children[index] ?? null)
     }
-    for (const row of old.values()) row.remove()
-    notice.textContent = matches.length > rows.length ? '已显示前 20 条，可输入标题缩小范围' :
-      rows.length ? '' : '没有匹配的会话'
-    notice.hidden = !notice.textContent
+    for (const item of old.values()) item.remove()
+    const first = list.querySelector('.aw-row')
+    const keep = focusedId && list.querySelector(`.aw-row[data-id="${CSS.escape?.(focusedId) ?? focusedId}"]`)
+    if (keep) keep.tabIndex = 0
+    else if (first) first.tabIndex = 0
+    if (focusedId && !keep && doc.activeElement === doc.body) query.focus()
+
+    let text = ''
+    if (!available) text = phases[current?.phase] ?? phases.loading
+    else if (!sessions.length) text = '暂无历史会话'
+    else if (!matches.length) text = term ? '没有匹配的会话' : `没有${scopeButtons.get(scope).label}的会话`
+    else if (matches.length > shown.length) text = `已显示前 ${VISIBLE_LIMIT} 条，输入标题缩小范围`
+    notice.textContent = text
+    notice.hidden = !text
+    notice.dataset.kind = !available ? 'phase' : !sessions.length ? 'empty' : !matches.length ? 'none' : 'more'
+    list.hidden = !shown.length
+    query.disabled = !available || !sessions.length || !openSession
   }
-  query.addEventListener('input', updateMatches)
-  select.addEventListener('change', updateMatches)
 
   function heatLevel(count, peak) {
     if (!count || count <= 0) return '0'
@@ -361,36 +434,29 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
     const tokenWsDays = tokenWsEntry && typeof tokenWsEntry.days === 'object' ? tokenWsEntry.days : {}
     const tokenWsTotal = tokenWsEntry && Number.isFinite(tokenWsEntry.total) ? tokenWsEntry.total : 0
 
+    const base = () => available && current.heatmap?.length === 140 ? current.heatmap : buildFallbackDates()
     let series
     if (heatMode === 'typing-ws') {
-      trendTitle.textContent = '本区打字里程 · 近 20 周'
+      trendTitle.textContent = '航行日志 · 本区打字 · 近 20 周'
       defaultSummary = `本区累计 ${number.format(totalWs)} 字`
-      const base = available && current.heatmap?.length === 140 ? current.heatmap : buildFallbackDates()
-      series = base.map(item => ({ date: item.date, count: Number(wsDays[item.date] || 0) }))
+      series = base().map(item => ({ date: item.date, count: Number(wsDays[item.date] || 0) }))
     } else if (heatMode === 'typing-all') {
-      trendTitle.textContent = '全局打字里程 · 近 20 周'
+      trendTitle.textContent = '航行日志 · 全局打字 · 近 20 周'
       defaultSummary = `全船坞累计 ${number.format(totalGlobal)} 字`
-      const base = available && current.heatmap?.length === 140 ? current.heatmap : buildFallbackDates()
-      series = base.map(item => ({ date: item.date, count: Number(globalDays[item.date] || 0) }))
+      series = base().map(item => ({ date: item.date, count: Number(globalDays[item.date] || 0) }))
     } else if (heatMode === 'tokens') {
-      trendTitle.textContent = 'Token 消耗分布 · 近 20 周'
+      trendTitle.textContent = '航行日志 · Token 消耗 · 近 20 周'
       defaultSummary = tokenGlobalTotal ? `已记录累计 ${formatTokens(tokenGlobalTotal)} tok（本区 ${formatTokens(tokenWsTotal)}）` : '暂未记录到新增 Token 消耗'
-      const base = available && current.heatmap?.length === 140 ? current.heatmap : buildFallbackDates()
-      series = base.map(item => ({ date: item.date, count: Number(tokenGlobalDays[item.date] || 0) }))
+      series = base().map(item => ({ date: item.date, count: Number(tokenGlobalDays[item.date] || 0) }))
     } else {
-      trendTitle.textContent = '会话最近更新时间分布 · 近 20 周'
+      trendTitle.textContent = '航行日志 · 会话最近更新时间分布 · 近 20 周'
       const activeDays = available && current.heatmap ? current.heatmap.filter(d => d.count > 0).length : 0
       defaultSummary = available
         ? (tokenWsTotal ? `近 20 周活跃 ${activeDays} 天 · 本区已记录 ${formatTokens(tokenWsTotal)} tok` : `近 20 周活跃 ${activeDays} 天`)
-        : 'BLUEPRINT // 20W'
-      if (available && current.heatmap?.length === 140) {
-        series = current.heatmap
-      } else if (available && current.days?.length === 7) {
-        const prefix = Array.from({ length: 133 }, () => null)
-        series = [...prefix, ...current.days]
-      } else {
-        series = Array.from({ length: 140 }, () => null)
-      }
+        : '数据未就绪'
+      if (available && current.heatmap?.length === 140) series = current.heatmap
+      else if (available && current.days?.length === 7) series = [...Array.from({ length: 133 }, () => null), ...current.days]
+      else series = Array.from({ length: 140 }, () => null)
     }
     if (heatTip.hidden) heatSummary.textContent = defaultSummary
 
@@ -404,22 +470,22 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
         cell.dataset.tip = '数据未就绪'
         cell.setAttribute('aria-label', '数据未就绪')
         cell.toggleAttribute('data-empty', true)
-      } else {
-        cell.dataset.level = heatLevel(day.count, peak)
-        const tokCount = heatMode === 'typing-all' || heatMode === 'tokens'
-          ? Number(tokenGlobalDays[day.date] || 0)
-          : Number(tokenWsDays[day.date] || tokenGlobalDays[day.date] || 0)
-        const tokLabel = tokCount > 0 ? `${formatTokens(tokCount)} tok` : '暂无 Token 记录'
-        const desc = heatMode === 'tokens'
-          ? `${day.date} · 消耗 ${tokLabel}`
-          : heatMode === 'sessions'
-            ? `${day.date}，${day.count} 个会话最后更新 · ${tokLabel}`
-            : `${day.date}，输入 ${number.format(day.count)} 字 · ${tokLabel}`
-        cell.title = desc
-        cell.dataset.tip = desc
-        cell.setAttribute('aria-label', desc)
-        cell.toggleAttribute('data-empty', !day.count)
+        continue
       }
+      cell.dataset.level = heatLevel(day.count, peak)
+      const tokCount = heatMode === 'typing-all' || heatMode === 'tokens'
+        ? Number(tokenGlobalDays[day.date] || 0)
+        : Number(tokenWsDays[day.date] || tokenGlobalDays[day.date] || 0)
+      const tokLabel = tokCount > 0 ? `${formatTokens(tokCount)} tok` : '暂无 Token 记录'
+      const desc = heatMode === 'tokens'
+        ? `${day.date} · 消耗 ${tokLabel}`
+        : heatMode === 'sessions'
+          ? `${day.date}，${day.count} 个会话最后更新 · ${tokLabel}`
+          : `${day.date}，输入 ${number.format(day.count)} 字 · ${tokLabel}`
+      cell.title = desc
+      cell.dataset.tip = desc
+      cell.setAttribute('aria-label', desc)
+      cell.toggleAttribute('data-empty', !day.count)
     }
   }
 
@@ -428,14 +494,13 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
     const changedWorkspace = workspace !== workspaceId
     current = activity
     workspace = workspaceId
-    const workspaceName = activity?.workspaceName
     const available = ready()
-    const sessions = available ? activity.sessions : []
-    if (changedWorkspace || !available || !sessions.length) {
+    if (changedWorkspace || !available || !activity.sessions.length) {
       query.value = ''
-      select.value = 'all'
-      if (searchAnchor) showSearch()
+      scope = 'all'
+      for (const [key, { el }] of scopeButtons) el.setAttribute('aria-pressed', String(key === 'all'))
     }
+    const workspaceName = activity?.workspaceName
     if (workspaceName) title.title = workspaceName
     else title.removeAttribute('title')
     workspaceChip.textContent = workspaceName ?? ''
@@ -447,30 +512,16 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
       values[index].classList.toggle('aw-long-value', value.length > 4)
     }
     values[2].parentElement.dataset.active = String(available && activity.running > 0)
+    const waiting = available ? activity.sessions.filter(row => row.waiting).length : 0
+    panel.dataset.attention = String(waiting > 0)
+    if (!speech.dataset.quip) speech.textContent = crewLine(activity)
+    renderList()
     renderHeatmap()
-    waiting = sessions.filter(session => session.waiting)
-    pending.hidden = !waiting.length || !openSession
-    const multiple = waiting.length > 1
-    pending.textContent = '待处理 · ' + waiting.length + (multiple ? ' ▾' : ' ↗')
-    pending.setAttribute('aria-label', (multiple ? '查看待处理会话列表，共 ' : '打开待处理会话，共 ') + waiting.length + ' 个')
-    pending.title = multiple ? '查看待处理会话列表' : (waiting[0]?.title ?? '')
-    syncSearchTriggers()
-    const recent = sessions[0]
-    searchToggle.disabled = !openSession || !sessions.length
-    resume.hidden = !recent || !openSession
-    empty.hidden = !resume.hidden
-    empty.textContent = !available ? phases[activity?.phase] ?? phases.loading :
-      recent ? recent.title : '暂无历史会话'
-    footLabel.textContent = resume.hidden ? '上次会话' : '继续上次会话'
-    latestTitle.textContent = recent?.title ?? ''
-    resume.title = recent ? '继续上次会话 · ' + recent.title : ''
-    resume.setAttribute('aria-label', resume.title)
-    if (!drawer.hidden) updateMatches()
   }
 
   return {
     panel, update,
-    destroy() { unsubscribe(); stopTimerSub(); doc.defaultView.clearTimeout(hideBubble); panel.remove() },
+    destroy() { unsubscribe(); stopTimerSub(); win.clearTimeout(quipTimer); panel.remove() },
   }
 }
 

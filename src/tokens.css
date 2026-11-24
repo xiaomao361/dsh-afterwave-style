@@ -1,0 +1,105 @@
+/* Workshop Logbook design tokens.
+   One vocabulary for every Afterwave surface. Colors keep the same meaning in
+   both modes: signal = actionable, brass = identity/decoration, wait = needs
+   you, run = in progress, err = failed. Components consume only these. */
+body {
+  --aw-font-ui: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  --aw-font-mono: 'IBM Plex Mono', 'SFMono-Regular', ui-monospace, Menlo, Consolas, 'PingFang SC', monospace;
+
+  --aw-bg: #e4ddd0;
+  --aw-paper: #f6f1e8;
+  --aw-paper-2: #ece6da;
+  --aw-paper-3: #e2dbcd;
+  --aw-ink: #1f1d1a;
+  --aw-ink-2: #47423b;
+  --aw-ink-3: #645e54;
+  --aw-line: rgb(31 29 26 / 13%);
+  --aw-line-2: rgb(31 29 26 / 24%);
+  --aw-hover: rgb(31 29 26 / 6%);
+  --aw-press: rgb(31 29 26 / 11%);
+
+  --aw-signal: #1f4f86;
+  --aw-signal-ink: #f7f3ec;
+  --aw-signal-soft: rgb(31 79 134 / 10%);
+  --aw-brass: #8a5e1e;
+  --aw-brass-line: #b88a45;
+  --aw-brass-soft: rgb(184 138 69 / 16%);
+  --aw-wait: #94560a;
+  --aw-wait-soft: #f5e2bd;
+  --aw-wait-line: #d39a3e;
+  --aw-run: #1d6474;
+  --aw-run-soft: #d6e8eb;
+  --aw-err: #a8321f;
+  --aw-err-soft: #f4dad3;
+  --aw-pin: #664a82;
+  --aw-pin-soft: #e7deef;
+
+  --aw-heat-0: #e9e2d5;
+  --aw-heat-1: #e6cf9e;
+  --aw-heat-2: #d0a259;
+  --aw-heat-3: #a87430;
+  --aw-heat-4: #6f4a14;
+
+  --aw-radius-lg: 12px;
+  --aw-radius: 8px;
+  --aw-radius-sm: 6px;
+  --aw-shadow-1: 0 1px 2px rgb(31 29 26 / 7%);
+  --aw-shadow-2: 0 1px 2px rgb(31 29 26 / 6%), 0 10px 28px -14px rgb(31 29 26 / 28%);
+  --aw-shadow-pop: 0 2px 6px rgb(31 29 26 / 8%), 0 18px 40px -16px rgb(31 29 26 / 34%);
+  --aw-hazard: repeating-linear-gradient(-45deg, var(--aw-wait-line) 0 4px, transparent 4px 8px);
+  --aw-ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+body[data-ds-dark-theme] {
+  --aw-bg: #131417;
+  --aw-paper: #1f2125;
+  --aw-paper-2: #18191c;
+  --aw-paper-3: #26292e;
+  --aw-ink: #ece6db;
+  --aw-ink-2: #c4bdb1;
+  --aw-ink-3: #9b9488;
+  --aw-line: rgb(236 230 219 / 10%);
+  --aw-line-2: rgb(236 230 219 / 19%);
+  --aw-hover: rgb(236 230 219 / 6%);
+  --aw-press: rgb(236 230 219 / 11%);
+
+  --aw-signal: #86b4e8;
+  --aw-signal-ink: #10151c;
+  --aw-signal-soft: rgb(134 180 232 / 13%);
+  --aw-brass: #d4a45a;
+  --aw-brass-line: #9c7536;
+  --aw-brass-soft: rgb(212 164 90 / 14%);
+  --aw-wait: #f2b14a;
+  --aw-wait-soft: #3a2c15;
+  --aw-wait-line: #b07a26;
+  --aw-run: #6cc3d3;
+  --aw-run-soft: #183238;
+  --aw-err: #ff8a73;
+  --aw-err-soft: #3d1f1a;
+  --aw-pin: #cdaef0;
+  --aw-pin-soft: #2f2640;
+
+  --aw-heat-0: #26282d;
+  --aw-heat-1: #45391f;
+  --aw-heat-2: #7a5c2a;
+  --aw-heat-3: #b98a3e;
+  --aw-heat-4: #f0c070;
+
+  --aw-shadow-1: 0 1px 2px rgb(0 0 0 / 30%);
+  --aw-shadow-2: 0 1px 2px rgb(0 0 0 / 28%), 0 12px 30px -14px rgb(0 0 0 / 62%);
+  --aw-shadow-pop: 0 2px 8px rgb(0 0 0 / 34%), 0 20px 44px -16px rgb(0 0 0 / 70%);
+}
+
+/* Shared popover surface for every floating Afterwave panel. */
+.aw-surface {
+  color: var(--aw-ink);
+  background: var(--aw-paper);
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius-lg);
+  box-shadow: var(--aw-shadow-pop);
+  font-family: var(--aw-font-ui);
+}
+
+@media (forced-colors: active) {
+  .aw-surface { border-color: CanvasText; background: Canvas; color: CanvasText; box-shadow: none; }
+}

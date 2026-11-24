@@ -6,55 +6,53 @@
   max-height: calc(100dvh - 16px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  color: var(--dsw-alias-label-primary);
-  background: var(--dsw-alias-bg-layer-2);
-  border: 1.5px solid #8a6c3e;
-  border-bottom: 2.5px solid #594425;
-  border-radius: 9px;
+  color: var(--aw-ink);
+  background: var(--aw-paper);
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius-lg);
   padding: 14px 16px;
-  box-shadow: inset 0 1px 0 rgb(255 250 240 / 62%), 0 16px 38px -10px rgb(12 14 18 / 34%);
-  font: 13px/1.45 -apple-system, "PingFang SC", sans-serif;
-}
-body[data-ds-dark-theme] .aw-controls {
-  border-bottom-color: #14100a;
-  box-shadow: inset 0 1px 0 rgb(255 236 196 / 11%), 0 20px 44px -10px rgb(0 0 0 / 68%);
+  box-shadow: var(--aw-shadow-pop);
+  font: 13px/1.45 var(--aw-font-ui);
 }
 html[data-aw-glass="on"] .aw-controls {
-  background: color-mix(in srgb, var(--dsw-alias-bg-layer-2) 94%, transparent);
+  background: color-mix(in srgb, var(--aw-paper) 94%, transparent);
   backdrop-filter: blur(12px);
 }
 .aw-controls-head, .aw-ctrl-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.aw-controls-head { margin-bottom:5px; padding-bottom:8px; border-bottom:1px solid var(--dsw-alias-border-l1); }
-.aw-controls-head h2 { margin:0; font-size:16px; font-weight:680; }
-.aw-controls button { cursor:pointer; color:var(--dsw-alias-label-secondary); background:transparent; font:inherit; }
-.aw-controls button:hover { color:var(--dsw-alias-brand-text); background:var(--dsw-alias-interactive-bg-hover); }
-.aw-controls .aw-ctrl-close { font:20px/1 system-ui; width:26px; height:26px; border:0; border-radius:5px; }
+.aw-controls-head { margin-bottom:5px; padding-bottom:8px; border-bottom:1px solid var(--aw-line); }
+.aw-controls-head h2 { margin:0; font-size:15px; font-weight:650; color:var(--aw-ink); }
+.aw-controls button { cursor:pointer; color:var(--aw-ink-2); background:transparent; font:inherit; }
+.aw-controls button:hover { color:var(--aw-ink); background:var(--aw-hover); }
+.aw-controls button:active { background:var(--aw-press); }
+.aw-controls .aw-ctrl-close { font:18px/1 var(--aw-font-ui); width:26px; height:26px; border:0; border-radius:var(--aw-radius-sm); }
 .aw-controls .aw-ctrl-reset-dock {
-  display: block; margin: -2px 0 6px; padding: 2px 6px; font-size: 12px;
-  border: 1px solid var(--dsw-alias-border-l2); border-radius: 4px;
+  display: block; margin: -2px 0 6px; padding: 2px 8px; font-size: 12px;
+  border: 1px solid var(--aw-line-2); border-radius: var(--aw-radius-sm);
 }
 .aw-controls .aw-ctrl-reset-dock[hidden] { display: none; }
-.aw-ctrl-row { min-height:33px; cursor:pointer; }
-.aw-ctrl-toggle { appearance:none; cursor:pointer; width:29px; height:17px; border-radius:12px; margin:0; border:1px solid var(--dsw-alias-border-l3); background:var(--dsw-alias-bg-module-platform); }
-.aw-ctrl-toggle::before { content:""; display:block; width:9px; height:9px; margin:3px; border-radius:50%; background:var(--dsw-alias-label-caption); }
-.aw-ctrl-toggle:checked { border-color:var(--dsw-alias-brand-primary); background:var(--dsw-alias-brand-primary); }
-.aw-ctrl-toggle:checked::before { transform:translateX(12px); background:var(--dsw-alias-label-primary-foreground); }
-.aw-ctrl-opacity { display:grid; grid-template-columns:1fr auto; gap:7px; padding-block:12px 9px; border-top:1px solid var(--dsw-alias-border-l1); margin-top:5px; }
-.aw-ctrl-opacity input { grid-column:1/-1; width:100%; margin:0; accent-color:var(--dsw-alias-brand-primary); }
-.aw-ctrl-opacity output { font-variant-numeric:tabular-nums; color:var(--dsw-alias-label-caption); }
+.aw-ctrl-row { min-height:33px; cursor:pointer; color:var(--aw-ink); }
+.aw-ctrl-toggle { appearance:none; cursor:pointer; flex:none; width:30px; height:18px; border-radius:999px; margin:0; border:1px solid var(--aw-line-2); background:var(--aw-paper-3); }
+.aw-ctrl-toggle::before { content:""; display:block; width:12px; height:12px; margin:2px; border-radius:50%; background:var(--aw-paper); box-shadow:var(--aw-shadow-1); }
+.aw-ctrl-toggle:checked { border-color:var(--aw-signal); background:var(--aw-signal); }
+.aw-ctrl-toggle:checked::before { transform:translateX(12px); background:var(--aw-signal-ink); }
+.aw-ctrl-opacity { display:grid; grid-template-columns:1fr auto; gap:7px; padding-block:12px 9px; border-top:1px solid var(--aw-line); margin-top:5px; }
+.aw-ctrl-opacity input { grid-column:1/-1; width:100%; margin:0; accent-color:var(--aw-signal); }
+.aw-ctrl-opacity output { font:500 12px/1.3 var(--aw-font-mono); font-variant-numeric:tabular-nums; color:var(--aw-ink-3); }
 .aw-ctrl-art { display:flex; flex-wrap:wrap; gap:7px; }
-.aw-ctrl-art button { border:1px solid var(--dsw-alias-border-l2); border-radius:5px; padding:4px 9px; }
-.aw-controls button:disabled { opacity:.55; cursor:default; }
-.aw-controls :focus-visible { outline:2px solid var(--dsw-focus-ring-color); outline-offset:2px; }
-.aw-controls-note { margin:8px 0 0; color:var(--dsw-alias-label-secondary); }
+.aw-ctrl-art button { border:1px solid var(--aw-line-2); border-radius:var(--aw-radius-sm); padding:4px 10px; }
+.aw-controls button:disabled { opacity:.5; cursor:default; }
+.aw-controls button:disabled:hover { background:transparent; color:var(--aw-ink-2); }
+.aw-controls :focus-visible { outline:2px solid var(--aw-signal); outline-offset:2px; }
+.aw-controls-note { margin:8px 0 0; color:var(--aw-ink-3); font-size:12px; }
 .aw-controls-note:empty { display:none; }
 @media (prefers-reduced-motion:no-preference) {
-  .aw-controls { animation:aw-control-in 140ms ease-out; }
-  .aw-ctrl-toggle::before { transition:transform 130ms ease-out; }
+  .aw-controls { animation:aw-control-in 150ms var(--aw-ease); }
+  .aw-ctrl-toggle::before { transition:transform 140ms var(--aw-ease); }
 }
 @keyframes aw-control-in { from { opacity:0; transform:translateY(3px); } }
 @media (forced-colors:active) {
-  .aw-controls { background:Canvas; border-color:CanvasText; box-shadow:none; }
+  .aw-controls { background:Canvas; color:CanvasText; border-color:CanvasText; box-shadow:none; }
+  .aw-controls button { border-color:ButtonText; }
   .aw-ctrl-toggle { appearance:auto; }
   .aw-ctrl-toggle::before { display:none; }
 }

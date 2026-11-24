@@ -79,9 +79,9 @@ test('mode pairs cover the macOS frame wash, native conversation accent, send bu
   const { palette } = mountShell(window)
   const token = name => palette['--dsw-' + name]
   const surface = token('alias-bg-base')
-  assert.deepEqual(surface, { light: '#dcd6cb', dark: '#141619' })
-  assert.deepEqual(token('specific-sidebar-tint'), { light: '#1c1f23', dark: '#0e1013' })
-  assert.deepEqual(token('alias-brand-primary'), { light: '#1b528c', dark: '#f0a42b' })
+  assert.deepEqual(surface, { light: '#e4ddd0', dark: '#131417' })
+  assert.deepEqual(token('specific-sidebar-tint'), { light: '#1b1d21', dark: '#0f1114' })
+  assert.deepEqual(token('alias-brand-primary'), { light: '#1f4f86', dark: '#86b4e8' })
   for (const mode of ['light', 'dark']) {
     for (const layer of ['top', 'top-clear', 'bottom-clear', 'bottom']) {
       assert.ok(token('specific-sidebar-wash-' + layer)[mode])
@@ -150,14 +150,14 @@ test('the rc.5 slot tree receives control styles while the main area, collapsed 
   assert.doesNotMatch(style('[data-row-key="session:b"]').backgroundImage, /aw-rail-lamp/)
   assert.equal(style('[data-conversation-tabs] button').fontWeight, '650')
   assert.equal(style('[data-turn-trigger]').borderRadius, '7px')
-  assert.equal(style('[data-composer-card]').getPropertyValue('--dsw-radius-panel'), '9px')
+  assert.equal(style('[data-composer-card]').getPropertyValue('--dsw-radius-panel'), '10px')
   assert.equal(style('[data-composer-card] button').borderRadius, '7px')
   document.body.setAttribute('data-ds-dark-theme', '')
   const darkRail = style('[data-slot="sidebar"]')
-  assert.equal(darkRail.getPropertyValue('--aw-rail-slot'), '#0e1013')
+  assert.equal(darkRail.getPropertyValue('--aw-rail-slot'), '#0f1114')
   assert.ok(contrastRatio(railMuted, darkRail.getPropertyValue('--aw-rail-selected')) >= 4.5)
   const darkSend = style('[data-composer-card] button')
-  assert.equal(darkSend.getPropertyValue('--dsw-alias-button-info-fill'), '#f0a42b')
+  assert.equal(darkSend.getPropertyValue('--dsw-alias-button-info-fill'), '#86b4e8')
   assert.ok(contrastRatio(darkSend.getPropertyValue('--dsw-alias-label-on-color'), darkSend.getPropertyValue('--dsw-alias-button-info-fill')) >= 4.5)
 
   node('[data-sidebar-scrollport]').removeAttribute('data-sidebar-scrollport')

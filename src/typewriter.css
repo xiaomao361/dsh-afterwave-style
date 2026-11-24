@@ -1,7 +1,8 @@
+/* Composer typewriter tools — Workshop Logbook paper popover. */
 .aw-tw-seat { position: relative; display: inline-flex; flex: 0 1 auto; align-items: center; gap: 4px; min-width: 0; }
 .aw-tw-launch, .aw-tw-panel button, .aw-tw-field {
   font: inherit;
-  color: var(--dsw-alias-label-primary);
+  color: var(--aw-ink);
 }
 .aw-tw-launch {
   display: inline-flex;
@@ -12,19 +13,19 @@
   min-width: 28px;
   padding: 0 7px;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--aw-radius-sm);
   background: transparent;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--aw-ink-2);
   cursor: pointer;
 }
 .aw-tw-launch:hover, .aw-tw-launch[aria-expanded="true"] {
-  background: var(--dsw-alias-interactive-bg-hover);
-  border-color: var(--dsw-alias-border-selected);
-  color: var(--dsw-alias-brand-text);
+  background: var(--aw-hover);
+  border-color: var(--aw-line-2);
+  color: var(--aw-signal);
 }
-.aw-tw-launch:disabled { opacity: .5; cursor: default; }
+.aw-tw-launch:disabled { opacity: .48; cursor: default; }
 .aw-tw-launch:focus-visible, .aw-tw-panel :focus-visible {
-  outline: 2px solid var(--dsw-focus-ring-color);
+  outline: 2px solid var(--aw-signal);
   outline-offset: 2px;
 }
 .aw-tw-key {
@@ -35,22 +36,16 @@
   flex: none;
   color: inherit;
 }
-.aw-tw-key svg {
-  width: 15px;
-  height: 15px;
-  display: block;
-}
+.aw-tw-key svg { width: 15px; height: 15px; display: block; }
 .aw-tw-count {
-  color: var(--dsw-alias-label-secondary);
-  font-family: 'SFMono-Regular', ui-monospace, Consolas, monospace;
-  font-size: 11px;
-  font-weight: 550;
+  color: var(--aw-ink-3);
+  font: 550 11px/1 var(--aw-font-mono);
   font-variant-numeric: tabular-nums;
 }
-.aw-tw-launch[aria-expanded="true"] .aw-tw-count {
-  color: var(--dsw-alias-brand-text);
+.aw-tw-launch[aria-expanded="true"] .aw-tw-count { color: var(--aw-signal); }
+.aw-tw-count[hidden], .aw-tw-panel[hidden], .aw-tw-panel [hidden], .aw-tw-recover[hidden], .aw-tw-backup-note[hidden] {
+  display: none;
 }
-.aw-tw-count[hidden], .aw-tw-panel[hidden], .aw-tw-panel [hidden], .aw-tw-recover[hidden], .aw-tw-backup-note[hidden] { display: none; }
 
 .aw-tw-ink {
   position: absolute;
@@ -59,187 +54,99 @@
   height: 2px;
   border-radius: 999px;
   pointer-events: none;
-  background: var(--dsw-alias-brand-primary);
-  box-shadow: 0 0 6px color-mix(in srgb, var(--dsw-alias-brand-primary) 58%, transparent);
+  background: var(--aw-signal);
   opacity: 0;
   transform: translateX(-100%);
 }
 @media (prefers-reduced-motion: no-preference) {
   .aw-tw-ink { transition: opacity 95ms ease-out; }
-  .aw-tw-ink[data-hit] { opacity: .88; transition-duration: 25ms; }
+  .aw-tw-ink[data-hit] { opacity: .85; transition-duration: 25ms; }
   .aw-tw-key { transition: transform 90ms ease-out; }
-  .aw-tw-key[data-hit] { transform: translateY(1.5px); transition-duration: 24ms; }
-  .aw-tw-launch, .aw-tw-panel button { transition: background-color 140ms ease-out, color 140ms ease-out, border-color 140ms ease-out, box-shadow 140ms ease-out, transform 120ms ease-out; }
-  .aw-tw-panel :is(.aw-tw-wrap, .aw-tw-audio, .aw-tw-save, .aw-tw-confirm, .aw-tw-transfer button):not(:disabled):active {
-    transform: translateY(1px) scale(.98);
+  .aw-tw-key[data-hit] { transform: translateY(1px); transition-duration: 24ms; }
+  .aw-tw-launch, .aw-tw-panel button {
+    transition: background-color 140ms var(--aw-ease), color 120ms var(--aw-ease), border-color 140ms var(--aw-ease);
   }
-  .aw-tw-panel:not([hidden]) { animation: aw-tw-open 140ms ease-out; }
+  .aw-tw-panel:not([hidden]) { animation: aw-tw-open 150ms var(--aw-ease); }
 }
-@keyframes aw-tw-open { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes aw-tw-open { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .aw-tw-ink { display: none; } }
 
-/* Shatterdome field comm-unit / mechanical typewriter console */
+/* Paper popover panel */
 .aw-tw-panel {
-  --tw-bg: linear-gradient(168deg, #eae3d5 0%, #ded6c6 58%, #d2c9b8 100%);
-  --tw-patina: rgb(42 30 16 / 14%);
-  --tw-rust: rgb(156 66 20 / 12%);
-  --tw-glint: rgb(255 250 240 / 68%);
-  --tw-seam: rgb(58 50 38 / 22%);
-  --tw-key-face: linear-gradient(180deg, #f6f2e9, #e2dacb);
-  --tw-key-edge: #9b9282;
-  --tw-key-bottom: #736b5d;
-  --tw-well-bg: #cfc7b7;
-  --tw-well-edge: #a69d8d;
-  --tw-list-bg: rgb(250 246 238 / 68%);
-  --tw-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='128' height='128' filter='url(%23n)' opacity='.075'/%3E%3C/svg%3E");
   position: fixed;
   z-index: 100;
   box-sizing: border-box;
   width: min(344px, calc(100vw - 16px));
-  padding: 14px 13px 12px;
+  padding: 13px 14px 12px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  border-radius: 9px;
-  border: 1.5px solid #8a6c3e;
-  border-bottom: 3px solid #594425;
-  background:
-    var(--tw-noise),
-    radial-gradient(ellipse 84px 48px at 0% 0%, var(--tw-patina), transparent 72%),
-    radial-gradient(ellipse 92px 52px at 100% 100%, var(--tw-rust), transparent 74%),
-    var(--tw-bg);
-  color: var(--dsw-alias-label-primary);
-  box-shadow:
-    inset 0 1px 0 var(--tw-glint),
-    inset 0 -2px 4px rgb(38 30 20 / 16%),
-    0 18px 40px -10px rgb(16 14 10 / 42%),
-    0 2px 5px rgb(16 14 10 / 16%);
-  font: inherit;
-  font-size: 13px;
-  line-height: 1.45;
+  border-radius: var(--aw-radius-lg);
+  border: 1px solid var(--aw-line-2);
+  border-top: 2px solid var(--aw-brass-line);
+  background: var(--aw-paper);
+  color: var(--aw-ink);
+  box-shadow: var(--aw-shadow-pop);
+  font: 13px/1.45 var(--aw-font-ui);
 }
-body[data-ds-dark-theme] .aw-tw-panel {
-  --tw-bg: linear-gradient(168deg, #252931 0%, #1b1f26 58%, #14171d 100%);
-  --tw-patina: rgb(0 0 0 / 38%);
-  --tw-rust: rgb(178 76 24 / 15%);
-  --tw-glint: rgb(255 238 204 / 12%);
-  --tw-seam: rgb(255 236 200 / 10%);
-  --tw-key-face: linear-gradient(180deg, #313640, #21252d);
-  --tw-key-edge: #4a515f;
-  --tw-key-bottom: #0f1116;
-  --tw-well-bg: #12151a;
-  --tw-well-edge: #343a45;
-  --tw-list-bg: rgb(18 21 27 / 66%);
-  border-color: #755b34;
-  border-bottom-color: #120e09;
-  box-shadow:
-    inset 0 1px 0 var(--tw-glint),
-    inset 0 -2px 5px rgb(0 0 0 / 48%),
-    0 20px 46px -10px rgb(0 0 0 / 72%),
-    0 3px 6px rgb(0 0 0 / 40%);
-}
-
-/* Chipped top Shatterdome hazard chevron bar */
-.aw-tw-panel::before {
-  content: '';
-  position: absolute;
-  inset: 0 18px auto;
-  height: 3.5px;
-  border-radius: 0 0 2px 2px;
-  background:
-    repeating-linear-gradient(112deg, transparent 0 24px, rgb(212 204 190 / 68%) 25px 26.5px, transparent 27px 58px) left bottom / 100% 2px no-repeat,
-    repeating-linear-gradient(-45deg, #d89022 0 5.5px, #242629 5.5px 11px);
-  box-shadow: inset 0 1px rgb(12 10 8 / 48%), 0 1px var(--tw-glint);
-  opacity: .9;
-  pointer-events: none;
-}
-
 .aw-tw-panel *, .aw-tw-launch *, .aw-tw-launch *::before, .aw-tw-launch *::after { box-sizing: border-box; }
 .aw-tw-panel button { cursor: pointer; }
 
-/* Header with stamped brass TYPE·04 plate and mechanical toggle switch */
 .aw-tw-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--tw-seam);
-  box-shadow: 0 1px 0 var(--tw-glint);
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--aw-line);
 }
 .aw-tw-title strong {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   font-size: 14px;
-  font-weight: 700;
-  letter-spacing: .03em;
-}
-.aw-tw-title strong::after {
-  content: 'TYPE·04';
-  padding: 1.5px 5px;
-  border: 1px solid #8a6c3e;
-  border-radius: 3px;
-  background: linear-gradient(180deg, #3a3226, #252018);
-  color: #f0be6a;
-  box-shadow: inset 0 1px 0 rgb(255 232 180 / 18%), 0 1px 1.5px rgb(0 0 0 / 28%);
-  font: 700 9px/1.15 ui-monospace, 'SFMono-Regular', Consolas, monospace;
-  letter-spacing: .08em;
+  font-weight: 650;
 }
 
 .aw-tw-audio, .aw-tw-save {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3.5px 9px;
-  border: 1px solid var(--tw-key-edge);
-  border-bottom: 2px solid var(--tw-key-bottom);
-  border-radius: 5px;
-  background: var(--tw-key-face);
-  box-shadow: inset 0 1px 0 var(--tw-glint), 0 1px 2px rgb(16 14 10 / 14%);
+  padding: 4px 9px;
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius-sm);
+  background: transparent;
+  color: var(--aw-ink-2);
   font-size: 11.5px;
-  font-weight: 600;
+  font-weight: 550;
   line-height: 1.25;
 }
 .aw-tw-audio::before {
   content: '';
   display: inline-block;
-  width: 6.5px;
-  height: 6.5px;
-  margin-inline-end: 5.5px;
+  width: 6px;
+  height: 6px;
+  margin-inline-end: 5px;
   border-radius: 50%;
-  background: rgb(28 31 36 / 24%);
-  border: 1px solid rgb(28 31 36 / 38%);
-  box-shadow: inset 0 1px 1px rgb(0 0 0 / 35%);
-}
-body[data-ds-dark-theme] .aw-tw-audio::before {
-  background: rgb(0 0 0 / 48%);
-  border-color: rgb(255 240 214 / 24%);
+  background: var(--aw-line-2);
 }
 .aw-tw-audio[aria-pressed="true"] {
-  color: var(--dsw-alias-brand-text);
-  border-color: var(--dsw-alias-brand-primary);
+  color: var(--aw-signal);
+  border-color: var(--aw-signal);
+  background: var(--aw-signal-soft);
 }
 .aw-tw-audio[aria-pressed="true"]::before {
-  background: #e89c28;
-  border-color: #9e5f0b;
-  box-shadow: 0 0 6px rgb(232 156 40 / 78%), inset 0 1px 0 rgb(255 248 220 / 65%);
+  background: var(--aw-signal);
 }
 
-/* Recessed cast-iron Veeder-Root mechanical drum odometer */
+/* Flat paper odometer strip */
 .aw-tw-odometer {
-  position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
-  margin-top: 10px;
-  padding: 6px 4px;
-  border: 1.5px solid #6b583e;
-  border-radius: 6px;
-  background: linear-gradient(180deg, #181b21 0%, #21252d 48%, #15181e 100%);
-  box-shadow:
-    inset 0 2px 5px rgb(0 0 0 / 68%),
-    inset 0 -1px 0 rgb(255 236 200 / 8%),
-    0 1px 0 var(--tw-glint);
+  margin-top: 9px;
+  padding: 7px 4px;
+  border: 1px solid var(--aw-line);
+  border-radius: var(--aw-radius);
+  background: var(--aw-paper-2);
 }
 .aw-tw-odo-cell {
   display: flex;
@@ -248,51 +155,36 @@ body[data-ds-dark-theme] .aw-tw-audio::before {
   min-width: 0;
   padding: 1px 8px;
 }
-.aw-tw-odo-cell + .aw-tw-odo-cell {
-  border-inline-start: 1px solid rgb(255 236 200 / 11%);
-  box-shadow: inset 1px 0 0 rgb(0 0 0 / 55%);
-}
-.aw-tw-odo-label {
-  font-size: 10px;
-  font-weight: 550;
-  color: #9da4b0;
-  letter-spacing: .02em;
-  white-space: nowrap;
-}
+.aw-tw-odo-cell + .aw-tw-odo-cell { border-inline-start: 1px solid var(--aw-line); }
+.aw-tw-odo-label { font-size: 10.5px; font-weight: 550; color: var(--aw-ink-3); white-space: nowrap; }
 .aw-tw-odo-val {
-  font: 700 16px/1.15 ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font: 700 15.5px/1.15 var(--aw-font-mono);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -.02em;
-  color: #f4eee2;
+  color: var(--aw-ink);
 }
-.aw-tw-odo-cell:last-child .aw-tw-odo-val {
-  color: #f2be66;
-  text-shadow: 0 0 10px rgb(240 164 43 / 24%);
-}
+.aw-tw-odo-cell:last-child .aw-tw-odo-val { color: var(--aw-brass); }
 .aw-tw-odo-sub {
-  font: 500 9.5px/1.2 ui-monospace, 'SFMono-Regular', Consolas, monospace;
-  color: #7f8794;
+  font: 500 10px/1.2 var(--aw-font-mono);
+  color: var(--aw-ink-3);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-/* 3x2 tactile mechanical macro keycap matrix — zero line wrap, uniform geometry */
+/* 3x2 formatting buttons */
 .aw-tw-format {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  margin-block: 10px;
+  gap: 5px;
+  margin-block: 9px;
 }
 .aw-tw-tabs, .aw-tw-transfer, .aw-tw-json-entry { display: flex; gap: 4px; }
 
 .aw-tw-wrap, .aw-tw-transfer button, .aw-tw-confirm, .aw-tw-recover {
-  border: 1px solid var(--tw-key-edge);
-  border-bottom: 2px solid var(--tw-key-bottom);
-  border-radius: 5px;
-  background: var(--tw-key-face);
-  color: var(--dsw-alias-label-primary);
-  box-shadow: inset 0 1px 0 var(--tw-glint), 0 1px 2px rgb(16 14 10 / 15%);
-  padding: 4px 7px;
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius-sm);
+  background: transparent;
+  color: var(--aw-ink-2);
+  padding: 4px 8px;
   font: inherit;
 }
 .aw-tw-wrap {
@@ -300,7 +192,7 @@ body[data-ds-dark-theme] .aw-tw-audio::before {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  min-height: 31px;
+  min-height: 30px;
   min-width: 0;
   white-space: nowrap;
 }
@@ -308,65 +200,59 @@ body[data-ds-dark-theme] .aw-tw-audio::before {
   flex: none;
   padding: 1px 4px;
   border-radius: 3px;
-  background: rgb(28 31 36 / 8%);
-  color: var(--dsw-alias-brand-text);
-  font: 700 10.5px/1.2 ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  background: var(--aw-paper-2);
+  color: var(--aw-signal);
+  font: 650 10.5px/1.2 var(--aw-font-mono);
 }
-body[data-ds-dark-theme] .aw-tw-sym {
-  background: rgb(255 240 214 / 10%);
-}
-.aw-tw-key-label {
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.2;
-  white-space: nowrap;
-}
+.aw-tw-key-label { font-size: 12px; font-weight: 550; line-height: 1.2; white-space: nowrap; color: var(--aw-ink); }
 
-/* Recessed segmented tab groove */
 .aw-tw-tabs {
-  padding: 3px;
-  border-radius: 6px;
-  border: 1px solid var(--tw-well-edge);
-  background: var(--tw-well-bg);
-  box-shadow: inset 0 1.5px 3px rgb(16 14 10 / 14%), 0 1px 0 var(--tw-glint);
-}
-body[data-ds-dark-theme] .aw-tw-tabs {
-  box-shadow: inset 0 2px 4px rgb(0 0 0 / 52%);
+  padding: 2px;
+  border-radius: var(--aw-radius-sm);
+  border: 1px solid var(--aw-line);
+  background: var(--aw-paper-2);
 }
 .aw-tw-tabs button {
   flex: 1;
-  padding: 4px 4px;
-  border: 1px solid transparent;
+  padding: 4px;
+  border: 0;
   border-radius: 4px;
   background: transparent;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--aw-ink-3);
   font-size: 12px;
-  font-weight: 560;
+  font-weight: 550;
 }
 .aw-tw-tabs [aria-selected="true"] {
-  color: var(--dsw-alias-brand-text);
-  background: var(--tw-key-face);
-  border-color: var(--tw-key-edge);
-  border-bottom-color: var(--tw-key-bottom);
-  box-shadow: inset 0 1px 0 var(--tw-glint), 0 1px 2px rgb(0 0 0 / 12%);
+  color: var(--aw-signal);
+  background: var(--aw-paper);
+  box-shadow: var(--aw-shadow-1);
   font-weight: 650;
 }
 
-.aw-tw-tabpanel { margin-top: 7px; }
+.aw-tw-tabpanel { margin-top: 8px; }
 .aw-tw-transfer { gap: 6px; margin-top: 8px; }
 .aw-tw-json-entry { align-items: end; margin-top: 6px; }
-.aw-tw-transfer button, .aw-tw-confirm { font-size: 12px; font-weight: 560; }
+.aw-tw-transfer button, .aw-tw-confirm { font-size: 12px; font-weight: 550; }
+.aw-tw-confirm, .aw-tw-save {
+  background: var(--aw-signal);
+  border-color: var(--aw-signal);
+  color: var(--aw-signal-ink);
+  font-weight: 600;
+}
+.aw-tw-confirm:hover, .aw-tw-save:enabled:hover { opacity: .92; }
 
 .aw-tw-recover {
   max-width: 15em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: 550 11px/1.5 -apple-system, 'PingFang SC', system-ui, sans-serif;
-  color: var(--dsw-alias-brand-text);
+  font: 550 11.5px/1.45 var(--aw-font-ui);
+  color: var(--aw-signal);
+  border-color: var(--aw-signal);
+  background: var(--aw-signal-soft);
   cursor: pointer;
 }
-.aw-tw-recover:focus-visible { outline: 2px solid var(--dsw-focus-ring-color); outline-offset: 2px; }
+.aw-tw-recover:focus-visible { outline: 2px solid var(--aw-signal); outline-offset: 2px; }
 .aw-tw-backup-note {
   position: absolute;
   z-index: 2;
@@ -374,44 +260,32 @@ body[data-ds-dark-theme] .aw-tw-tabs {
   bottom: calc(100% + 4px);
   width: max-content;
   max-width: min(26em, 70vw);
-  border: 1px solid #8a6c3e;
-  border-radius: 5px;
-  padding: 4px 8px;
-  background: var(--dsw-alias-bg-overlay);
-  color: var(--dsw-alias-label-primary);
-  box-shadow: 0 4px 12px -4px rgb(0 0 0 / 26%);
-  font: 12px/1.45 -apple-system, 'PingFang SC', system-ui, sans-serif;
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius-sm);
+  padding: 4px 9px;
+  background: var(--aw-paper);
+  color: var(--aw-ink);
+  box-shadow: var(--aw-shadow-2);
+  font: 12px/1.45 var(--aw-font-ui);
   pointer-events: none;
 }
 
-/* Framed dispatch slot list with return-key affordance */
 .aw-tw-list {
   display: grid;
   gap: 2px;
   max-height: 34vh;
   overflow-y: auto;
-  padding: 3px;
-  border: 1px solid var(--tw-well-edge);
-  border-radius: 6px;
-  background: var(--tw-list-bg);
-  box-shadow: inset 0 1px 2px rgb(16 14 10 / 8%);
+  padding: 4px;
+  border: 1px solid var(--aw-line);
+  border-radius: var(--aw-radius);
+  background: var(--aw-paper-2);
 }
-.aw-tw-list:empty {
-  display: none;
-}
-.aw-tw-row {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  border-radius: 4px;
-}
-.aw-tw-row + .aw-tw-row {
-  border-top: 1px solid rgb(120 110 94 / 14%);
-}
+.aw-tw-list:empty { display: none; }
+.aw-tw-row { display: flex; align-items: center; min-width: 0; border-radius: var(--aw-radius-sm); }
 .aw-tw-pick, .aw-tw-remove {
   min-height: 30px;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--aw-radius-sm);
   background: transparent;
 }
 .aw-tw-pick {
@@ -424,7 +298,7 @@ body[data-ds-dark-theme] .aw-tw-tabs {
   padding: 5px 8px;
   text-align: left;
   font-size: 12.5px;
-  font-weight: 520;
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -432,25 +306,23 @@ body[data-ds-dark-theme] .aw-tw-tabs {
 .aw-tw-pick::after {
   content: '↵';
   flex: none;
-  color: var(--dsw-alias-label-caption);
-  opacity: .45;
-  font: 600 11px/1 ui-monospace, 'SFMono-Regular', monospace;
+  color: var(--aw-ink-3);
+  opacity: .5;
+  font: 600 11px/1 var(--aw-font-mono);
 }
 .aw-tw-pick:hover {
-  background: var(--dsw-alias-interactive-bg-hover);
-  color: var(--dsw-alias-brand-text);
-  box-shadow: inset 2.5px 0 var(--dsw-alias-brand-primary);
+  background: var(--aw-signal-soft);
+  color: var(--aw-signal);
+  box-shadow: inset 2px 0 0 var(--aw-signal);
 }
-.aw-tw-pick:hover::after {
-  color: var(--dsw-alias-brand-text);
-  opacity: .95;
-}
-.aw-tw-remove { width: 28px; color: var(--dsw-alias-label-caption); }
-.aw-tw-remove:hover { color: #b83227; background: rgb(184 50 39 / 10%); }
+.aw-tw-pick:hover::after { color: var(--aw-signal); opacity: 1; }
+.aw-tw-remove { width: 28px; color: var(--aw-ink-3); }
+.aw-tw-remove:hover { color: var(--aw-err); background: var(--aw-err-soft); }
 
-.aw-tw-panel :is(.aw-tw-wrap, .aw-tw-audio, .aw-tw-save, .aw-tw-confirm, .aw-tw-transfer button):hover {
-  border-color: var(--dsw-alias-brand-primary);
-  color: var(--dsw-alias-brand-text);
+.aw-tw-panel :is(.aw-tw-wrap, .aw-tw-audio, .aw-tw-transfer button):hover {
+  background: var(--aw-hover);
+  border-color: var(--aw-line-2);
+  color: var(--aw-ink);
 }
 
 .aw-tw-add { display: flex; align-items: end; gap: 6px; margin-top: 8px; }
@@ -460,45 +332,37 @@ body[data-ds-dark-theme] .aw-tw-tabs {
   width: 0;
   min-height: 40px;
   resize: vertical;
-  border: 1px solid var(--tw-key-edge);
-  border-radius: 5px;
-  background: var(--tw-list-bg);
-  box-shadow: inset 0 1.5px 3px rgb(16 14 10 / 10%);
-  padding: 5px 7px;
-  font-size: 12px;
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius-sm);
+  background: var(--aw-paper-2);
+  padding: 6px 8px;
+  font-size: 12.5px;
 }
-.aw-tw-panel .aw-tw-copy { display: block; width: 100%; margin-top: 5px; }
+.aw-tw-panel .aw-tw-copy { display: block; width: 100%; margin-top: 6px; }
 .aw-tw-field:focus-visible {
-  border-color: var(--dsw-alias-brand-text);
-  outline-offset: 1px;
+  outline: none;
+  border-color: var(--aw-signal);
+  box-shadow: 0 0 0 3px var(--aw-signal-soft);
 }
 .aw-tw-save:disabled { opacity: .45; cursor: default; }
-.aw-tw-note:not(:empty) { font-size: 12px; margin-top: 8px; color: var(--dsw-alias-label-secondary); }
+.aw-tw-note:not(:empty) { font-size: 12px; margin-top: 8px; color: var(--aw-ink-2); }
 
 @container (max-width: 480px) {
   .aw-tw-count { display: none; }
   .aw-tw-launch { padding-inline: 4px; }
 }
 
-/* Preserve clean proportional CJK/Latin typography in the main composer while keeping tabular numbers. */
 body[data-dsh-afterwave-style] [data-composer-card]:has(.aw-tw-launch) [data-composer-input] {
   font-variant-numeric: tabular-nums;
 }
-.aw-tw-count:not([hidden])::after { content: ' 字'; font-family: -apple-system, 'PingFang SC', system-ui, sans-serif; font-size: 10px; }
+.aw-tw-count:not([hidden])::after { content: ' 字'; font-family: var(--aw-font-ui); font-size: 10px; }
 
-html[data-aw-focus="on"] .aw-tw-panel { background: var(--tw-bg); }
-html[data-aw-focus="on"] :is(.aw-tw-panel::before, .aw-tw-title strong::after) { display: none; }
+html[data-aw-focus="on"] .aw-tw-panel { border-top-color: var(--aw-line-2); }
 
 @media (forced-colors: active) {
-  .aw-tw-panel {
-    background: Canvas;
-    border-color: CanvasText;
-    box-shadow: none;
-    backdrop-filter: none;
-  }
-  .aw-tw-panel::before { display: none; }
+  .aw-tw-panel { background: Canvas; border-color: CanvasText; box-shadow: none; }
   .aw-tw-launch, .aw-tw-panel button, .aw-tw-field, .aw-tw-recover, .aw-tw-odometer, .aw-tw-list { border: 1px solid ButtonText; }
-  .aw-tw-tabs [aria-selected="true"] { border-color: Highlight; color: Highlight; }
+  .aw-tw-tabs [aria-selected="true"] { border: 1px solid Highlight; color: Highlight; }
   .aw-tw-audio[aria-pressed="true"] { border: 2px solid Highlight; }
-  .aw-tw-audio[aria-pressed="true"]::before { forced-color-adjust: none; background: Highlight; border-color: CanvasText; }
+  .aw-tw-audio[aria-pressed="true"]::before { forced-color-adjust: none; background: Highlight; }
 }

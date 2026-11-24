@@ -14,42 +14,37 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 52%));
 }
 .aw-brand-name {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #f3ece0;
-  font: 700 16px/1.25 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  letter-spacing: .12em;
-  text-shadow: 0 1px 1px rgb(0 0 0 / 65%);
+  color: #ece6db;
+  font: 700 15.5px/1.25 var(--aw-font-ui);
+  letter-spacing: .08em;
   white-space: nowrap;
 }
 .aw-brand-name::after {
-  content: 'BAY·04';
+  content: 'No.04';
   display: inline-block;
-  padding: 2px 5px;
-  border: 1px solid #8a6c3e;
+  padding: 1.5px 5px;
+  border: 1px solid rgb(212 164 90 / 48%);
   border-radius: 3px;
-  background: linear-gradient(180deg, #3c3326, #262018);
-  box-shadow: inset 0 1px rgb(255 232 180 / 18%), 0 1px 2px rgb(0 0 0 / 45%);
-  color: #f0be6a;
-  font: 700 9px/1.1 ui-monospace, 'SFMono-Regular', Consolas, monospace;
-  letter-spacing: .08em;
-  text-shadow: none;
+  background: rgb(212 164 90 / 12%);
+  color: #e4ba74;
+  font: 600 9.5px/1.15 var(--aw-font-mono);
+  letter-spacing: .06em;
 }
 .aw-home-frame { display: contents; }
 
-/* Weathered concrete grain + wide drydock structural grid + hull draft marks. */
+/* Subtle architectural grid and hull draft ruler — quiet concrete ground. */
 .aw-paper-field {
-  --aw-grid: rgb(56 48 38 / 5.8%);
-  --aw-grid-axis: rgb(56 48 38 / 11%);
-  --aw-field-signal: #5c5346;
-  --aw-field-rust: #9e4819;
-  --aw-rail-opacity: .3;
-  --aw-draft-opacity: .36;
-  --aw-concrete-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.74' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23c)' opacity='.072'/%3E%3C/svg%3E");
+  --aw-grid: rgb(31 29 26 / 4.5%);
+  --aw-grid-axis: rgb(31 29 26 / 8.5%);
+  --aw-field-signal: #645e54;
+  --aw-field-brass: #9a6a24;
+  --aw-rail-opacity: .24;
+  --aw-draft-opacity: .3;
   position: absolute;
   z-index: -1;
   inset: 0;
@@ -57,29 +52,18 @@
   pointer-events: none;
   color: var(--aw-field-signal);
   background:
-    var(--aw-concrete-noise),
-    radial-gradient(ellipse 58% 42% at 0% 100%, rgb(142 66 22 / 9%), transparent 70%),
-    radial-gradient(ellipse 50% 38% at 100% 100%, rgb(24 28 34 / 9%), transparent 70%),
     linear-gradient(90deg, var(--aw-grid-axis) 1px, transparent 1px) 0 0 / 224px 224px,
     linear-gradient(var(--aw-grid-axis) 1px, transparent 1px) 0 0 / 224px 224px,
     linear-gradient(90deg, var(--aw-grid) 1px, transparent 1px) 0 0 / 56px 56px,
     linear-gradient(var(--aw-grid) 1px, transparent 1px) 0 0 / 56px 56px;
 }
 body[data-ds-dark-theme] .aw-paper-field {
-  --aw-grid: rgb(232 216 190 / 3.5%);
-  --aw-grid-axis: rgb(232 216 190 / 7.5%);
-  --aw-field-signal: #9e9688;
-  --aw-field-rust: #d86e34;
-  --aw-draft-opacity: .26;
-  --aw-rail-opacity: .24;
-  background:
-    var(--aw-concrete-noise),
-    radial-gradient(ellipse 55% 40% at 0% 100%, rgb(216 110 52 / 7%), transparent 70%),
-    radial-gradient(ellipse 50% 38% at 100% 0%, rgb(48 84 128 / 8%), transparent 70%),
-    linear-gradient(90deg, var(--aw-grid-axis) 1px, transparent 1px) 0 0 / 224px 224px,
-    linear-gradient(var(--aw-grid-axis) 1px, transparent 1px) 0 0 / 224px 224px,
-    linear-gradient(90deg, var(--aw-grid) 1px, transparent 1px) 0 0 / 56px 56px,
-    linear-gradient(var(--aw-grid) 1px, transparent 1px) 0 0 / 56px 56px;
+  --aw-grid: rgb(236 230 219 / 3%);
+  --aw-grid-axis: rgb(236 230 219 / 6.5%);
+  --aw-field-signal: #9b9488;
+  --aw-field-brass: #d4a45a;
+  --aw-draft-opacity: .22;
+  --aw-rail-opacity: .2;
 }
 .aw-draft-mark {
   position: absolute;
@@ -88,7 +72,7 @@ body[data-ds-dark-theme] .aw-paper-field {
   display: grid;
   grid-template-rows: repeat(3, 48px) 1px;
   width: 47px;
-  border-right: 2px solid var(--aw-field-rust);
+  border-right: 1.5px solid var(--aw-field-brass);
   background:
     repeating-linear-gradient(to bottom, currentColor 0 1px, transparent 1px 8px) right / 5px 100% no-repeat,
     repeating-linear-gradient(to bottom, currentColor 0 1px, transparent 1px 24px) right / 9px 100% no-repeat;
@@ -100,7 +84,7 @@ body[data-ds-dark-theme] .aw-paper-field {
   align-self: start;
   margin-right: 18px;
   text-align: right;
-  font: 600 10px/1 ui-monospace, 'SFMono-Regular', monospace;
+  font: 600 10px/1 var(--aw-font-mono);
   font-variant-numeric: tabular-nums;
   letter-spacing: .04em;
   transform: translateY(-45%);
@@ -170,13 +154,14 @@ body[data-ds-dark-theme] .aw-paper-field {
   padding: 0;
   border: 0;
   border-radius: 10px;
-  width: 168px;
-  height: 70px;
+  width: 156px;
+  height: 64px;
   background: transparent;
   line-height: 0;
   cursor: pointer;
   pointer-events: auto;
   touch-action: manipulation;
+  opacity: .88;
 }
 body[data-ds-dark-theme] .aw-dock-fastener {
   --aw-alloy-glint: #a6b7c9;
@@ -193,7 +178,7 @@ body[data-ds-dark-theme] .aw-dock-fastener {
   height: 100%;
   display: block;
   object-fit: contain;
-  filter: drop-shadow(0 3px 4px rgb(24 20 14 / 26%));
+  filter: drop-shadow(0 2px 4px rgb(24 20 14 / 20%));
 }
 .aw-fastener-art {
   transform-origin: 50% 60%;
@@ -203,21 +188,20 @@ body[data-ds-dark-theme] .aw-dock-fastener {
 .aw-fastener-main { transform: rotate(calc(var(--aw-fastener-turns, 0) * 60deg)); }
 .aw-fastener-brass { transform: rotate(calc(var(--aw-fastener-turns, 0) * -90deg + var(--aw-nut-hover, 0deg))); }
 .aw-fastener-zone[data-covered] .aw-dock-fastener { visibility: hidden; }
-.aw-dock-fastener:focus-visible { outline: 2px solid var(--dsw-focus-ring-color); outline-offset: 2px; }
-.aw-dock-fastener:active .aw-fastener-art { filter: drop-shadow(0 2px 3px rgb(24 20 14 / 42%)) brightness(.96); }
+.aw-dock-fastener:focus-visible { outline: 2px solid var(--aw-signal); outline-offset: 2px; }
 @media (hover: hover) {
-  .aw-dock-fastener:hover :is(svg, .aw-fastener-art) { filter: drop-shadow(0 5px 8px rgb(24 20 14 / 42%)) brightness(1.07); }
+  .aw-dock-fastener:hover { opacity: 1; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .aw-fastener-main, .aw-fastener-brass, .aw-fastener-art { transition: transform 320ms cubic-bezier(.34, 1.56, .64, 1), filter 140ms ease; }
-  .aw-dock-fastener svg { transition: filter 140ms ease; }
+  .aw-fastener-main, .aw-fastener-brass, .aw-fastener-art { transition: transform 280ms var(--aw-ease), filter 140ms ease; }
+  .aw-dock-fastener { transition: opacity 140ms ease; }
   @media (hover: hover) { .aw-dock-fastener:hover { --aw-nut-hover: 6deg; } }
 }
 @media (width < 600px), (height < 520px) { .aw-fastener-zone { display: none; } }
 @container aw-fastener-zone (width < 600px) or (height < 480px) { .aw-dock-fastener { display: none; } }
 @media (height < 520px) { .aw-draft-mark, .aw-paper-track { display: none; } }
 
-/* Drydock boot curtain covers the bare host loading text while settings hydrate. */
+/* Clean logbook boot curtain: nameplate + thin progress bar, no hazard stripes. */
 .aw-boot-curtain {
   position: fixed;
   inset: 0;
@@ -225,108 +209,79 @@ body[data-ds-dark-theme] .aw-dock-fastener {
   display: grid;
   place-items: center;
   pointer-events: none;
-  background:
-    linear-gradient(90deg, rgb(56 48 38 / 6%) 1px, transparent 1px) 0 0 / 56px 56px,
-    linear-gradient(rgb(56 48 38 / 6%) 1px, transparent 1px) 0 0 / 56px 56px,
-    linear-gradient(165deg, #e1dbd0, #d4cdc0);
-  transition: opacity 280ms ease-out, transform 300ms ease-out;
-}
-body[data-ds-dark-theme] .aw-boot-curtain {
-  background:
-    linear-gradient(90deg, rgb(232 216 190 / 4%) 1px, transparent 1px) 0 0 / 56px 56px,
-    linear-gradient(rgb(232 216 190 / 4%) 1px, transparent 1px) 0 0 / 56px 56px,
-    linear-gradient(165deg, #181b20, #101216);
-}
-.aw-boot-curtain::before {
-  content: '';
-  position: fixed;
-  inset: 0 0 auto;
-  height: 3px;
-  background: repeating-linear-gradient(-45deg, #d89022 0 7px, #2b2d30 7px 14px);
-  opacity: .88;
+  background: var(--aw-bg);
+  transition: opacity 240ms var(--aw-ease), transform 260ms var(--aw-ease);
 }
 .aw-boot-curtain[data-leaving='true'] {
   opacity: 0;
-  transform: translateY(-6px);
+  transform: translateY(-4px);
 }
 .aw-boot-plate {
-  position: relative;
   display: grid;
   justify-items: center;
   gap: 10px;
   min-width: 248px;
   padding: 24px 32px 22px;
-  border: 1.5px solid #8c8476;
-  border-bottom: 3px solid #6b6458;
-  border-radius: 9px;
-  background: linear-gradient(168deg, #eee9e0, #dbd4c7);
-  box-shadow: inset 0 1px rgb(255 250 240 / 78%), 0 18px 40px -14px rgb(20 16 10 / 36%);
-  animation: aw-boot-in 260ms cubic-bezier(.2,.75,.25,1) both;
-}
-body[data-ds-dark-theme] .aw-boot-plate {
-  border-color: #464b55;
-  border-bottom-color: #0b0d10;
-  background: linear-gradient(168deg, #252930, #181b20);
-  box-shadow: inset 0 1px rgb(255 236 196 / 10%), 0 22px 48px -12px rgb(0 0 0 / 72%);
+  border: 1px solid var(--aw-line-2);
+  border-top: 2px solid var(--aw-brass-line);
+  border-radius: var(--aw-radius-lg);
+  background: var(--aw-paper);
+  box-shadow: var(--aw-shadow-pop);
+  animation: aw-boot-in 220ms var(--aw-ease) both;
 }
 .aw-boot-emblem {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgb(20 16 10 / 32%));
 }
 .aw-boot-title {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #1c1f24;
-  font: 700 18px/1.2 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  letter-spacing: .14em;
+  color: var(--aw-ink);
+  font: 700 17px/1.2 var(--aw-font-ui);
+  letter-spacing: .1em;
 }
-body[data-ds-dark-theme] .aw-boot-title { color: #f3ece0; }
 .aw-boot-title::after {
-  content: 'BAY·04';
-  padding: 2px 6px;
-  border: 1px solid #8a6c3e;
+  content: 'No.04';
+  padding: 1.5px 6px;
+  border: 1px solid var(--aw-brass-line);
   border-radius: 3px;
-  background: linear-gradient(180deg, #3c3326, #262018);
-  color: #f0be6a;
-  font: 700 10px/1.15 ui-monospace, 'SFMono-Regular', monospace;
-  letter-spacing: .08em;
+  background: var(--aw-brass-soft);
+  color: var(--aw-brass);
+  font: 600 10px/1.15 var(--aw-font-mono);
+  letter-spacing: .06em;
 }
 .aw-boot-bar {
-  width: 184px;
-  height: 5px;
+  width: 180px;
+  height: 3px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgb(28 31 36 / 14%);
-  box-shadow: inset 0 1px 2px rgb(0 0 0 / 24%);
+  background: var(--aw-line);
 }
-body[data-ds-dark-theme] .aw-boot-bar { background: rgb(255 255 255 / 10%); }
 .aw-boot-bar i {
   display: block;
-  width: 46%;
+  width: 42%;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #1b528c, #e89c28);
+  background: var(--aw-signal);
   animation: aw-boot-sweep 950ms ease-in-out infinite;
 }
 .aw-boot-sub {
-  color: #57524a;
-  font: 600 11px/1.4 ui-monospace, 'SFMono-Regular', 'PingFang SC', monospace;
-  letter-spacing: .04em;
+  color: var(--aw-ink-3);
+  font: 500 11px/1.4 var(--aw-font-mono);
+  letter-spacing: .03em;
 }
-body[data-ds-dark-theme] .aw-boot-sub { color: #a9a49a; }
 @keyframes aw-boot-in {
-  from { opacity: 0; transform: translateY(8px) scale(.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 @keyframes aw-boot-sweep {
   0% { transform: translateX(-110%); }
   100% { transform: translateX(260%); }
 }
 
-/* The scan layer is pointer-transparent and never takes up any layout space. */
+/* Subtle top brass sweep on power-on. */
 @media (prefers-reduced-motion: no-preference) {
   body[data-dsh-afterwave-style][data-aw-power-on]::after {
     content: '';
@@ -337,37 +292,29 @@ body[data-ds-dark-theme] .aw-boot-sub { color: #a9a49a; }
     top: 0;
     height: 2px;
     pointer-events: none;
-    background: linear-gradient(90deg, transparent, #b87a24 48%, #f6cf86 76%, #d86e34 92%, transparent);
-    box-shadow: 0 0 10px rgb(232 156 40 / 55%);
-    animation: aw-power-scan 760ms cubic-bezier(.32,.67,.3,1) both;
-  }
-  body[data-dsh-afterwave-style][data-aw-power-on] .aw-brand-mark img {
-    animation: aw-scope-start 440ms ease-out both;
+    background: linear-gradient(90deg, transparent, var(--aw-brass-line) 50%, transparent);
+    animation: aw-power-scan 640ms var(--aw-ease) both;
   }
   body[data-dsh-afterwave-style][data-aw-power-on] .aw-panel,
   .aw-home-frame[data-aw-first-home] .aw-panel {
-    animation: aw-panel-start 360ms cubic-bezier(.2,.7,.25,1) backwards;
+    animation: aw-panel-start 260ms var(--aw-ease) backwards;
   }
 }
 @keyframes aw-power-scan {
   0% { opacity: 0; transform: translateX(-98%); }
-  12% { opacity: 1; }
+  16% { opacity: 1; }
   100% { opacity: 0; transform: translateX(99%); }
 }
-@keyframes aw-scope-start {
-  from { opacity: .35; transform: translateY(8%); }
+@keyframes aw-panel-start {
+  from { opacity: .35; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
-@keyframes aw-panel-start {
-  from { opacity: .4; filter: brightness(.72); transform: translateY(6px) scale(.99); }
-  to { opacity: 1; filter: brightness(1); transform: translateY(0) scale(1); }
-}
 @media (prefers-reduced-motion: reduce) {
-  /* This also stops visible movement if the setting changes mid-sweep. */
   .aw-paper-belt { transform: none !important; }
 }
 @media (forced-colors: active) {
   .aw-brand-mark { outline: 1px solid CanvasText; }
   .aw-paper-field, .aw-fastener-zone, body[data-dsh-afterwave-style][data-aw-power-on]::after { display: none; }
 }
-html[data-aw-focus="on"] :is(.aw-paper-field,.aw-fastener-zone), .aw-paper-field[hidden], .aw-fastener-zone[hidden] { display: none; }
+html[data-aw-focus="on"] :is(.aw-paper-field, .aw-fastener-zone),
+.aw-paper-field[hidden], .aw-fastener-zone[hidden] { display: none; }

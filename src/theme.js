@@ -3,31 +3,31 @@ const BODY_ATTRIBUTE = 'data-dsh-afterwave-style'
 const SHEET_ID = 'dsh-afterwave-style-sheet'
 
 const pair = (light, dark) => ({ light, dark })
-const fog = pair('#dcd6cb', '#141619')
-const raised = pair('#eee9e0', '#1d2025')
-const elevated = pair('#e5dfd4', '#262a31')
-const inset = pair('#cfc8bb', '#0e1013')
-const selected = pair('#c8d5e2', '#2b251b')
-const ink = pair('#1c1f24', '#e8e3da')
-const secondary = pair('#383733', '#c2bcb2')
-const muted = pair('#4a4843', '#a09b91')
-const signal = pair('#1b528c', '#f0a42b')
-const signalHover = pair('#154170', '#f7b955')
-const onSignal = pair('#f7f4ee', '#171410')
-const rail = pair('#1c1f23', '#0e1013')
-const borderL1 = pair('#cbc3b5', '#23272e')
-const borderL2 = pair('#b5ac9d', '#31363f')
-const line = pair('#8f8779', '#454b56')
-const borderL4 = pair('#6b6459', '#616875')
+const bg = pair('#e4ddd0', '#131417')
+const paper = pair('#f6f1e8', '#1f2125')
+const paper3 = pair('#e2dbcd', '#26292e')
+const inset = pair('#ece6da', '#18191c')
+const selected = pair('#d6e0ec', '#222d3a')
+const ink = pair('#1f1d1a', '#ece6db')
+const secondary = pair('#47423b', '#c4bdb1')
+const muted = pair('#5d574d', '#9b9488')
+const signal = pair('#1f4f86', '#86b4e8')
+const signalHover = pair('#173e6b', '#9ec4ee')
+const onSignal = pair('#f7f3ec', '#10151c')
+const rail = pair('#1b1d21', '#0f1114')
+const borderL1 = pair('#d8d0c2', '#26282e')
+const borderL2 = pair('#c5bcac', '#33363e')
+const line = pair('#a69d8e', '#464a54')
+const borderL4 = pair('#7c7468', '#626774')
 
 const tokens = {
-  '--dsw-alias-bg-base': fog,
-  '--dsw-alias-bg-layer-1': fog,
-  '--dsw-alias-bg-layer-2': raised,
-  '--dsw-alias-bg-layer-3': elevated,
+  '--dsw-alias-bg-base': bg,
+  '--dsw-alias-bg-layer-1': bg,
+  '--dsw-alias-bg-layer-2': paper,
+  '--dsw-alias-bg-layer-3': paper3,
   '--dsw-alias-bg-module-platform': inset,
-  '--dsw-alias-bg-overlay': raised,
-  '--dsw-alias-card-fill': raised,
+  '--dsw-alias-bg-overlay': paper,
+  '--dsw-alias-card-fill': paper,
   '--dsw-alias-card-fill-hover': selected,
   '--dsw-alias-label-primary': ink,
   '--dsw-alias-label-primary-dimmed': ink,
@@ -45,16 +45,16 @@ const tokens = {
   '--dsw-alias-button-primary-hover': signalHover,
   '--dsw-alias-label-primary-foreground': onSignal,
   '--dsw-alias-label-primary-inverted': onSignal,
-  '--dsw-alias-button-info-fill': pair('#9e4819', '#1f5f9e'),
-  '--dsw-alias-button-info-hover': pair('#7f3812', '#184d82'),
-  '--dsw-alias-label-on-color': pair('#f8f5ef', '#f8f5ef'),
-  '--dsw-alias-button-elevated-fill': raised,
-  '--dsw-alias-button-floating-fill': raised,
+  '--dsw-alias-button-info-fill': signal,
+  '--dsw-alias-button-info-hover': signalHover,
+  '--dsw-alias-label-on-color': onSignal,
+  '--dsw-alias-button-elevated-fill': paper,
+  '--dsw-alias-button-floating-fill': paper,
   '--dsw-alias-button-floating-hover': selected,
   '--dsw-alias-button-ghost-active-fill': selected,
   '--dsw-alias-button-ghost-active-hover': selected,
-  '--dsw-alias-interactive-bg-hover': pair('rgb(28 31 36 / 7%)', 'rgb(240 164 43 / 10%)'),
-  '--dsw-alias-interactive-bg-active': pair('rgb(28 31 36 / 13%)', 'rgb(240 164 43 / 16%)'),
+  '--dsw-alias-interactive-bg-hover': pair('rgb(31 29 26 / 6%)', 'rgb(236 230 219 / 6%)'),
+  '--dsw-alias-interactive-bg-active': pair('rgb(31 29 26 / 11%)', 'rgb(236 230 219 / 11%)'),
   '--dsw-alias-interactive-bg-hover-solid': selected,
   '--dsw-alias-border-l1': borderL1,
   '--dsw-alias-border-l2': borderL2,
@@ -64,26 +64,26 @@ const tokens = {
   '--dsw-alias-link': signal,
   '--dsw-focus-ring-color': signal,
   '--dsw-alias-markdown-code-block': inset,
-  '--dsw-alias-markdown-code-block-banner': pair('#c5bdb0', '#191c21'),
+  '--dsw-alias-markdown-code-block-banner': pair('#e2dbcd', '#1d1f24'),
   '--dsw-alias-markdown-inline-code': inset,
-  '--dsw-alias-markdown-code-segment-selected': raised,
+  '--dsw-alias-markdown-code-segment-selected': paper,
   '--dsw-alias-markdown-code-segment-unselected': inset,
-  '--dsw-specific-input-major': raised,
-  '--dsw-specific-bubble': pair('#d4dce4', '#212730'),
+  '--dsw-specific-input-major': paper,
+  '--dsw-specific-bubble': pair('#dde5ee', '#222832'),
   '--dsw-specific-bubble-highlight': selected,
   // The macOS frame paints five layers outside the sidebar slot. Its fallback
   // fill is scoped to the sidebar column in shell.css (also used by drawers).
   '--dsw-specific-sidebar-fill': inset,
   '--dsw-specific-sidebar-tint': rail,
-  '--dsw-specific-sidebar-wash-top': pair('rgb(232 156 40 / 9%)', 'rgb(232 156 40 / 8%)'),
-  '--dsw-specific-sidebar-wash-top-clear': pair('rgb(232 156 40 / 0%)', 'rgb(232 156 40 / 0%)'),
+  '--dsw-specific-sidebar-wash-top': pair('rgb(212 164 90 / 6%)', 'rgb(212 164 90 / 5%)'),
+  '--dsw-specific-sidebar-wash-top-clear': pair('rgb(212 164 90 / 0%)', 'rgb(212 164 90 / 0%)'),
   '--dsw-specific-sidebar-wash-bottom-clear': pair('rgb(8 9 11 / 0%)', 'rgb(8 9 11 / 0%)'),
-  '--dsw-specific-sidebar-wash-bottom': pair('rgb(8 9 11 / 42%)', 'rgb(8 9 11 / 48%)'),
+  '--dsw-specific-sidebar-wash-bottom': pair('rgb(8 9 11 / 36%)', 'rgb(8 9 11 / 42%)'),
   '--dsw-specific-sidebar-nav-item-active': selected,
   '--dsw-specific-sidebar-nav-item-active-accent': selected,
-  '--dsw-menu-surface-fill': raised,
-  '--dsw-specific-menu': raised,
-  '--dsw-alias-menu-group-header-fill': raised,
+  '--dsw-menu-surface-fill': paper,
+  '--dsw-specific-menu': paper,
+  '--dsw-alias-menu-group-header-fill': paper,
   '--shiki-foreground': ink,
   '--shiki-background': inset,
   '--shiki-token-constant': pair('#0c4a6e', '#7dd3fc'),

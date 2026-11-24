@@ -1,21 +1,8 @@
 /* Native readings, their triggers and the host's reserved dock seat stay in
-   place. Apply the cast-iron & brass gauge pod only when readings exist. */
+   place. When readings exist, group them on a flat logbook strip. */
 body[data-dsh-afterwave-style] [data-composer-dock] {
-  --aw-meter-glass: linear-gradient(180deg, #2b2f37, #1c1f25);
-  --aw-meter-well: rgb(9 11 15 / 66%);
-  --aw-meter-well-edge: rgb(255 236 200 / 12%);
-  --aw-meter-ink: #efe9de;
-  --aw-meter-accent: #eab049;
-  --aw-fuel-warn: #f0a42b;
-  --aw-fuel-critical: #ff5c72;
-  --aw-meter-edge: #6b5a42;
-  --aw-meter-shadow: inset 0 1px 0 rgb(255 238 206 / 16%), 0 4px 12px -2px rgb(16 14 10 / 38%);
-  transition: border-color .2s ease-out, box-shadow .2s ease-out;
-}
-body[data-dsh-afterwave-style][data-ds-dark-theme] [data-composer-dock] {
-  --aw-meter-glass: linear-gradient(180deg, #22262d, #15181d);
-  --aw-meter-edge: #4e4538;
-  --aw-meter-shadow: inset 0 1px 0 rgb(255 238 206 / 11%), 0 5px 15px rgb(0 0 0 / 54%);
+  --aw-fuel: var(--aw-run);
+  transition: border-color 160ms var(--aw-ease), background-color 160ms var(--aw-ease);
 }
 body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [style*="--dsh-context-"] button) {
   display: flex;
@@ -25,33 +12,17 @@ body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [s
   width: fit-content;
   min-width: 0;
   max-width: 100%;
-  gap: 5px;
+  gap: 4px;
   margin: 7px auto 2px;
-  padding: 3.5px 14px;
-  background: var(--aw-meter-glass);
-  border: 1px solid var(--aw-meter-edge);
-  border-bottom: 2px solid #0e1014;
-  border-radius: 6px;
-  box-shadow: var(--aw-meter-shadow);
+  padding: 3px 6px;
+  background: var(--aw-paper-2);
+  border: 1px solid var(--aw-line);
+  border-radius: var(--aw-radius);
+  box-shadow: none;
 }
-body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [style*="--dsh-context-"] button)::before,
-body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [style*="--dsh-context-"] button)::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 4.5px;
-  height: 4.5px;
-  margin-top: -2.25px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #f5d896, #966e30 72%, #4a3310);
-  box-shadow: 0 1px 1.5px rgb(0 0 0 / 65%);
-  pointer-events: none;
-}
-body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [style*="--dsh-context-"] button)::before { left: 5px; }
-body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [style*="--dsh-context-"] button)::after { right: 5px; }
 body[data-dsh-afterwave-style] [data-composer-dock] [data-composer-stat] {
   min-width: 0;
-  color: var(--aw-meter-ink);
+  color: var(--aw-ink-2);
 }
 body[data-dsh-afterwave-style] [data-composer-dock] [data-composer-stat] :is(button, span):has(> svg),
 body[data-dsh-afterwave-style] [data-composer-dock] [style*="--dsh-context-"] button {
@@ -60,30 +31,36 @@ body[data-dsh-afterwave-style] [data-composer-dock] [style*="--dsh-context-"] bu
   min-width: 0;
   max-width: 100%;
   padding-inline: 7px;
-  border: 1px solid var(--aw-meter-well-edge);
-  border-radius: 3.5px;
-  background: var(--aw-meter-well);
-  box-shadow: inset 0 1.5px 3px rgb(0 0 0 / 58%);
-  color: var(--aw-meter-ink);
-  font: 550 11.5px/18px ui-monospace, 'SFMono-Regular', 'PingFang SC', monospace;
+  border: 1px solid transparent;
+  border-radius: var(--aw-radius-sm);
+  background: transparent;
+  box-shadow: none;
+  color: var(--aw-ink-2);
+  font: 500 11.5px/20px var(--aw-font-mono);
   font-variant-numeric: tabular-nums;
 }
 body[data-dsh-afterwave-style] [data-composer-dock] :is([data-composer-stat], [style*="--dsh-context-"]) svg {
   flex: none;
-  color: var(--aw-meter-accent);
+  color: var(--aw-ink-3);
 }
 body[data-dsh-afterwave-style] [data-composer-dock] [data-composer-stat="usage"],
 body[data-dsh-afterwave-style] [data-composer-dock] [style*="--dsh-context-"]:has(button) {
   box-shadow: none;
 }
-body[data-dsh-afterwave-style] [data-composer-dock] button:is(:hover, [aria-expanded="true"]) {
-  background: rgb(234 176 73 / 18%);
-  border-color: rgb(234 176 73 / 48%);
-  color: #fff7e6;
+body[data-dsh-afterwave-style] [data-composer-dock] button:hover {
+  background: var(--aw-hover);
+  border-color: var(--aw-line);
+  color: var(--aw-ink);
+}
+body[data-dsh-afterwave-style] [data-composer-dock] button[aria-expanded="true"],
+body[data-dsh-afterwave-style] [data-composer-dock] button:active {
+  background: var(--aw-press);
+  border-color: var(--aw-line-2);
+  color: var(--aw-ink);
 }
 body[data-dsh-afterwave-style] [data-composer-dock] button:focus-visible {
-  outline: 2px solid var(--aw-meter-accent);
-  outline-offset: -1px;
+  outline: 2px solid var(--aw-signal);
+  outline-offset: 2px;
 }
 .aw-reading-tools { display: none; }
 body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [style*="--dsh-context-"] button) .aw-reading-tools {
@@ -93,17 +70,19 @@ body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [s
   position: relative;
   flex: none;
   order: 8;
+  padding-inline-start: 4px;
+  border-inline-start: 1px solid var(--aw-line);
 }
 .aw-copy-readings {
   position: relative;
   width: 24px;
   height: 22px;
   padding: 0;
-  border: 1px solid rgb(234 176 73 / 36%);
-  border-radius: 3.5px;
-  background: linear-gradient(180deg, #38332b, #25221c);
-  color: var(--aw-meter-accent);
-  box-shadow: inset 0 1px 0 rgb(255 236 196 / 16%);
+  border: 1px solid transparent;
+  border-radius: var(--aw-radius-sm);
+  background: transparent;
+  color: var(--aw-ink-2);
+  box-shadow: none;
   cursor: pointer;
 }
 .aw-copy-readings::before, .aw-copy-readings::after {
@@ -116,7 +95,8 @@ body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [s
   border-radius: 1.5px;
 }
 .aw-copy-readings::before { top: 4px; left: 6px; }
-.aw-copy-readings::after { top: 7px; left: 9px; background: #2a2721; }
+.aw-copy-readings::after { top: 7px; left: 9px; background: var(--aw-paper-2); }
+.aw-copy-readings:hover::after { background: var(--aw-paper-3); }
 .aw-reading-feedback {
   position: absolute;
   z-index: 1;
@@ -124,24 +104,24 @@ body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [s
   bottom: calc(100% + 6px);
   pointer-events: none;
   white-space: nowrap;
-  color: var(--dsw-alias-label-primary);
-  font: 12px/1.5 -apple-system, 'PingFang SC', system-ui, sans-serif;
+  color: var(--aw-ink);
+  font: 12px/1.5 var(--aw-font-ui);
 }
 .aw-reading-feedback:not(:empty) {
   padding: 3px 9px;
-  border: 1px solid var(--dsw-alias-brand-text);
-  border-radius: 999px;
-  background: var(--dsw-alias-bg-overlay);
-  box-shadow: 0 4px 12px rgb(5 14 27 / 22%);
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius-sm);
+  background: var(--aw-paper);
+  box-shadow: var(--aw-shadow-2);
 }
 body[data-dsh-afterwave-style] [role="dialog"]:is([style*="--dsh-stat-"], [style*="--dsh-context-"]) {
-  border: 1.5px solid #8a6c3e;
-  border-radius: 9px;
-  background: var(--dsw-alias-bg-overlay);
-  background: color-mix(in srgb, var(--dsw-alias-bg-overlay) 94%, transparent);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  box-shadow: inset 0 2px var(--dsw-alias-brand-text), 0 14px 36px -8px rgb(4 12 27 / 38%);
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius-lg);
+  background: var(--aw-paper);
+  color: var(--aw-ink);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: var(--aw-shadow-pop);
   font-variant-numeric: tabular-nums;
 }
 @media (max-width: 600px) {
@@ -159,12 +139,20 @@ body[data-dsh-afterwave-style] [role="dialog"]:is([style*="--dsh-stat-"], [style
     box-shadow: none;
     backdrop-filter: none;
   }
+  .aw-copy-readings { border-color: ButtonText; }
 }
-body[data-dsh-afterwave-style] [data-composer-dock][data-fuel="warn"] { --aw-fuel: var(--aw-fuel-warn); }
-body[data-dsh-afterwave-style] [data-composer-dock][data-fuel="critical"] { --aw-fuel: var(--aw-fuel-critical); }
-body[data-dsh-afterwave-style] [data-composer-dock][data-fuel] {
-  border-color: var(--aw-fuel);
-  border-color: color-mix(in srgb, var(--aw-fuel) 72%, var(--aw-meter-edge));
+
+/* Fuel: flat status. warn = amber, critical = rust; the lamp keeps its text
+   label (aria-label/title) and critical also changes shape. */
+body[data-dsh-afterwave-style] [data-composer-dock][data-fuel="warn"] { --aw-fuel: var(--aw-wait); }
+body[data-dsh-afterwave-style] [data-composer-dock][data-fuel="critical"] { --aw-fuel: var(--aw-err); }
+body[data-dsh-afterwave-style] [data-composer-dock][data-fuel="warn"]:has([data-composer-stat], [style*="--dsh-context-"] button) {
+  border-color: var(--aw-wait-line);
+  background: var(--aw-wait-soft);
+}
+body[data-dsh-afterwave-style] [data-composer-dock][data-fuel="critical"]:has([data-composer-stat], [style*="--dsh-context-"] button) {
+  border-color: var(--aw-err);
+  background: var(--aw-err-soft);
 }
 .aw-fuel-lamp {
   display: grid;
@@ -179,11 +167,10 @@ body[data-dsh-afterwave-style] [data-composer-dock][data-fuel] {
   height: 7px;
   background: currentColor;
   border-radius: 50%;
-  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 18%, transparent);
 }
 [data-fuel="critical"] .aw-fuel-lamp::before { border-radius: 1px; transform: rotate(45deg); }
 .aw-fuel-lamp[hidden] { display: none; }
-.aw-fuel-lamp:focus-visible { outline: 2px solid var(--dsw-focus-ring-color); border-radius: 4px; }
+.aw-fuel-lamp:focus-visible { outline: 2px solid var(--aw-signal); outline-offset: 2px; border-radius: var(--aw-radius-sm); }
 .aw-fuel-lamp:is(:focus-visible, :hover)::after {
   content: attr(aria-label);
   position: absolute;
@@ -192,17 +179,20 @@ body[data-dsh-afterwave-style] [data-composer-dock][data-fuel] {
   padding: 4px 9px;
   width: max-content;
   max-width: min(240px, 65vw);
-  font: 12px/1.5 -apple-system, 'PingFang SC', system-ui, sans-serif;
-  color: var(--dsw-alias-label-primary);
-  background: var(--dsw-alias-bg-overlay);
-  border: 1px solid var(--aw-fuel);
-  border-radius: 6px;
+  font: 12px/1.5 var(--aw-font-ui);
+  color: var(--aw-ink);
+  background: var(--aw-paper);
+  border: 1px solid var(--aw-line-2);
+  border-inline-start: 3px solid var(--aw-fuel);
+  border-radius: var(--aw-radius-sm);
+  box-shadow: var(--aw-shadow-2);
   pointer-events: none;
 }
 @media (prefers-reduced-motion: reduce) {
   body[data-dsh-afterwave-style] [data-composer-dock] { transition: none; }
 }
 @media (forced-colors: active) {
-  body[data-dsh-afterwave-style] [data-composer-dock][data-fuel] { border-color: CanvasText; }
+  body[data-dsh-afterwave-style] [data-composer-dock][data-fuel] { border-color: CanvasText; background: Canvas; }
   .aw-fuel-lamp::before { background: CanvasText; }
+  .aw-fuel-lamp:is(:focus-visible, :hover)::after { border-color: CanvasText; background: Canvas; color: CanvasText; }
 }

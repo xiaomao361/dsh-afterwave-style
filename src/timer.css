@@ -1,4 +1,4 @@
-/* Cast-iron & oxidized brass Shatterdome duty chronometer pod */
+/* Duty pomodoro timer — Workshop Logbook paper panel & floating pill. */
 .aw-timer-pill {
   position: fixed;
   z-index: 108;
@@ -8,112 +8,120 @@
   align-items: center;
   gap: 6px;
   overflow: hidden;
-  padding: 4px 10px 5px;
-  border: 1.5px solid #8a6c3e;
-  border-bottom: 2.5px solid #4a381d;
-  border-radius: 6px;
-  background: linear-gradient(180deg, #2b2f37, #1b1e24);
-  color: #f3ece0;
-  box-shadow: inset 0 1px 0 rgb(255 236 196 / 16%), 0 6px 16px -6px rgb(0 0 0 / 52%);
-  font: 650 12px/1.2 ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  padding: 5px 10px 6px;
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius);
+  background: var(--aw-paper);
+  color: var(--aw-ink);
+  box-shadow: var(--aw-shadow-2);
+  font: 600 12px/1.2 var(--aw-font-mono);
   font-variant-numeric: tabular-nums;
   cursor: pointer;
 }
+.aw-timer-pill:hover { border-color: var(--aw-signal); }
 .aw-timer-pill[hidden], .aw-timer-panel[hidden] { display: none !important; }
 .aw-timer-pill-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #f0a42b;
-  box-shadow: 0 0 6px #f0a42b;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--aw-signal);
 }
-.aw-timer-pill[data-running='false'] .aw-timer-pill-dot { background: #8f8a80; box-shadow: none; }
+.aw-timer-pill[data-running='false'] .aw-timer-pill-dot { background: var(--aw-ink-3); }
 .aw-timer-pill-bar {
-  position: absolute; left: 0; bottom: 0; height: 2px;
-  background: linear-gradient(90deg, #4ea6ff, #f0a42b);
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--aw-signal);
   transition: width 300ms linear;
 }
 
 .aw-timer-panel {
-  --tm-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.07'/%3E%3C/svg%3E");
   position: fixed;
   z-index: 122;
   right: 22px;
   top: 86px;
-  width: min(326px, calc(100vw - 24px));
-  padding: 13px 12px 12px;
-  border: 1.5px solid #8a6c3e;
-  border-bottom: 3px solid #4a381d;
-  border-radius: 8px;
-  background:
-    var(--tm-noise),
-    radial-gradient(ellipse 80px 44px at 100% 100%, rgb(178 76 24 / 15%), transparent 74%),
-    linear-gradient(170deg, #272b33, #171a20);
-  color: #eee9e0;
-  box-shadow: inset 0 1px 0 rgb(255 238 206 / 14%), 0 20px 44px -12px rgb(0 0 0 / 70%);
-  font: 12.5px/1.45 -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  width: min(324px, calc(100vw - 24px));
+  padding: 13px 14px 12px;
+  border: 1px solid var(--aw-line-2);
+  border-top: 2px solid var(--aw-brass-line);
+  border-radius: var(--aw-radius-lg);
+  background: var(--aw-paper);
+  color: var(--aw-ink);
+  box-shadow: var(--aw-shadow-pop);
+  font: 12.5px/1.45 var(--aw-font-ui);
 }
-.aw-timer-panel::before {
-  content: '';
-  position: absolute;
-  inset: 0 16px auto;
-  height: 3px;
-  border-radius: 0 0 2px 2px;
-  background: repeating-linear-gradient(-45deg, #d89022 0 5px, #232528 5px 10px);
-  opacity: .85;
-  pointer-events: none;
-}
-.aw-tm-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.aw-tm-title { font-size: 13.5px; font-weight: 700; letter-spacing: .04em; }
+.aw-tm-head { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+.aw-tm-title { font-size: 14px; font-weight: 650; }
 .aw-tm-mode {
   margin-inline-start: auto;
-  padding: 1.5px 6px;
-  border: 1px solid #8a6c3e;
-  border-radius: 3px;
-  background: #332a1d;
-  color: #f3c274;
+  padding: 1.5px 7px;
+  border: 1px solid var(--aw-signal);
+  border-radius: 999px;
+  background: var(--aw-signal-soft);
+  color: var(--aw-signal);
   font-size: 10.5px;
   font-weight: 600;
 }
-.aw-tm-mode[data-break='true'] { border-color: #3d6b99; background: #1a2d42; color: #9bc8f5; }
-.aw-tm-close {
-  width: 24px; height: 24px; border: 0; border-radius: 4px;
-  background: transparent; color: inherit; font-size: 16px; cursor: pointer;
+.aw-tm-mode[data-break='true'] {
+  border-color: var(--aw-run);
+  background: var(--aw-run-soft);
+  color: var(--aw-run);
 }
-.aw-tm-close:hover { background: rgb(255 255 255 / 10%); }
+.aw-tm-close {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: var(--aw-radius-sm);
+  background: transparent;
+  color: var(--aw-ink-2);
+  font-size: 16px;
+  cursor: pointer;
+}
+.aw-tm-close:hover { background: var(--aw-hover); color: var(--aw-ink); }
 .aw-tm-dial {
-  padding: 10px 12px;
-  border: 1px solid #3f444f;
-  border-radius: 6px;
-  background: rgb(9 11 15 / 76%);
-  box-shadow: inset 0 2px 6px rgb(0 0 0 / 68%), 0 1px 0 rgb(255 240 214 / 8%);
+  padding: 12px 14px;
+  border: 1px solid var(--aw-line);
+  border-radius: var(--aw-radius);
+  background: var(--aw-paper-2);
   text-align: center;
 }
 .aw-tm-clock {
-  font: 700 34px/1.1 ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font: 700 34px/1.1 var(--aw-font-mono);
   font-variant-numeric: tabular-nums;
-  letter-spacing: .04em;
-  color: #f7f1e6;
-  text-shadow: 0 0 14px rgb(240 164 43 / 28%);
+  letter-spacing: .02em;
+  color: var(--aw-ink);
 }
 .aw-tm-track {
-  height: 5px; margin-top: 8px; border-radius: 999px;
-  background: rgb(255 255 255 / 10%); overflow: hidden;
+  height: 4px;
+  margin-top: 9px;
+  border-radius: 999px;
+  background: var(--aw-line);
+  overflow: hidden;
 }
 .aw-tm-fill {
-  display: block; height: 100%; width: 0;
-  background: linear-gradient(90deg, #3f8bcc, #f0a42b);
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--aw-signal);
   transition: width 300ms linear;
 }
 .aw-tm-task {
   box-sizing: border-box;
   width: 100%;
-  margin-top: 8px;
-  padding: 5px 8px;
-  border: 1px solid #3d424c;
-  border-radius: 4px;
-  background: #13161b;
-  color: #eee9e0;
-  box-shadow: inset 0 1.5px 3px rgb(0 0 0 / 45%);
-  font: 12px/1.4 inherit;
+  margin-top: 9px;
+  padding: 6px 9px;
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius-sm);
+  background: var(--aw-paper-2);
+  color: var(--aw-ink);
+  font: 12.5px/1.4 var(--aw-font-ui);
+}
+.aw-tm-task::placeholder { color: var(--aw-ink-3); }
+.aw-tm-task:focus-visible, .aw-tm-minutes:focus-visible {
+  outline: none;
+  border-color: var(--aw-signal);
+  box-shadow: 0 0 0 3px var(--aw-signal-soft);
 }
 .aw-tm-presets {
   display: grid;
@@ -122,55 +130,62 @@
   margin-top: 8px;
 }
 .aw-tm-preset, .aw-tm-btn {
-  padding: 4.5px 6px;
-  border: 1px solid #484e5a;
-  border-bottom-color: #14171d;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #2c313a, #20242c);
-  color: #eee9e0;
-  box-shadow: inset 0 1px 0 rgb(255 240 214 / 10%);
-  font: 550 11.5px/1.35 inherit;
+  padding: 5px 7px;
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius-sm);
+  background: transparent;
+  color: var(--aw-ink-2);
+  font: 550 11.5px/1.35 var(--aw-font-ui);
   cursor: pointer;
 }
-.aw-tm-preset:hover, .aw-tm-btn:hover { border-color: #f0a42b; color: #ffd48a; }
-.aw-tm-custom {
-  display: flex; align-items: center; gap: 6px; margin-top: 7px;
-}
+.aw-tm-preset:hover, .aw-tm-btn:hover { background: var(--aw-hover); color: var(--aw-ink); }
+.aw-tm-preset:active, .aw-tm-btn:active { background: var(--aw-press); }
+.aw-tm-custom { display: flex; align-items: center; gap: 6px; margin-top: 7px; }
 .aw-tm-minutes {
-  width: 60px; padding: 4px 6px;
-  border: 1px solid #484e5a; border-radius: 4px;
-  background: #13161b; color: #eee9e0;
-  font: 600 12px/1.3 ui-monospace, monospace;
+  width: 60px;
+  padding: 4px 7px;
+  border: 1px solid var(--aw-line-2);
+  border-radius: var(--aw-radius-sm);
+  background: var(--aw-paper-2);
+  color: var(--aw-ink);
+  font: 600 12px/1.3 var(--aw-font-mono);
+  font-variant-numeric: tabular-nums;
 }
-.aw-tm-unit { font-size: 11.5px; opacity: .75; }
-.aw-tm-controls {
-  display: flex; align-items: center; gap: 6px; margin-top: 9px;
-}
+.aw-tm-unit { font-size: 11.5px; color: var(--aw-ink-3); }
+.aw-tm-controls { display: flex; align-items: center; gap: 6px; margin-top: 9px; }
 .aw-tm-primary {
-  background: linear-gradient(180deg, #f0a42b, #c97f14);
-  border-color: #f5bf66;
-  border-bottom-color: #7d4c08;
-  color: #171410;
-  font-weight: 700;
+  background: var(--aw-signal);
+  border-color: var(--aw-signal);
+  color: var(--aw-signal-ink);
+  font-weight: 600;
 }
-.aw-tm-primary:hover { color: #171410; filter: brightness(1.08); }
+.aw-tm-primary:hover { background: var(--aw-signal); color: var(--aw-signal-ink); opacity: .92; }
 .aw-tm-auto {
   margin-inline-start: auto;
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 11px; opacity: .86; cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  color: var(--aw-ink-2);
+  cursor: pointer;
 }
 .aw-tm-stats {
-  margin-top: 8px; padding-top: 7px;
-  border-top: 1px solid rgb(255 240 212 / 10%);
-  font: 500 11px/1.3 ui-monospace, 'SFMono-Regular', monospace;
-  color: #b8b2a6;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid var(--aw-line);
+  font: 500 11px/1.3 var(--aw-font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--aw-ink-3);
 }
+.aw-timer-panel :focus-visible, .aw-timer-pill:focus-visible { outline: 2px solid var(--aw-signal); outline-offset: 2px; }
+
 @media (prefers-reduced-motion: no-preference) {
-  .aw-timer-panel:not([hidden]) { animation: aw-disclose 140ms ease-out; }
-  .aw-tm-preset, .aw-tm-btn, .aw-timer-pill { transition: border-color 140ms ease-out, color 140ms ease-out, transform 120ms ease-out; }
-  :is(.aw-tm-preset, .aw-tm-btn, .aw-timer-pill):active { transform: translateY(1px) scale(.98); }
+  .aw-timer-panel:not([hidden]) { animation: aw-tm-in 150ms var(--aw-ease); }
+  .aw-tm-preset, .aw-tm-btn, .aw-timer-pill {
+    transition: background-color 140ms var(--aw-ease), border-color 140ms var(--aw-ease), color 120ms var(--aw-ease);
+  }
 }
+@keyframes aw-tm-in { from { opacity: 0; transform: translateY(3px); } }
 @media (forced-colors: active) {
   .aw-timer-pill, .aw-timer-panel { background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; }
-  .aw-timer-panel::before { display: none; }
 }
