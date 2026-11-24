@@ -220,6 +220,7 @@ export function applyRuntime(ctx, React, win, stationFactory, config = {}) {
     React.useLayoutEffect(() => {
       latest.current = activity;
       if (active) {
+        if (activity?.workspaceId) win.document.body.dataset.awWorkspaceId = String(activity.workspaceId);
         mounted.current?.station.update({ expanded: true, status: 'idle', activity });
         mountPalette(win).configure({
           sessions: () => latest.current?.sessions ?? [],
@@ -296,6 +297,7 @@ export function applyRuntime(ctx, React, win, stationFactory, config = {}) {
     }, []);
     React.useLayoutEffect(() => {
       latest.current = workspace;
+      if (active && workspace?.workspaceId) win.document.body.dataset.awWorkspaceId = String(workspace.workspaceId);
       if (active) alertOwner.current?.update(status, title);
       if (active) mounted.current?.station.update({
         expanded: false, status, activity: workspace, sessionId, sessionTitle: title,
@@ -324,6 +326,7 @@ export function applyRuntime(ctx, React, win, stationFactory, config = {}) {
   ctx.slots.inject(UTILITIES, () => ctx.slots.register({ name: UTILITIES, id: 'afterwave-signal' }, Utility));
   ctx.effect(() => () => {
     active = false;
+    delete win.document.body.dataset.awWorkspaceId;
     for (const dispose of live) dispose();
     alerts.destroy();
     reminders.destroy();

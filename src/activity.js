@@ -33,8 +33,8 @@ export function workspaceActivity(list, workspaces, statuses, now, sessionId) {
   if (phase !== 'ready') return emptyActivity(phase);
   const pinned = new Set(workspaces.pinnedSessionIds);
   const today = new Date(now);
-  const heatmap = Array.from({ length: 84 }, (_, index) => ({
-    date: localDay(new Date(today.getFullYear(), today.getMonth(), today.getDate() + index - 83)),
+  const heatmap = Array.from({ length: 140 }, (_, index) => ({
+    date: localDay(new Date(today.getFullYear(), today.getMonth(), today.getDate() + index - 139)),
     count: 0,
   }));
   const days = heatmap.slice(-7);

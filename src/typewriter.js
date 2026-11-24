@@ -1,4 +1,5 @@
 import { getPrefs } from './prefs.js'
+import { icon } from './icons.js'
 
 const slot = 'conversation.input.left'
 const templates = {
@@ -18,20 +19,20 @@ const templates = {
 }
 const tick = '`'
 const wrappers = [
-  [tick.repeat(3), '包裹为代码块', text => {
+  [tick.repeat(3), '代码块', '包裹为代码块', text => {
     const runs = text.match(/`+/g) || []
     const fence = tick.repeat(runs.reduce((length, run) => Math.max(length, run.length + 1), 3))
     return fence + '\n' + text + '\n' + fence
   }],
-  [tick, '包裹为行内代码', text => {
+  [tick, '行内码', '包裹为行内代码', text => {
     const runs = text.match(/`+/g) || []
     const fence = tick.repeat(runs.reduce((length, run) => Math.max(length, run.length + 1), 1))
     const padded = text.startsWith(tick) || text.endsWith(tick)
       || (text.startsWith(' ') && text.endsWith(' ') && text.trim())
     return fence + (padded ? ' ' + text + ' ' : text) + fence
   }],
-  ['>', '包裹为引用块', text => text.split('\n').map(line => '> ' + line).join('\n')],
-  ['<context>', '包裹为上下文标签', text => '<context>\n' + text + '\n</context>'],
+  ['>', '引用块', '包裹为引用块', text => text.split('\n').map(line => '> ' + line).join('\n')],
+  ['<>', '上下文', '包裹为上下文标签', text => '<context>\n' + text + '\n</context>'],
 ]
 const draftPrefix = 'typing.draft.'
 const lastPhrases = 'typing.phrases'
@@ -83,21 +84,31 @@ function selectedText(editor, span, draft) {
 
 function draftBackup(win, prefs, sessionId, report) {
   const key = sessionId ? draftPrefix + sessionId : null
-  let lastText, pending, baseline, timer
+  let baseline = readDraft(prefs, key)
+  let lastText, pending, timer
   function cancel() {
     win.clearTimeout(timer)
     pending = undefined
   }
+  function changedElsewhere(stored) {
+    return stored?.at !== baseline?.at || stored?.text !== baseline?.text
+  }
   function clear() {
     cancel()
-    if (key && readDraft(prefs, key) && !prefs.remove(key)) report('本机存储不可用，暂存草稿仅在此窗口清除。')
+    const stored = readDraft(prefs, key)
+    if (changedElsewhere(stored)) {
+      report(stored ? '另一窗口已更改暂存草稿，已保留该版本。' : '暂存草稿状态已变动，清除操作已取消。')
+      return
+    }
+    const cleared = !baseline || prefs.remove(key)
+    baseline = null
+    report(cleared ? '' : '本机存储不可用，暂存草稿仅在此窗口清除。')
   }
   function flush() {
     if (pending === undefined) return
     const text = pending
     cancel()
-    const other = readDraft(prefs, key)
-    if (other?.at !== baseline?.at || other?.text !== baseline?.text) {
+    if (changedElsewhere(readDraft(prefs, key))) {
       report('另一窗口已更改暂存草稿。本窗口的文字仍在输入框中。')
       return
     }
@@ -106,7 +117,8 @@ function draftBackup(win, prefs, sessionId, report) {
       return
     }
     const at = win.performance.timeOrigin + win.performance.now()
-    const durable = prefs.set(key, { text, at })
+    baseline = { text, at }
+    const durable = prefs.set(key, baseline)
     trimDrafts(prefs)
     report(durable ? '' : '本机存储不可用，此草稿仅暂存在当前窗口。')
   }
@@ -114,13 +126,12 @@ function draftBackup(win, prefs, sessionId, report) {
     const before = lastText
     lastText = text
     if (!key || before === undefined || before === text) return
-    if (!text) { report(''); clear(); return }
-    if (pending === undefined) baseline = readDraft(prefs, key)
+    if (!text) { clear(); return }
     pending = text
     win.clearTimeout(timer)
     timer = win.setTimeout(flush, 500)
   }
-  return { key, read: () => readDraft(prefs, key)?.text || '', update, flush, clear }
+  return { key, read: () => readDraft(prefs, key), adopt(saved) { baseline = saved }, update, flush, clear }
 }
 
 // A short felt-damped impact, synthesized once per audio device. All strokes
@@ -219,6 +230,7 @@ function mountTools(anchor, editor, actions, prefs, sessionId) {
   const button = element(doc, 'button', 'aw-tw-launch')
   const glyph = element(doc, 'span', 'aw-tw-key')
   glyph.setAttribute('aria-hidden', 'true')
+  glyph.append(icon(doc, 'typewriter', 15))
   const count = element(doc, 'span', 'aw-tw-count')
   button.append(glyph, count)
   button.setAttribute('aria-haspopup', 'dialog')
@@ -253,32 +265,32 @@ function mountTools(anchor, editor, actions, prefs, sessionId) {
     backupNotice.textContent = message
     backupNotice.hidden = !message
   })
+  function macroKey(symbol, shortLabel, fullTitle, onClick) {
+    const btn = element(doc, 'button', 'aw-tw-wrap')
+    const sym = element(doc, 'code', 'aw-tw-sym', symbol)
+    sym.setAttribute('aria-hidden', 'true')
+    btn.append(sym, element(doc, 'span', 'aw-tw-key-label', shortLabel))
+    btn.title = fullTitle
+    btn.setAttribute('aria-label', fullTitle)
+    btn.addEventListener('click', onClick)
+    return btn
+  }
   const format = element(doc, 'div', 'aw-tw-format')
   format.setAttribute('role', 'group')
   format.setAttribute('aria-label', '快捷包裹')
-  for (const [symbol, name, wrap] of wrappers) {
-    const action = element(doc, 'button', 'aw-tw-wrap', symbol)
-    action.title = name
-    action.setAttribute('aria-label', name)
-    action.addEventListener('click', () => {
+  for (const [symbol, shortLabel, name, wrap] of wrappers) {
+    format.append(macroKey(symbol, shortLabel, name, () => {
       if (selectionText == null) { feedback.textContent = '请选中普通文字，引用和命令标签须保留。'; return }
       insert(wrap(selectionText))
-    })
-    format.append(action)
+    }))
   }
-  const redactBtn = element(doc, 'button', 'aw-tw-wrap', '脱敏')
-  redactBtn.title = '一键脱敏选中文本中的密钥、Token、手机号与邮箱'
-  redactBtn.setAttribute('aria-label', redactBtn.title)
-  redactBtn.addEventListener('click', () => {
+  const redactBtn = macroKey('⊘', '脱敏', '一键脱敏选中文本中的密钥、Token、手机号与邮箱', () => {
     if (!selectionText) { feedback.textContent = '请先在输入框中选中需要脱敏的文本。'; return }
     const { text: cleaned, hits } = redactSecrets(selectionText)
     if (!hits) { feedback.textContent = '未在选中文本中发现敏感凭据。'; return }
     insert(cleaned)
   })
-  const cleanBtn = element(doc, 'button', 'aw-tw-wrap', '洗日志')
-  cleanBtn.title = '清除选中日志中的 ANSI 终端色码与多余空行'
-  cleanBtn.setAttribute('aria-label', cleanBtn.title)
-  cleanBtn.addEventListener('click', () => {
+  const cleanBtn = macroKey('⌫', '洗日志', '清除选中日志中的 ANSI 终端色码与多余空行', () => {
     if (!selectionText) { feedback.textContent = '请先在输入框中选中需要清洗的日志文本。'; return }
     const { text: cleaned, changed } = cleanTerminalLog(selectionText)
     if (!changed) { feedback.textContent = '选中文本已经很干净，无需清洗。'; return }
@@ -335,13 +347,19 @@ function mountTools(anchor, editor, actions, prefs, sessionId) {
   custom.append(add, transfer, entry)
   pane.append(items, custom)
   const odometer = element(doc, 'div', 'aw-tw-odometer')
-  const odoTodayCell = element(doc, 'div', 'aw-tw-odo-cell')
-  const odoTodayVal = element(doc, 'span', 'aw-tw-odo-val', '0')
-  odoTodayCell.append(element(doc, 'span', 'aw-tw-odo-label', '今日打字'), odoTodayVal)
+  const odoSessCell = element(doc, 'div', 'aw-tw-odo-cell')
+  const odoSessVal = element(doc, 'span', 'aw-tw-odo-val', '0')
+  const odoSessSub = element(doc, 'span', 'aw-tw-odo-sub', '今日 0')
+  odoSessCell.append(element(doc, 'span', 'aw-tw-odo-label', '当前会话'), odoSessVal, odoSessSub)
+  const odoWsCell = element(doc, 'div', 'aw-tw-odo-cell')
+  const odoWsVal = element(doc, 'span', 'aw-tw-odo-val', '0')
+  const odoWsSub = element(doc, 'span', 'aw-tw-odo-sub', '今日 0')
+  odoWsCell.append(element(doc, 'span', 'aw-tw-odo-label', '当前工作区'), odoWsVal, odoWsSub)
   const odoTotalCell = element(doc, 'div', 'aw-tw-odo-cell')
   const odoTotalVal = element(doc, 'span', 'aw-tw-odo-val', '0')
-  odoTotalCell.append(element(doc, 'span', 'aw-tw-odo-label', '历史累计'), odoTotalVal)
-  odometer.append(odoTodayCell, odoTotalCell)
+  const odoTotalSub = element(doc, 'span', 'aw-tw-odo-sub', '今日 0')
+  odoTotalCell.append(element(doc, 'span', 'aw-tw-odo-label', '全局累计'), odoTotalVal, odoTotalSub)
+  odometer.append(odoSessCell, odoWsCell, odoTotalCell)
 
   const feedback = element(doc, 'div', 'aw-tw-note')
   feedback.setAttribute('role', 'status')
@@ -353,30 +371,82 @@ function mountTools(anchor, editor, actions, prefs, sessionId) {
     const p = v => String(v).padStart(2, '0')
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
   }
+  const activeWorkspaceKey = () => doc.body?.dataset?.awWorkspaceId || 'default'
+  const activeSessionKey = () => sessionId || 'blank'
   function readStats() {
     const raw = prefs.get('typing.stats')
     if (raw && typeof raw === 'object') {
       const total = Number.isFinite(raw.total) && raw.total >= 0 ? Math.floor(raw.total) : 0
       const days = raw.days && typeof raw.days === 'object' ? { ...raw.days } : {}
-      return { total, days }
+      const workspaces = raw.workspaces && typeof raw.workspaces === 'object' ? { ...raw.workspaces } : {}
+      const sessions = raw.sessions && typeof raw.sessions === 'object' ? { ...raw.sessions } : {}
+      return { total, days, workspaces, sessions }
     }
-    return { total: 0, days: {} }
+    return { total: 0, days: {}, workspaces: {}, sessions: {} }
+  }
+  function trimDays(daysMap, limit = 160) {
+    const keys = Object.keys(daysMap).sort()
+    while (keys.length > limit) delete daysMap[keys.shift()]
   }
   function refreshOdometer() {
     const stats = readStats()
-    const dayCount = Number(stats.days[todayKey()] || 0)
-    odoTodayVal.textContent = numFmt.format(dayCount)
+    const day = todayKey()
+    const wsKey = activeWorkspaceKey()
+    const sessKey = activeSessionKey()
+    const globalToday = Number(stats.days[day] || 0)
+    const wsEntry = stats.workspaces[wsKey]
+    const wsTotal = Number(wsEntry?.total || 0)
+    const wsToday = Number(wsEntry?.days?.[day] || 0)
+    const sessEntry = stats.sessions[sessKey]
+    const sessTotal = Number(sessEntry?.total || 0)
+    const sessToday = sessEntry?.day === day ? Number(sessEntry?.today || 0) : 0
+
+    odoSessVal.textContent = numFmt.format(sessTotal)
+    odoSessSub.textContent = `今日 ${numFmt.format(sessToday)}`
+    odoWsVal.textContent = numFmt.format(wsTotal)
+    odoWsSub.textContent = `今日 ${numFmt.format(wsToday)}`
     odoTotalVal.textContent = numFmt.format(stats.total)
-    return { today: dayCount, total: stats.total }
+    odoTotalSub.textContent = `今日 ${numFmt.format(globalToday)}`
+    return { today: globalToday, total: stats.total, wsTotal, sessTotal }
   }
   function recordTyped(added) {
     if (!added || added <= 0) return
     const stats = readStats()
-    const key = todayKey()
+    const day = todayKey()
+    const wsKey = activeWorkspaceKey()
+    const sessKey = activeSessionKey()
+
     stats.total += added
-    stats.days[key] = (Number(stats.days[key]) || 0) + added
-    const keys = Object.keys(stats.days).sort()
-    while (keys.length > 90) delete stats.days[keys.shift()]
+    stats.days[day] = (Number(stats.days[day]) || 0) + added
+    trimDays(stats.days, 160)
+
+    const wsPrev = stats.workspaces[wsKey] && typeof stats.workspaces[wsKey] === 'object'
+      ? { total: Number(stats.workspaces[wsKey].total || 0), days: { ...(stats.workspaces[wsKey].days || {}) }, updatedAt: Date.now() }
+      : { total: 0, days: {}, updatedAt: Date.now() }
+    wsPrev.total += added
+    wsPrev.days[day] = (Number(wsPrev.days[day]) || 0) + added
+    trimDays(wsPrev.days, 160)
+    stats.workspaces[wsKey] = wsPrev
+    const wsKeys = Object.keys(stats.workspaces)
+    if (wsKeys.length > 30) {
+      wsKeys.sort((a, b) => (stats.workspaces[a]?.updatedAt || 0) - (stats.workspaces[b]?.updatedAt || 0))
+      while (wsKeys.length > 30) delete stats.workspaces[wsKeys.shift()]
+    }
+
+    const sessPrev = stats.sessions[sessKey] && typeof stats.sessions[sessKey] === 'object'
+      ? { ...stats.sessions[sessKey] }
+      : { total: 0, today: 0, day, updatedAt: Date.now() }
+    sessPrev.total = Number(sessPrev.total || 0) + added
+    sessPrev.today = (sessPrev.day === day ? Number(sessPrev.today || 0) : 0) + added
+    sessPrev.day = day
+    sessPrev.updatedAt = Date.now()
+    stats.sessions[sessKey] = sessPrev
+    const sessKeys = Object.keys(stats.sessions)
+    if (sessKeys.length > 120) {
+      sessKeys.sort((a, b) => (stats.sessions[a]?.updatedAt || 0) - (stats.sessions[b]?.updatedAt || 0))
+      while (sessKeys.length > 120) delete stats.sessions[sessKeys.shift()]
+    }
+
     prefs.set('typing.stats', stats)
     refreshOdometer()
     refreshCount()
@@ -391,7 +461,7 @@ function mountTools(anchor, editor, actions, prefs, sessionId) {
     selectionText = captured ? selectedText(editor, captured, draft) : null
   }
   function updateRecovery() {
-    const text = !draft && !locked && !composing && backup.read()
+    const text = !draft && !locked && !composing && backup.read()?.text
     recover.hidden = !text
     if (text) {
       recover.textContent = '恢复草稿（' + characterCount(text) + ' 字）'
@@ -400,11 +470,11 @@ function mountTools(anchor, editor, actions, prefs, sessionId) {
   }
   function refreshCount() {
     const n = characterCount(draft)
-    const { today, total } = refreshOdometer()
+    const { total, wsTotal, sessTotal } = refreshOdometer()
     count.hidden = n === 0 && total === 0
     count.textContent = n ? String(n) : (total ? numFmt.format(total) : '')
     button.title = total
-      ? `输入工具 · 草稿 ${n} 字（今日 ${numFmt.format(today)} / 累计 ${numFmt.format(total)}）`
+      ? `输入工具 · 草稿 ${n} 字（本会话 ${numFmt.format(sessTotal)} / 本工作区 ${numFmt.format(wsTotal)} / 全局 ${numFmt.format(total)}）`
       : '输入工具 · ' + n + ' 字'
     button.setAttribute('aria-label', button.title)
   }
@@ -640,11 +710,12 @@ function mountTools(anchor, editor, actions, prefs, sessionId) {
   })
   recover.addEventListener('click', () => {
     if (locked || composing || draft) return
-    const text = backup.read()
-    if (!text) { updateRecovery(); return }
+    const saved = backup.read()
+    if (!saved?.text) { updateRecovery(); return }
     const at = actions.captureInsertion()
     if (at && at.start === 0 && at.end === 0 && (draftRevision == null || at.draftRev === draftRevision)
-      && actions.insertText(text, at)) {
+      && actions.insertText(saved.text, at)) {
+      backup.adopt(saved)
       editor.focus({ preventScroll: true })
     } else {
       backupNotice.hidden = false

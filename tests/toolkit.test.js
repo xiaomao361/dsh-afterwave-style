@@ -6,6 +6,7 @@ import { mountScratchpad } from '../src/scratchpad.js'
 import { mountPalette } from '../src/palette.js'
 import { attachCodeTools } from '../src/code-tools.js'
 import { getDockTimer, formatClock } from '../src/timer.js'
+import { parseTokenCount, formatTokens } from '../src/readings.js'
 
 test('redactSecrets masks keys, tokens, phones and emails while cleanTerminalLog strips ANSI and excess blanks', () => {
   const sample = 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.abc\nkey=sk-1234567890abcdef1234\nphone 13800138000 mail a@b.com'
@@ -45,6 +46,41 @@ test('scratchpad supports multiple stacked notes, cycling, color switching, clea
   } finally { window.close() }
 })
 
+test('scratchpad preserves newer cross-window notes and keeps conflicting local edits available to copy', t => {
+  const { window } = new JSDOM('', { url: 'https://dock.test' })
+  const { document, localStorage } = window
+  const key = 'dsh-afterwave-style.scratchpad'
+  const storeNote = (text, dispatch = true) => {
+    localStorage.setItem(key, JSON.stringify({ activeId: 'note', notes: [{ id: 'note', text, color: 'paper', updatedAt: Date.now() }] }))
+    if (dispatch) window.dispatchEvent(new window.StorageEvent('storage', { key, storageArea: localStorage }))
+  }
+  const saved = () => JSON.parse(localStorage.getItem(key)).notes[0].text
+  storeNote('旧版便签')
+  const pad = mountScratchpad(window)
+  t.after(() => { pad.destroy(); window.close() })
+  pad.open()
+  storeNote('另一窗口的新便签')
+  pad.close()
+  assert.equal(saved(), '另一窗口的新便签')
+
+  pad.open()
+  const area = document.querySelector('.aw-sp-area')
+  area.value = '本窗口仍需保留的修改'
+  area.dispatchEvent(new window.Event('input'))
+  storeNote('另一窗口再次保存', false)
+  pad.close()
+  assert.equal(saved(), '另一窗口再次保存')
+  pad.open()
+  assert.equal(area.value, '本窗口仍需保留的修改')
+  assert.match(document.querySelector('.aw-sp-status').textContent, /尚未保存/)
+  document.querySelector('.aw-sp-reload').click()
+  assert.equal(area.value, '另一窗口再次保存')
+  area.value = '重新载入后的修改'
+  area.dispatchEvent(new window.Event('input'))
+  pad.close()
+  assert.equal(saved(), '重新载入后的修改')
+})
+
 test('command palette opens with Cmd/Ctrl+K, filters sessions and commands, and executes selection', () => {
   const { window } = new JSDOM('<body><button id="host">focus</button></body>', { url: 'https://dock.test' })
   try {
@@ -70,6 +106,42 @@ test('command palette opens with Cmd/Ctrl+K, filters sessions and commands, and 
   } finally { window.close() }
 })
 
+test('the palette keeps tab focus, arrow selection and the executed command in sync', t => {
+  const { window } = new JSDOM('<textarea></textarea>', { url: 'https://dock.test' })
+  const { document } = window
+  const editor = document.querySelector('textarea')
+  const palette = mountPalette(window)
+  t.after(() => { palette.destroy(); window.close() })
+  const ran = []
+  palette.configure({ commands: () => ['one', 'two'].map(id => ({ id, title: id, run: () => ran.push(id) })) })
+  const press = (target, key, shiftKey = false) => target.dispatchEvent(new window.KeyboardEvent('keydown', {
+    key, shiftKey, bubbles: true, cancelable: true,
+  }))
+  editor.focus()
+  palette.open()
+  const second = document.querySelectorAll('.aw-pal-item')[1]
+  second.focus()
+  assert.equal(second.getAttribute('aria-selected'), 'true')
+  press(second, 'Enter')
+  assert.deepEqual(ran, ['two'])
+  assert.equal(document.activeElement, editor)
+
+  palette.open()
+  const [first, next] = document.querySelectorAll('.aw-pal-item')
+  const input = document.querySelector('.aw-pal-input')
+  first.focus()
+  press(first, 'ArrowDown')
+  assert.equal(document.activeElement, next)
+  assert.equal(next.getAttribute('aria-selected'), 'true')
+  assert.equal(input.getAttribute('aria-activedescendant'), next.id)
+  press(next, 'Tab')
+  assert.equal(document.activeElement, input)
+  press(input, 'Tab', true)
+  assert.equal(document.activeElement, next)
+  press(next, 'Escape')
+  assert.equal(document.activeElement, editor)
+})
+
 test('code tools fold long code blocks (>=25 lines) and list all blocks cleanly', () => {
   const longCode = Array.from({ length: 30 }, (_, i) => `const line${i} = ${i}`).join('\n')
   const { window } = new JSDOM(`<div id="scroll"><pre><code class="language-js">${longCode}</code></pre><pre><code>short</code></pre></div>`)
@@ -84,6 +156,15 @@ test('code tools fold long code blocks (>=25 lines) and list all blocks cleanly'
     tools.destroy()
     assert.equal(scroll.querySelector('.aw-code-fold-bar'), null)
   } finally { window.close() }
+})
+
+test('parseTokenCount and formatTokens handle K/M/plain token readings accurately', () => {
+  assert.equal(parseTokenCount('429K tok · 缓存命中 97%'), 429000)
+  assert.equal(parseTokenCount('1.7M tok'), 1700000)
+  assert.equal(parseTokenCount('12,340 tokens'), 12340)
+  assert.equal(parseTokenCount('无数字'), null)
+  assert.equal(formatTokens(429000), '429K')
+  assert.equal(formatTokens(1700000), '1.7M')
 })
 
 test('dock timer formats clock and supports start, pause and reset', () => {

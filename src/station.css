@@ -2,50 +2,61 @@
 @import './companion.css';
 
 .aw-station {
-  --aw-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, 'PingFang SC', monospace;
-  --aw-focus-ring: #1858a8;
+  --aw-mono: 'IBM Plex Mono', 'SFMono-Regular', ui-monospace, Consolas, 'PingFang SC', monospace;
+  --aw-focus-ring: #1b528c;
   font-family: inherit;
   box-sizing: border-box;
 }
-body[data-ds-dark-theme] .aw-station { --aw-focus-ring: #78bcff; }
+body[data-ds-dark-theme] .aw-station { --aw-focus-ring: #f0a42b; }
 .aw-station *, .aw-station *::before, .aw-station *::after { box-sizing: border-box; }
 .aw-station [hidden] { display: none !important; }
 .aw-station[data-expanded='true'] { width: 100%; min-width: 0; container-type: inline-size; }
 .aw-station[data-expanded='false'] { display: inline-flex; flex: none; margin-inline: 4px; }
 .aw-station :where(button,input,select) { font: inherit; }
 .aw-station button { appearance: none; cursor: pointer; }
-.aw-station button:disabled { cursor: default; opacity: .55; }
+.aw-station button:disabled { cursor: default; opacity: .5; }
 .aw-station :is(button,input,select):focus-visible { outline: 2px solid var(--aw-focus-ring); outline-offset: 2px; }
 
+.aw-icon {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  display: block;
+}
+
+/* Pacific Rim Shatterdome heavy mecha armor casing:
+   cast-iron grain, weld soot, corner rust patina, chipped edge bevels, and bolted seams. */
 .aw-panel {
   --aw-ink: #1c1f24;
-  --aw-muted: #4b4842;
+  --aw-muted: #4b4740;
   --aw-signal: #1b528c;
   --aw-active: #a84717;
-  --aw-case: linear-gradient(164deg, #d7d0c3 0%, #cac2b3 56%, #bdb4a4 100%);
-  --aw-peg-hole: rgb(42 36 28 / 22%);
-  --aw-peg-rim: rgb(255 250 240 / 48%);
-  --aw-board-bg: #f1ece2;
-  --aw-board-edge: #aba292;
-  --aw-grain: rgb(255 248 236 / 16%);
-  --aw-patina: rgb(42 32 20 / 16%);
-  --aw-rust: rgb(152 68 24 / 12%);
-  --aw-seam: rgb(58 52 42 / 34%);
-  --aw-glint: rgb(255 249 238 / 58%);
-  --aw-key-face: linear-gradient(180deg, #e5dfd3, #cfc7b8);
-  --aw-key-edge: #938a7c;
-  --aw-key-ink: #24221e;
-  --aw-inset: #e4ded2;
-  --aw-plate-face: #c3baa9;
-  --aw-plate-edge: #938a7b;
-  --aw-plate-ink: #8c3d13;
-  --aw-metric-well: rgb(247 243 235 / 88%);
-  --aw-metric-edge: rgb(146 138 122 / 55%);
-  --aw-dial-frame: #6a6357;
-  --aw-screw-metal: radial-gradient(circle at 32% 28%, #ebe6dc, #9e9688 58%, #5e584e);
-  --aw-screw-slot: #3b3730;
-  --aw-etch: #4a453c;
-  --aw-sticker-shadow: rgb(24 20 14 / 32%);
+  --aw-case: linear-gradient(165deg, #d7d0c3 0%, #c8bfb0 54%, #b9b09f 100%);
+  --aw-board-bg: linear-gradient(175deg, #f0ebe0, #e5decfe8);
+  --aw-board-solid: #ede7db;
+  --aw-board-edge: #9c9383;
+  --aw-board-bottom: #787062;
+  --aw-patina: rgb(38 28 16 / 19%);
+  --aw-rust: rgb(156 66 20 / 15%);
+  --aw-scuff: rgb(255 250 240 / 28%);
+  --aw-seam: rgb(48 42 32 / 38%);
+  --aw-glint: rgb(255 249 238 / 62%);
+  --aw-key-face: linear-gradient(180deg, #e7e0d3, #cdc5b5);
+  --aw-key-edge: #8a8172;
+  --aw-key-bottom: #635c50;
+  --aw-key-ink: #22201c;
+  --aw-well-bg: rgb(36 30 22 / 11%);
+  --aw-well-edge: rgb(78 70 58 / 34%);
+  --aw-inset: #dfd8ca;
+  --aw-plate-face: linear-gradient(180deg, #3a3226, #262018);
+  --aw-plate-edge: #8a6c3e;
+  --aw-plate-ink: #f0be6a;
+  --aw-metric-well: linear-gradient(180deg, #dfd9cc, #ece6da);
+  --aw-metric-edge: #9c9383;
+  --aw-screw-metal: radial-gradient(circle at 32% 28%, #f0ebe0, #9a9284 55%, #524c43);
+  --aw-screw-slot: #2e2a24;
+  --aw-etch: #433e35;
+  --aw-sticker-shadow: rgb(24 18 10 / 34%);
   --aw-wait-ink: #7d3906;
   --aw-wait-bg: #f3dbb0;
   --aw-wait-edge: #b87928;
@@ -53,57 +64,67 @@ body[data-ds-dark-theme] .aw-station { --aw-focus-ring: #78bcff; }
   --aw-run-bg: #cddded;
   --aw-pin-ink: #5d396e;
   --aw-pin-bg: #e1d5e8;
-  --aw-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
+  --aw-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='128' height='128' filter='url(%23n)' opacity='.095'/%3E%3C/svg%3E");
   position: relative;
   min-width: 0;
-  margin: 0 0 10px;
-  padding: 0 clamp(22px, 3.8cqi, 28px) 8px;
-  border: 1.5px solid #8c8476;
-  border-bottom: 2.5px solid #6e675b;
-  border-radius: 7px;
+  margin: 0 0 11px;
+  padding: 2px clamp(22px, 3.8cqi, 28px) 12px;
+  border: 1.5px solid #7d7567;
+  border-bottom: 3px solid #595348;
+  border-radius: 8px;
   color: var(--aw-ink);
   color-scheme: light;
   background:
     var(--aw-noise),
-    radial-gradient(circle at 8px 8px, var(--aw-peg-hole) 1.8px, transparent 2.3px) 0 0 / 16px 16px,
-    radial-gradient(circle at 8px 9.2px, var(--aw-peg-rim) 1.8px, transparent 2.3px) 0 0 / 16px 16px,
-    radial-gradient(ellipse 68px 42px at top left, var(--aw-patina), transparent 72%),
-    radial-gradient(ellipse 56px 40px at top right, var(--aw-rust), transparent 72%),
-    radial-gradient(ellipse 72px 46px at bottom left, var(--aw-rust), transparent 74%),
-    radial-gradient(ellipse 84px 48px at bottom right, var(--aw-patina), transparent 76%),
+    /* Subtle battle-scratched paint glints near armor edges */
+    repeating-linear-gradient(116deg, transparent 0 62px, var(--aw-scuff) 62px 63px, transparent 63px 138px) 0 0 / 100% 24px no-repeat,
+    /* Vertical armor bulkhead seam lines */
+    linear-gradient(90deg, transparent 22px, rgb(52 44 34 / 9%) 22px 23px, rgb(255 250 240 / 28%) 23px 24px, transparent 24px calc(100% - 24px), rgb(52 44 34 / 9%) calc(100% - 24px) calc(100% - 23px), rgb(255 250 240 / 28%) calc(100% - 23px) calc(100% - 22px), transparent calc(100% - 22px)),
+    /* Corner weld soot, oil grime & rust streaks */
+    radial-gradient(ellipse 92px 54px at 0% 0%, var(--aw-patina), transparent 72%),
+    radial-gradient(ellipse 76px 48px at 100% 0%, var(--aw-rust), transparent 72%),
+    radial-gradient(ellipse 96px 56px at 0% 100%, var(--aw-rust), transparent 74%),
+    radial-gradient(ellipse 110px 60px at 100% 100%, var(--aw-patina), transparent 76%),
     var(--aw-case);
-  box-shadow: inset 0 1px 0 rgb(255 250 240 / 68%), inset 0 -2px 4px rgb(46 38 28 / 18%),
-    0 10px 24px -12px rgb(24 20 14 / 34%), 0 2px 3px rgb(24 20 14 / 14%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 250 240 / 72%),
+    inset 0 -2px 5px rgb(38 30 20 / 24%),
+    inset 0 0 0 1px rgb(58 50 38 / 12%),
+    0 12px 26px -12px rgb(22 18 12 / 38%),
+    0 2px 4px rgb(22 18 12 / 16%);
 }
+
 body[data-ds-dark-theme] .aw-panel {
   --aw-ink: #e8e3da;
-  --aw-muted: #aba59a;
+  --aw-muted: #aba498;
   --aw-signal: #f0a42b;
-  --aw-active: #ff7847;
-  --aw-case: linear-gradient(164deg, #24282f 0%, #1b1e24 58%, #14171c 100%);
-  --aw-peg-hole: rgb(4 6 9 / 58%);
-  --aw-peg-rim: rgb(255 242 220 / 7%);
-  --aw-board-bg: #23272f;
-  --aw-board-edge: #3d434f;
-  --aw-grain: rgb(255 244 225 / 2.5%);
-  --aw-patina: rgb(0 0 0 / 28%);
-  --aw-rust: rgb(168 74 28 / 14%);
-  --aw-seam: rgb(4 6 9 / 76%);
-  --aw-glint: rgb(230 214 190 / 12%);
-  --aw-key-face: linear-gradient(180deg, #323740, #22262d);
-  --aw-key-edge: #4c525e;
-  --aw-key-ink: #eae5dc;
+  --aw-active: #ff7a45;
+  --aw-case: linear-gradient(165deg, #24282f 0%, #1a1d23 56%, #12151a 100%);
+  --aw-board-bg: linear-gradient(175deg, #232830, #1b1f26);
+  --aw-board-solid: #20242c;
+  --aw-board-edge: #3e4552;
+  --aw-board-bottom: #0d0f13;
+  --aw-patina: rgb(0 0 0 / 42%);
+  --aw-rust: rgb(178 76 24 / 17%);
+  --aw-scuff: rgb(255 226 176 / 8%);
+  --aw-seam: rgb(4 6 9 / 82%);
+  --aw-glint: rgb(245 224 190 / 13%);
+  --aw-key-face: linear-gradient(180deg, #323741, #21252c);
+  --aw-key-edge: #4d5462;
+  --aw-key-bottom: #0e1014;
+  --aw-key-ink: #ece7de;
+  --aw-well-bg: rgb(7 9 13 / 56%);
+  --aw-well-edge: rgb(255 232 190 / 11%);
   --aw-inset: #13161b;
-  --aw-plate-face: #2c2924;
-  --aw-plate-edge: #735c3d;
+  --aw-plate-face: linear-gradient(180deg, #362e22, #231d15);
+  --aw-plate-edge: #8a6c3e;
   --aw-plate-ink: #f3c274;
-  --aw-metric-well: rgb(9 11 15 / 50%);
-  --aw-metric-edge: rgb(240 164 43 / 18%);
-  --aw-dial-frame: #3a3f4a;
-  --aw-screw-metal: radial-gradient(circle at 32% 28%, #777d88, #3d424b 58%, #1a1d22);
-  --aw-screw-slot: #0d0f13;
+  --aw-metric-well: linear-gradient(180deg, #13161c, #1a1e26);
+  --aw-metric-edge: #383f4b;
+  --aw-screw-metal: radial-gradient(circle at 32% 28%, #858c98, #3f4550 56%, #181b20);
+  --aw-screw-slot: #0b0d11;
   --aw-etch: #a9a296;
-  --aw-sticker-shadow: rgb(0 2 6 / 52%);
+  --aw-sticker-shadow: rgb(0 2 6 / 58%);
   --aw-wait-ink: #ffd180;
   --aw-wait-bg: #3d2a12;
   --aw-wait-edge: #9c6c29;
@@ -112,97 +133,160 @@ body[data-ds-dark-theme] .aw-panel {
   --aw-pin-ink: #e1c0fa;
   --aw-pin-bg: #362840;
   color-scheme: dark;
-  border-color: #3a404a;
-  border-bottom-color: #0b0d10;
-  box-shadow: inset 0 1px rgb(255 238 212 / 10%), inset 0 -2px 5px rgb(0 0 0 / 48%), 0 12px 28px -12px rgb(0 0 0 / 64%);
+  border-color: #414854;
+  border-bottom-color: #090b0e;
+  background:
+    var(--aw-noise),
+    repeating-linear-gradient(116deg, transparent 0 62px, var(--aw-scuff) 62px 63px, transparent 63px 138px) 0 0 / 100% 24px no-repeat,
+    linear-gradient(90deg, transparent 22px, rgb(0 0 0 / 34%) 22px 23px, rgb(255 236 200 / 6%) 23px 24px, transparent 24px calc(100% - 24px), rgb(0 0 0 / 34%) calc(100% - 24px) calc(100% - 23px), rgb(255 236 200 / 6%) calc(100% - 23px) calc(100% - 22px), transparent calc(100% - 22px)),
+    radial-gradient(ellipse 96px 54px at 0% 0%, var(--aw-patina), transparent 72%),
+    radial-gradient(ellipse 84px 50px at 100% 0%, var(--aw-rust), transparent 72%),
+    radial-gradient(ellipse 98px 56px at 0% 100%, var(--aw-rust), transparent 74%),
+    radial-gradient(ellipse 116px 62px at 100% 100%, var(--aw-patina), transparent 76%),
+    var(--aw-case);
+  box-shadow:
+    inset 0 1px 0 rgb(255 236 202 / 14%),
+    inset 0 -3px 6px rgb(0 0 0 / 55%),
+    inset 0 0 0 1px rgb(255 220 160 / 5%),
+    0 16px 34px -12px rgb(0 0 0 / 72%),
+    0 3px 6px rgb(0 0 0 / 42%);
 }
 
-/* A recessed stripe and slotted metal heads sit outside the controls' hit areas. */
+/* Battle-scarred Shatterdome hazard chevron bar with chipped paint scratches. */
 .aw-panel::before {
   content: '';
   position: absolute;
   inset: 0 28px auto;
-  height: 4px;
+  height: 4.5px;
   border-radius: 0 0 2px 2px;
   background:
-    repeating-linear-gradient(109deg, transparent 0 38px, rgb(188 180 168 / 65%) 39px 41px, transparent 42px 74px) left bottom / 100% 2px no-repeat,
-    repeating-linear-gradient(-45deg, #d89022 0 6px, #2b2d30 6px 12px);
-  box-shadow: inset 0 1px rgb(16 14 12 / 44%), 0 1px var(--aw-glint);
-  opacity: .9;
+    repeating-linear-gradient(112deg, transparent 0 29px, rgb(212 204 190 / 72%) 30px 31.5px, transparent 32px 67px) left bottom / 100% 2.5px no-repeat,
+    repeating-linear-gradient(-45deg, #d89022 0 6px, #242629 6px 12px);
+  box-shadow: inset 0 1px rgb(12 10 8 / 52%), 0 1px var(--aw-glint);
+  opacity: .92;
   pointer-events: none;
 }
+
 .aw-panel-hardware { position: absolute; inset: 0; pointer-events: none; user-select: none; }
 .aw-screw {
   position: absolute;
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: var(--aw-screw-metal);
-  box-shadow: inset 0 0 0 1px rgb(24 20 14 / 36%), inset 0 -1px 2px rgb(12 10 8 / 38%),
-    0 0 0 1.5px var(--aw-seam), 0 0 4px 1px rgb(42 32 18 / 24%), 0 1px 0 1px var(--aw-glint);
+  box-shadow:
+    inset 0 0 0 1px rgb(24 20 14 / 42%),
+    inset 0 -1.5px 2px rgb(12 10 8 / 45%),
+    0 0 0 1.8px var(--aw-seam),
+    0 0 5px 1px rgb(48 32 14 / 30%),
+    0 1px 0 1px var(--aw-glint);
 }
 .aw-screw::after {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(var(--aw-screw-slot), var(--aw-screw-slot)) center / 6px 1.4px no-repeat,
-    linear-gradient(var(--aw-screw-slot), var(--aw-screw-slot)) center / 1.4px 4px no-repeat;
-  filter: drop-shadow(0 .65px .15px rgb(255 255 255 / 52%));
+    linear-gradient(var(--aw-screw-slot), var(--aw-screw-slot)) center / 6.5px 1.5px no-repeat,
+    linear-gradient(var(--aw-screw-slot), var(--aw-screw-slot)) center / 1.5px 4.2px no-repeat;
+  filter: drop-shadow(0 .65px .15px rgb(255 255 255 / 50%));
   transform: rotate(var(--aw-slot-angle));
 }
-.aw-screw[data-corner='nw'] { top: 8px; left: 8px; --aw-slot-angle: 28deg; }
-.aw-screw[data-corner='ne'] { top: 8px; right: 8px; --aw-slot-angle: -18deg; }
-.aw-screw[data-corner='sw'] { bottom: 8px; left: 8px; --aw-slot-angle: 64deg; }
-.aw-screw[data-corner='se'] { bottom: 8px; right: 8px; --aw-slot-angle: -42deg; }
+.aw-screw[data-corner='nw'] { top: 8px; left: 7px; --aw-slot-angle: 28deg; }
+.aw-screw[data-corner='ne'] { top: 8px; right: 7px; --aw-slot-angle: -18deg; }
+.aw-screw[data-corner='sw'] { bottom: 8px; left: 7px; --aw-slot-angle: 64deg; }
+.aw-screw[data-corner='se'] { bottom: 8px; right: 7px; --aw-slot-angle: -42deg; }
+
 .aw-overview-head, .aw-overview-foot, .aw-query-controls, .aw-result {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
-.aw-overview-head { padding: 15px 0 12px; flex-wrap: wrap; gap: 6px 9px; }
+.aw-overview-head { padding: 15px 0 11px; flex-wrap: wrap; gap: 6px 9px; }
 .aw-heading {
   display: flex; flex: none; align-items: center; gap: 9px; margin: 0;
   color: var(--aw-ink);
-  font: 650 clamp(16px, 2.8cqi, 20px)/1.35 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font: 700 clamp(16px, 2.7cqi, 19.5px)/1.3 -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  letter-spacing: .02em;
+  text-shadow: 0 1px 0 var(--aw-glint);
 }
-.aw-ws-chip, .aw-last-label {
+body[data-ds-dark-theme] .aw-heading { text-shadow: 0 1px 2px rgb(0 0 0 / 65%); }
+
+/* Oxidized brass hull nameplate matching BAY·04 */
+.aw-ws-chip {
+  min-width: 0; max-width: 148px;
   padding: 2px 7px;
   border: 1px solid var(--aw-plate-edge);
   border-radius: 3px;
   background: var(--aw-plate-face);
-  box-shadow: inset 0 1px 1px rgb(0 0 0 / 5%), 0 1px var(--aw-glint);
-}
-.aw-ws-chip {
-  min-width: 0; max-width: 140px;
-  color: var(--aw-plate-ink); font: 600 11px/1.45 var(--aw-mono);
+  color: var(--aw-plate-ink);
+  box-shadow: inset 0 1px 0 rgb(255 232 180 / 18%), 0 1px 2px rgb(0 0 0 / 28%);
+  font: 600 11px/1.4 var(--aw-mono);
+  letter-spacing: .02em;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.aw-head-tools { display: inline-flex; gap: 5px; margin-inline-start: auto; }
-.aw-find, .aw-tool-btn, .aw-settings {
-  display: inline-flex; flex: none; align-items: center; justify-content: center; gap: 7px;
-  min-height: 29px; padding: 4px 10px;
-  border: 1px solid var(--aw-key-edge); border-radius: 5px;
+.aw-last-label {
+  flex: none;
+  padding: 1.5px 6px;
+  border: 1px solid var(--aw-board-edge);
+  border-radius: 3px;
+  background: var(--aw-inset);
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%), 0 1px 0 var(--aw-glint);
+  color: var(--aw-muted);
+  font: 600 10.5px/1.35 var(--aw-mono);
+}
+
+.aw-head-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-inline-start: auto;
+}
+/* Recessed cast-metal utility bay */
+.aw-tool-well {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--aw-well-edge);
+  border-radius: 6px;
+  background: var(--aw-well-bg);
+  box-shadow: inset 0 1.5px 3px rgb(0 0 0 / 18%), 0 1px 0 var(--aw-glint);
+}
+.aw-tool-btn {
+  display: inline-flex; flex: none; align-items: center; justify-content: center; gap: 4.5px;
+  min-height: 24px; padding: 2px 7px;
+  border: 1px solid transparent; border-radius: 4px;
+  background: transparent; color: var(--aw-ink);
+  opacity: .84;
+  font-size: 11.5px; font-weight: 550; line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+.aw-tool-btn .aw-btn-kbd {
+  font: 650 10.5px/1 var(--aw-mono);
+  letter-spacing: -.02em;
+}
+.aw-find, .aw-settings {
+  display: inline-flex; flex: none; align-items: center; justify-content: center; gap: 6px;
+  min-height: 28px; padding: 4px 10px;
+  border: 1px solid var(--aw-key-edge);
+  border-bottom: 2px solid var(--aw-key-bottom);
+  border-radius: 5px;
   background: var(--aw-key-face); color: var(--aw-key-ink);
-  box-shadow: inset 0 1px var(--aw-glint), 0 1px 2px rgb(16 28 44 / 13%);
-  font-size: 12px; line-height: 1.3;
+  box-shadow: inset 0 1px 0 var(--aw-glint), 0 2px 3px rgb(16 14 10 / 18%);
+  font-size: 12px; font-weight: 600; line-height: 1.25;
 }
-.aw-tool-btn { padding-inline: 8px; }
-.aw-settings { padding: 4px; width: 29px; }
-.aw-settings::before {
-  content: ''; width: 16px; height: 16px; background: currentColor;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='1.8' stroke-linejoin='round' d='M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.1-3.1a6 6 0 0 1-7.9 7.9l-7.6 7.6a2.1 2.1 0 0 1-3-3l7.6-7.6a6 6 0 0 1 7.9-7.9z'/%3E%3C/svg%3E") center / contain no-repeat;
-}
+.aw-settings { padding: 4px; width: 28px; }
 .aw-find:not(:disabled):active, .aw-settings:active, .aw-find[aria-expanded='true'] {
-  background: var(--aw-plate-face);
-  box-shadow: inset 0 2px 3px rgb(20 35 53 / 18%), 0 1px var(--aw-glint);
+  background: var(--aw-inset);
+  color: var(--aw-signal);
+  border-color: var(--aw-signal);
+  box-shadow: inset 0 2px 4px rgb(12 16 24 / 26%);
 }
-.aw-find-icon { position: relative; width: 10px; height: 10px; border: 1.3px solid currentColor; border-radius: 50%; }
-.aw-find-icon::after { content: ''; position: absolute; width: 5px; height: 1.3px; background: currentColor; top: 8px; left: 7px; transform: rotate(48deg); }
+
 .aw-face {
-  --aw-stage-width: clamp(142px, 26cqi, 195px);
-  --aw-face-gap: clamp(17px, 4cqi, 32px);
+  --aw-stage-width: clamp(144px, 25.5cqi, 192px);
+  --aw-face-gap: clamp(16px, 3.6cqi, 28px);
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--aw-stage-width);
@@ -216,252 +300,386 @@ body[data-ds-dark-theme] .aw-panel {
     width: 1px; background: var(--aw-seam); box-shadow: 1px 0 var(--aw-glint); pointer-events: none;
   }
 }
-.aw-dashboard-readings { display: grid; align-content: center; gap: 11px; min-width: 0; }
-/* Magnetic whiteboard card pinned slightly askew onto the pegboard. */
+
+.aw-dashboard-readings { display: grid; align-content: space-between; gap: 11px; min-width: 0; }
+
+/* Bolted Jaeger cockpit telemetry manifold with oxidized brass & steel corner studs. */
 .aw-metrics {
   position: relative;
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(4px, 1.1cqi, 8px); min-width: 0; margin: 0;
-  padding: 9px 10px 8px;
+  gap: clamp(5px, 1.1cqi, 8px); min-width: 0; margin: 0;
+  padding: 9px 9px 8px;
   border: 1px solid var(--aw-board-edge);
-  border-radius: 5px;
+  border-bottom: 2px solid var(--aw-board-bottom);
+  border-radius: 6px;
   background: var(--aw-board-bg);
-  box-shadow: 0 4px 10px -4px rgb(22 18 12 / 26%), inset 0 1px rgb(255 255 255 / 45%);
-  transform: rotate(-.7deg);
-  transition: transform 180ms ease-out;
+  box-shadow:
+    inset 0 1px 0 var(--aw-glint),
+    0 5px 12px -5px rgb(20 16 10 / 28%);
 }
 .aw-metrics::before, .aw-metrics::after {
-  content: ''; position: absolute; top: -4px; width: 8px; height: 8px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #f7b85c, #b85518 70%, #692c0a);
-  box-shadow: 0 1px 2px rgb(16 12 8 / 42%);
+  content: ''; position: absolute; top: 4px; width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f5cfa0, #9c5620 68%, #4d260b);
+  box-shadow: 0 1px 1.5px rgb(0 0 0 / 45%);
   pointer-events: none;
 }
-.aw-metrics::before { left: 14px; }
-.aw-metrics::after { right: 14px; background: radial-gradient(circle at 35% 30%, #8bc0f7, #1b528c 70%, #0d2b4a); }
+.aw-metrics::before { left: 5px; }
+.aw-metrics::after { right: 5px; background: radial-gradient(circle at 35% 30%, #d4dce6, #5f6d7d 68%, #27303a); }
+
+/* Recessed armored gauge well — crisp metal bezel + vernier calibration ticks */
 .aw-metric {
   position: relative; min-width: 0;
-  padding: 5px clamp(5px, 1.3cqi, 10px) 6px;
-  border: 1px dashed var(--aw-metric-edge); border-radius: 4px;
+  padding: 6px clamp(7px, 1.3cqi, 10px) 6px;
+  border: 1px solid var(--aw-metric-edge);
+  border-radius: 4px;
   background: var(--aw-metric-well);
+  box-shadow:
+    inset 0 1.5px 3px rgb(14 12 8 / 14%),
+    0 1px 0 var(--aw-glint);
+}
+body[data-ds-dark-theme] .aw-metric {
+  box-shadow:
+    inset 0 2px 4px rgb(0 0 0 / 52%),
+    0 1px 0 rgb(255 240 214 / 6%);
 }
 .aw-metric::before {
-  content: ''; position: absolute; top: 0; right: 5px; width: 17px; height: 2px;
-  background: repeating-linear-gradient(90deg, var(--aw-muted) 0 1px, transparent 1px 4px); opacity: .38;
+  content: ''; position: absolute; top: 4px; right: 6px; width: 15px; height: 3px;
+  background: repeating-linear-gradient(90deg, var(--aw-muted) 0 1px, transparent 1px 4px);
+  opacity: .42;
 }
-.aw-measure-label { color: var(--aw-muted); font-size: 11px; line-height: 1.3; white-space: nowrap; }
+.aw-measure-label {
+  color: var(--aw-muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
 .aw-readout {
   margin: 3px 0 0; color: var(--aw-muted);
-  font: 600 clamp(24px, 4.4cqi, 34px)/1.05 var(--aw-mono);
+  font: 700 clamp(23px, 4.3cqi, 33px)/1.05 var(--aw-mono);
   font-variant-numeric: tabular-nums; letter-spacing: -.045em; overflow-wrap: anywhere;
 }
 .aw-metric:first-child .aw-readout { color: var(--aw-ink); }
 .aw-metric:nth-child(2) .aw-readout { color: var(--aw-signal); }
-.aw-metric[data-active='true'] .aw-readout { color: var(--aw-active); }
+.aw-metric[data-active='true'] .aw-readout { color: var(--aw-active); text-shadow: 0 0 10px rgb(255 120 71 / 22%); }
 .aw-metric[data-active='true'] .aw-measure-label::after {
-  content: ''; display: inline-block; width: 4px; height: 4px;
-  margin-inline-start: 4px; border-radius: 50%; vertical-align: middle;
-  background: var(--aw-active); box-shadow: 0 0 4px var(--aw-active);
+  content: ''; display: inline-block; width: 5px; height: 5px;
+  margin-inline-start: 5px; border-radius: 50%; vertical-align: middle;
+  background: var(--aw-active); box-shadow: 0 0 6px var(--aw-active);
 }
-.aw-readout.aw-long-value { font-size: clamp(14px, 2.8cqi, 22px); line-height: 1.35; }
+.aw-readout.aw-long-value { font-size: clamp(14px, 2.7cqi, 21px); line-height: 1.3; }
 
-/* Pinned blueprint card with 12-week GitHub-style activity / typing heatmap. */
+/* Shatterdome tactical radar / blueprint plate bolted with 4 tarnished brass rivets. */
 .aw-trend {
   position: relative;
-  min-width: 0; margin: 0; padding: 8px 10px 8px;
-  border: 1.5px solid #2b4561; border-radius: 5px;
+  min-width: 0; margin: 0; padding: 9px 11px 8px;
+  border: 1.5px solid #355273;
+  border-bottom: 2px solid #091019;
+  border-radius: 6px;
   background-color: #101b29;
   background-image:
-    linear-gradient(90deg, rgba(120, 175, 230, 0.08) 1px, transparent 1px),
-    linear-gradient(rgba(120, 175, 230, 0.08) 1px, transparent 1px),
-    linear-gradient(155deg, #132030, #0d1724);
-  background-size: 12px 12px, 12px 12px, auto;
-  box-shadow: 0 5px 12px -4px rgb(16 14 10 / 38%), inset 0 1px rgb(156 202 246 / 14%);
-  transform: rotate(.55deg);
-  transition: transform 180ms ease-out;
+    radial-gradient(ellipse 90px 44px at 100% 100%, rgb(216 128 38 / 10%), transparent 72%),
+    linear-gradient(90deg, rgba(120, 175, 230, 0.075) 1px, transparent 1px),
+    linear-gradient(rgba(120, 175, 230, 0.075) 1px, transparent 1px),
+    linear-gradient(158deg, #132030, #0b1420);
+  background-size: auto, 14px 14px, 14px 14px, auto;
+  box-shadow:
+    0 6px 14px -5px rgb(12 10 8 / 45%),
+    inset 0 0 0 2px rgb(130 185 238 / 6%),
+    inset 0 1px 0 rgb(164 208 250 / 20%);
 }
 .aw-trend::before, .aw-trend::after {
-  content: ''; position: absolute; top: 4px; width: 6px; height: 6px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #f5d896, #a87b32);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 55%);
+  content: ''; position: absolute; top: 5px; width: 5.5px; height: 5.5px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f5d896, #9e7029 72%, #4a3310);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 60%);
   pointer-events: none;
 }
-.aw-trend::before { left: 6px; }
-.aw-trend::after { right: 6px; }
+.aw-trend::before { left: 5px; }
+.aw-trend::after { right: 5px; }
 .aw-trend-head {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  padding-inline: 8px;
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  padding-inline: 7px 5px;
 }
-.aw-trend-title { color: #c4d7ec; font-size: 11px; font-weight: 600; line-height: 1.3; letter-spacing: .03em; }
-.aw-trend-modes { display: inline-flex; gap: 2px; padding: 1px; border-radius: 4px; background: rgb(0 0 0 / 30%); }
+.aw-trend-title {
+  color: #d6e6f6;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: .03em;
+}
+.aw-trend-modes {
+  display: inline-flex; gap: 1.5px; padding: 2px;
+  border-radius: 4px;
+  background: rgb(4 8 14 / 52%);
+  border: 1px solid rgb(136 190 242 / 16%);
+}
 .aw-trend-mode {
-  padding: 1px 6px; border: 0; border-radius: 3px; background: transparent;
-  color: #93aecb; font-size: 10px; line-height: 1.45;
+  padding: 1.5px 6px; border: 0; border-radius: 3px; background: transparent;
+  color: #8faac7; font-size: 10px; font-weight: 550; line-height: 1.4;
 }
-.aw-trend-mode[aria-pressed='true'] { background: #26486b; color: #f5f9ff; font-weight: 600; }
+.aw-trend-mode[aria-pressed='true'] {
+  background: linear-gradient(180deg, #2d557e, #1e3c5c);
+  color: #f7fbff;
+  font-weight: 650;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%), 0 1px 2px rgb(0 0 0 / 40%);
+}
+.aw-heat-body {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  margin-top: 7px;
+  padding-inline: 2px;
+}
+.aw-heat-axis {
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+  gap: 3px;
+  color: #718eab;
+  font: 500 8.5px/1 var(--aw-mono);
+  text-align: right;
+  user-select: none;
+}
+.aw-heat-axis span { display: grid; place-items: center end; height: 9px; }
 .aw-heatmap {
   display: grid;
-  grid-template-rows: repeat(7, 8px);
+  grid-template-rows: repeat(7, auto);
   grid-auto-flow: column;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-columns: repeat(20, minmax(0, 1fr));
   gap: 3px;
-  margin: 6px 2px 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 .aw-heat-cell {
-  width: 100%; height: 8px; border-radius: 2px;
-  background: rgb(255 255 255 / 7%);
-  box-shadow: inset 0 0 0 1px rgb(160 205 245 / 8%);
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 2px;
+  background: rgb(186 218 250 / 7%);
+  box-shadow: inset 0 0 0 1px rgb(156 204 248 / 9%);
+  transition: transform 120ms ease-out, filter 120ms ease-out;
 }
-.aw-heat-cell[data-level='1'] { background: #2c6294; }
-.aw-heat-cell[data-level='2'] { background: #4a95d4; }
-.aw-heat-cell[data-level='3'] { background: #e09626; }
-.aw-heat-cell[data-level='4'] { background: #ffbe4d; box-shadow: 0 0 6px rgb(255 190 77 / 45%); }
+.aw-heat-cell[data-level='1'], .aw-heat-swatch[data-level='1'] { background: #245785; box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%); }
+.aw-heat-cell[data-level='2'], .aw-heat-swatch[data-level='2'] { background: #3f8bcc; box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%); }
+.aw-heat-cell[data-level='3'], .aw-heat-swatch[data-level='3'] { background: #e09626; box-shadow: inset 0 1px 0 rgb(255 245 220 / 28%); }
+.aw-heat-cell[data-level='4'], .aw-heat-swatch[data-level='4'] { background: #ffbe4d; box-shadow: inset 0 1px 0 rgb(255 252 240 / 48%), 0 0 7px rgb(255 190 77 / 50%); }
+.aw-heat-cell:hover { transform: scale(1.22); filter: brightness(1.2); z-index: 1; }
+.aw-heat-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-top: 6px; padding-inline: 2px;
+  color: #829fbd; font: 500 9.5px/1.2 var(--aw-mono);
+}
+.aw-heat-legend { display: inline-flex; align-items: center; gap: 3px; }
+.aw-heat-swatch {
+  display: inline-block; width: 8px; height: 8px; border-radius: 2px;
+  background: rgb(186 218 250 / 8%);
+  box-shadow: inset 0 0 0 1px rgb(156 204 248 / 12%);
+}
+.aw-heat-tip {
+  position: absolute;
+  z-index: 6;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  border: 1px solid #9c7840;
+  border-radius: 4px;
+  background: rgb(13 20 30 / 96%);
+  color: #f4eee2;
+  box-shadow: 0 6px 16px -4px rgb(0 0 0 / 60%);
+  font: 600 10.5px/1.35 var(--aw-mono);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.aw-heat-tip[hidden] { display: none !important; }
 
-/* Retro shipyard whale-girl taped onto the right side of the pegboard. */
+/* Weathered crew Polaroid taped beside the heavy telemetry manifold. */
 .aw-mascot-stage {
-  position: relative; isolation: isolate; align-self: center; min-width: 0; padding: 10px 6px 6px;
+  position: relative; isolation: isolate; align-self: center; min-width: 0;
+  padding: 10px 7px 8px;
   display: grid; place-items: center;
-  border: 1px solid var(--aw-board-edge); border-radius: 4px;
-  background: var(--aw-board-bg);
-  box-shadow: 0 6px 14px -5px rgb(20 16 10 / 34%);
-  transform: rotate(1.5deg);
-  transition: transform 180ms ease-out;
+  border: 1px solid var(--aw-board-edge);
+  border-bottom: 2px solid var(--aw-board-bottom);
+  border-radius: 5px;
+  background:
+    radial-gradient(ellipse 70% 45% at 100% 100%, var(--aw-rust), transparent 75%),
+    var(--aw-board-bg);
+  box-shadow:
+    inset 0 1px 0 var(--aw-glint),
+    0 8px 18px -6px rgb(18 14 8 / 38%);
+  transform: rotate(1.35deg);
+  transition: transform 200ms cubic-bezier(.22,.76,.25,1), box-shadow 200ms ease-out;
 }
 .aw-mascot-stage::before {
   content: ''; position: absolute; z-index: 2; top: -8px; left: 50%;
-  width: 58px; height: 16px; margin-left: -29px;
-  background: rgb(232 214 166 / 78%);
-  border-inline: 1px dashed rgb(158 138 92 / 42%);
-  box-shadow: 0 1px 2px rgb(20 16 10 / 18%);
-  transform: rotate(-3.5deg);
+  width: 56px; height: 15px; margin-left: -28px;
+  background: linear-gradient(180deg, rgb(232 212 162 / 84%), rgb(212 190 138 / 76%));
+  border-inline: 1.5px dashed rgb(146 124 78 / 48%);
+  box-shadow: 0 1.5px 3px rgb(20 16 10 / 24%);
+  transform: rotate(-3.2deg);
   pointer-events: none;
+}
+body[data-ds-dark-theme] .aw-mascot-stage::before {
+  background: linear-gradient(180deg, rgb(204 176 118 / 64%), rgb(164 136 82 / 56%));
+  border-inline-color: rgb(240 206 140 / 34%);
 }
 .aw-mascot-art {
   display: block; width: 100%; height: clamp(142px, 23cqi, 174px); object-fit: contain;
-  filter: drop-shadow(0 5px 8px var(--aw-sticker-shadow));
+  filter: drop-shadow(0 5px 9px var(--aw-sticker-shadow));
 }
 .aw-hero-bubble {
-  position: absolute; inset-inline: 2px; bottom: 4px; padding: 6px 8px; border: 1px solid var(--aw-key-edge);
-  border-radius: 6px; color: var(--aw-ink); background: var(--aw-inset); font-size: 12px; line-height: 1.5;
+  position: absolute; z-index: 3; inset-inline: 4px; bottom: 5px; padding: 6px 8px;
+  border: 1px solid var(--aw-key-edge);
+  border-radius: 5px; color: var(--aw-ink); background: var(--aw-board-solid);
+  box-shadow: 0 4px 12px -3px rgb(16 14 10 / 32%);
+  font-size: 11.5px; line-height: 1.45;
 }
+
 .aw-overview-foot {
-  position: relative; min-height: 36px; margin-top: 12px; padding: 0 10px;
-  border: 1px solid var(--aw-board-edge); border-radius: 4px;
+  position: relative; min-height: 36px; margin-bottom: 11px; padding: 2px 10px; gap: 8px;
+  border: 1px solid var(--aw-board-edge);
+  border-bottom: 2px solid var(--aw-board-bottom);
+  border-radius: 5px;
   background: var(--aw-board-bg);
-  box-shadow: 0 3px 8px -3px rgb(20 16 10 / 24%);
-  transform: rotate(-.25deg);
+  box-shadow: inset 0 1px 0 var(--aw-glint), 0 3px 8px -3px rgb(20 16 10 / 22%);
   font-size: 12px;
 }
-.aw-last-label { flex: none; padding: 1px 5px; color: var(--aw-muted); font-size: 11px; }
 .aw-resume {
   display: inline-flex; flex: 1; align-items: center; justify-content: space-between;
-  gap: 8px; min-width: 0; padding: 6px 3px; border: 0; border-radius: 3px;
-  color: var(--aw-ink); text-align: start; background: transparent;
+  gap: 8px; min-width: 0; padding: 5px 4px; border: 0; border-radius: 4px;
+  color: var(--aw-ink); font-weight: 560; text-align: start; background: transparent;
 }
 .aw-last-title, .aw-last-empty, .aw-result-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .aw-last-empty { color: var(--aw-muted); }
-.aw-arrow { color: var(--aw-signal); font: 16px/1 var(--aw-mono); }
+.aw-arrow { color: var(--aw-signal); font: 650 15px/1 var(--aw-mono); }
 .aw-stencil {
-  flex: none; margin-inline-start: auto; color: var(--aw-etch); opacity: .45;
-  font: 600 9px/1.1 var(--aw-mono); letter-spacing: .14em; user-select: none; pointer-events: none;
+  flex: none; margin-inline-start: auto; color: var(--aw-etch); opacity: .56;
+  font: 700 9px/1.1 var(--aw-mono); letter-spacing: .14em; user-select: none; pointer-events: none;
 }
-.aw-session-search { padding: 0 0 12px; }
-.aw-query-controls { gap: 8px; padding: 1px 0 7px; }
+
+.aw-session-search { padding: 2px 0 10px; }
+.aw-query-controls { gap: 8px; padding: 1px 0 8px; }
 .aw-query, .aw-scope {
-  min-height: 32px; min-width: 0; padding: 4px 8px; border: 1px solid var(--aw-key-edge);
+  min-height: 32px; min-width: 0; padding: 4px 10px;
+  border: 1px solid var(--aw-key-edge);
   border-radius: 5px; background: var(--aw-inset); color: var(--aw-ink); font-size: 13px;
-  box-shadow: inset 0 1px 2px rgb(16 26 38 / 8%);
+  box-shadow: inset 0 1.5px 3px rgb(16 14 10 / 12%), 0 1px 0 var(--aw-glint);
 }
 .aw-query { flex: 1; }
-.aw-query::placeholder { color: var(--aw-muted); opacity: 1; }
-.aw-query-controls :is(.aw-query,.aw-scope):focus-visible { outline-offset: 0; }
+.aw-query::placeholder { color: var(--aw-muted); opacity: .85; }
+.aw-query-controls :is(.aw-query,.aw-scope):focus-visible { outline-offset: 0; border-color: var(--aw-signal); }
 .aw-scope { flex: none; }
-.aw-found { display: grid; max-height: min(135px, 22vh); overflow-y: auto; overscroll-behavior-y: contain; }
+.aw-found {
+  display: grid; gap: 2px; max-height: min(148px, 24vh);
+  overflow-y: auto; overscroll-behavior-y: contain;
+}
 .aw-result {
-  width: 100%; min-height: 31px; justify-content: space-between; padding: 4px 8px;
-  border: 0; border-radius: 4px; background: transparent; color: var(--aw-ink); text-align: start; font-size: 13px;
+  width: 100%; min-height: 32px; justify-content: space-between; padding: 5px 9px;
+  border: 1px solid transparent; border-radius: 4px;
+  background: transparent; color: var(--aw-ink); text-align: start; font-size: 13px;
 }
 .aw-station .aw-result:focus-visible { outline-offset: -2px; }
-.aw-result-flag { flex: none; padding: 1px 6px; border: 1px solid; border-radius: 999px; font-size: 11px; line-height: 1.4; }
+.aw-result-flag {
+  flex: none; padding: 1px 7px; border: 1px solid; border-radius: 999px;
+  font-size: 11px; font-weight: 560; line-height: 1.4;
+}
 .aw-result-flag[data-flag='waiting'] { color: var(--aw-wait-ink); background: var(--aw-wait-bg); border-color: var(--aw-wait-edge); }
 .aw-result-flag[data-flag='running'] { color: var(--aw-run-ink); background: var(--aw-run-bg); border-color: var(--aw-key-edge); }
 .aw-result-flag[data-flag='pinned'] { color: var(--aw-pin-ink); background: var(--aw-pin-bg); border-color: var(--aw-key-edge); }
 .aw-no-match { margin: 6px 0 2px; color: var(--aw-muted); font-size: 12px; }
+
 .aw-pending {
-  padding: 4px 8px; min-height: 26px; border: 1px solid #bd8d48; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; min-height: 25px; border: 1px solid var(--aw-wait-edge, #bd8d48); border-radius: 999px;
   font-size: 11px; line-height: 1.3; font-weight: 600; white-space: nowrap;
-  color: var(--aw-wait-ink, #804100); background: var(--aw-wait-bg, #fae9c9);
+  color: var(--aw-wait-ink, #7d3906); background: var(--aw-wait-bg, #f3dbb0);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 35%);
 }
-body[data-ds-dark-theme] .aw-header-pending { color: #ffce7e; background: #3c2b15; border-color: #8c642e; }
+body[data-ds-dark-theme] .aw-header-pending { color: #ffd180; background: #3d2a12; border-color: #9c6c29; }
 .aw-pending:hover { border-color: currentColor; }
+.aw-home-pending[aria-expanded='true'] { border-color: currentColor; }
+
 @media (hover: hover) {
-  .aw-find:not(:disabled):hover, .aw-tool-btn:hover, .aw-settings:hover { border-color: var(--aw-signal); color: var(--aw-signal); }
-  .aw-result:hover { background: var(--aw-metric-well); box-shadow: inset 2px 0 var(--aw-signal); }
+  .aw-tool-btn:hover {
+    background: var(--aw-key-face);
+    border-color: var(--aw-key-edge);
+    color: var(--aw-key-ink);
+    opacity: 1;
+    box-shadow: inset 0 1px 0 var(--aw-glint), 0 1px 2px rgb(16 14 10 / 16%);
+  }
+  .aw-find:not(:disabled):hover, .aw-settings:hover {
+    border-color: var(--aw-signal);
+    color: var(--aw-signal);
+  }
+  .aw-result:hover {
+    background: var(--aw-board-solid);
+    border-color: var(--aw-board-edge);
+    box-shadow: inset 2.5px 0 var(--aw-signal);
+  }
   .aw-resume:hover { color: var(--aw-signal); }
-  .aw-metrics:hover, .aw-trend:hover, .aw-mascot-stage:hover, .aw-overview-foot:hover { transform: rotate(0deg); }
-  .aw-heat-cell:hover { filter: brightness(1.24); }
+  .aw-mascot-stage:hover {
+    transform: rotate(0deg) translateY(-1px);
+    box-shadow: inset 0 1px 0 var(--aw-glint), 0 12px 24px -8px rgb(20 16 10 / 42%);
+  }
+  .aw-heat-cell:hover { filter: brightness(1.22); }
 }
+
 @media (prefers-reduced-motion: no-preference) {
   .aw-metric[data-active='true'] .aw-measure-label::after { animation: aw-status-breathe 1.8s ease-in-out infinite; }
-  .aw-station :is(.aw-result,.aw-resume,.aw-find,.aw-settings,.aw-arrow) { transition: color .14s ease-out, background-color .14s ease-out, box-shadow .14s ease-out, transform .14s ease-out; }
-  .aw-bar { transition: height 250ms cubic-bezier(.22,.7,.19,1), opacity 160ms ease-out; }
-  .aw-mascot-art { transition: transform 200ms cubic-bezier(.22,.76,.25,1); }
+  .aw-station :is(.aw-result,.aw-resume,.aw-find,.aw-tool-btn,.aw-settings,.aw-arrow,.aw-pending) {
+    transition: color .14s ease-out, background-color .14s ease-out, border-color .14s ease-out, box-shadow .14s ease-out, transform .12s ease-out;
+  }
+  .aw-station :is(.aw-find:not(:disabled), .aw-tool-btn:not(:disabled), .aw-settings:not(:disabled), .aw-pending:not(:disabled)):active {
+    transform: translateY(1px) scale(.98);
+  }
+  .aw-mascot-art { transition: transform 220ms cubic-bezier(.22,.76,.25,1); }
   .aw-session-search:not([hidden]) { animation: aw-disclose .16s ease-out; }
   @media (hover: hover) {
-    .aw-mascot-stage:hover .aw-mascot-art { transform: translateY(-3px) rotate(-1deg); }
+    .aw-mascot-stage:hover .aw-mascot-art { transform: translateY(-2px) scale(1.015); }
     .aw-resume:hover .aw-arrow { transform: translate(2px, -2px); }
   }
 }
-@keyframes aw-disclose { from { opacity: .25; transform: translateY(-2px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes aw-status-breathe { 0%, 100% { opacity: .76; } 50% { opacity: 1; } }
+@keyframes aw-disclose { from { opacity: .25; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes aw-status-breathe { 0%, 100% { opacity: .72; } 50% { opacity: 1; } }
 
 @container (max-width: 519px) {
   .aw-face { grid-template-columns: minmax(0,1fr); gap: 0; }
   .aw-mascot-stage, .aw-stencil { display: none; }
   .aw-measure-label { font-size: 11px; }
-  .aw-readout { font-size: 25px; }
-  .aw-trend { padding-inline: 7px; }
-  .aw-overview-head { gap: 6px; padding-block: 11px; }
+  .aw-readout { font-size: 24px; }
+  .aw-trend { padding-inline: 8px; }
+  .aw-overview-head { gap: 6px; padding-block: 11px 8px; }
 }
-@container (max-width: 320px) {
+@container (max-width: 360px) {
   .aw-overview-head { column-gap: 5px; }
   .aw-head-tools { gap: 4px; }
+  .aw-tool-btn span:not(.aw-btn-kbd) { display: none; }
   .aw-heading { font-size: 14px; }
-  .aw-ws-chip { max-width: 64px; font-size: 10px; padding-inline: 4px; }
-  .aw-find { padding-inline: 6px; }
-  .aw-metric { padding: 5px 4px; }
+  .aw-ws-chip { max-width: 68px; font-size: 10px; padding-inline: 4px; }
+  .aw-find { padding-inline: 7px; }
+  .aw-metric { padding: 5px 5px; }
   .aw-measure-label { font-size: 10px; }
-  .aw-trend { display: grid; grid-template-columns: 4.9em minmax(0,1fr); align-items: center; gap: 5px; padding-block: 4px; }
-  .aw-bars { margin: 0; }
-  .aw-column { grid-template-rows: 18px auto; }
-  .aw-readout { margin-top: 2px; }
-  .aw-overview-foot { margin-top: 8px; }
+  .aw-overview-foot { gap: 5px; padding-inline: 6px; margin-bottom: 8px; }
   .aw-dashboard-readings { gap: 7px; }
   .aw-result { gap: 6px; }
 }
 @media (max-height: 480px) {
   .aw-overview-head { padding-block: 6px; }
-  .aw-column { grid-template-rows: 15px auto; }
-  .aw-overview-foot { min-height: 26px; margin-top: 6px; }
-  .aw-readout { font-size: 21px; margin-top: 2px; }
+  .aw-overview-foot { min-height: 28px; margin-bottom: 6px; }
+  .aw-readout { font-size: 20px; margin-top: 2px; }
   .aw-metric { padding-block: 4px; }
   .aw-mascot-art { height: 80px; }
-  .aw-dashboard-readings { gap: 5px; }
+  .aw-dashboard-readings { gap: 6px; }
   .aw-found { max-height: 58px; }
 }
 html[data-aw-focus='on'] .aw-panel { background: var(--aw-case); }
-html[data-aw-focus='on'] :is(.aw-metrics, .aw-trend, .aw-mascot-stage, .aw-overview-foot) { transform: none; }
-html[data-aw-focus='on'] :is(.aw-panel-hardware,.aw-stencil,.aw-metrics::before,.aw-metrics::after,.aw-trend::before,.aw-trend::after,.aw-mascot-stage::before),
-html[data-aw-focus='on'] .aw-metric::before { display: none; }
+html[data-aw-focus='on'] .aw-mascot-stage { transform: none; }
+html[data-aw-focus='on'] :is(.aw-panel-hardware,.aw-stencil,.aw-metrics::before,.aw-metrics::after,.aw-trend::before,.aw-trend::after,.aw-mascot-stage::before,.aw-metric::before) { display: none; }
 @media (forced-colors: active) {
   .aw-panel, .aw-trend, .aw-metric, .aw-result, .aw-resume, .aw-find, .aw-settings, .aw-monitor,
-  .aw-pending, .aw-column .aw-bar-track, .aw-ws-chip { border-color: CanvasText; }
-  .aw-panel-hardware, .aw-stencil, .aw-panel::before, .aw-metric::before { display: none; }
+  .aw-pending, .aw-ws-chip, .aw-tool-well { border-color: CanvasText; }
+  .aw-panel-hardware, .aw-stencil, .aw-panel::before, .aw-metric::before, .aw-metrics::before, .aw-metrics::after, .aw-trend::before, .aw-trend::after { display: none; }
   .aw-resume, .aw-result { border: 1px solid ButtonText; }
-  .aw-bar, .aw-monitor-lamp { forced-color-adjust: none; background: CanvasText; box-shadow: none; }
-  .aw-column:last-child .aw-bar { background: Highlight; }
-  .aw-settings::before { forced-color-adjust: none; background: ButtonText; }
+  .aw-monitor-lamp { forced-color-adjust: none; background: CanvasText; box-shadow: none; }
   .aw-mascot-stage { border: 1px solid ButtonText; }
   .aw-metric[data-active='true'] .aw-measure-label::after { background: CanvasText; forced-color-adjust: none; }
 }

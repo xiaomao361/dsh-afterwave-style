@@ -90,6 +90,37 @@ test('search filters the actual index, keeps IME Enter local, and resets stale w
   } finally { close() }
 })
 
+test('the overview places its session actions first and opens a filtered list for multiple pending sessions', () => {
+  const { dom, doc, home, opened, close } = fixture()
+  try {
+    home(activity)
+    const pending = doc.querySelector('.aw-home-pending')
+    const resume = doc.querySelector('.aw-resume')
+    const face = doc.querySelector('.aw-face')
+    for (const action of [pending, resume]) {
+      assert.ok(action.compareDocumentPosition(face) & dom.window.Node.DOCUMENT_POSITION_FOLLOWING)
+    }
+    assert.match(doc.querySelector('.aw-trend-title').textContent, /会话最近更新时间分布/)
+    pending.click()
+    assert.deepEqual(opened, ['c'])
+
+    home({ ...activity, sessions: sessions.map(row => row.id === 'a' ? { ...row, waiting: true } : row) })
+    doc.querySelector('.aw-find').click()
+    const input = doc.querySelector('.aw-query')
+    input.value = '旧查询'
+    pending.click()
+    assert.equal(input.value, '')
+    assert.equal(doc.querySelector('.aw-scope').value, 'waiting')
+    assert.equal(pending.getAttribute('aria-expanded'), 'true')
+    assert.deepEqual([...doc.querySelectorAll('.aw-result-name')].map(row => row.textContent), ['晚班交接', '上午交接'])
+    input.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    assert.equal(doc.activeElement, pending)
+    doc.querySelector('.aw-find').click()
+    assert.equal(doc.querySelector('.aw-scope').value, 'all')
+    assert.deepEqual(opened, ['c'])
+  } finally { close() }
+})
+
 test('theme takes the official whale frame cell and local brand seats; startup timers cleanly unload', () => {
   const { dom, doc, close } = fixture()
   try {

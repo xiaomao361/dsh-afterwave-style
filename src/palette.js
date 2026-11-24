@@ -31,11 +31,16 @@ export function mountPalette(win) {
   input.autocomplete = 'off'
   input.placeholder = '搜索会话或船坞指令…（↑↓ 选择，Enter 执行，Esc 关闭）'
   input.setAttribute('aria-label', '搜索会话或船坞指令')
+  input.setAttribute('role', 'combobox')
+  input.setAttribute('aria-autocomplete', 'list')
+  input.setAttribute('aria-expanded', 'false')
   head.append(badge, input)
 
   const list = node(doc, 'div', 'aw-pal-list')
+  list.id = 'aw-palette-results'
   list.setAttribute('role', 'listbox')
   list.setAttribute('aria-label', '指令与会话列表')
+  input.setAttribute('aria-controls', list.id)
 
   const empty = node(doc, 'p', 'aw-pal-empty', '没有匹配的会话或指令')
   empty.hidden = true
@@ -85,17 +90,23 @@ export function mountPalette(win) {
 
   function highlight(index) {
     const rows = [...list.children]
-    if (!rows.length) { activeIndex = 0; return }
+    if (!rows.length) {
+      activeIndex = 0
+      input.removeAttribute('aria-activedescendant')
+      return
+    }
     activeIndex = (index + rows.length) % rows.length
     for (const [i, row] of rows.entries()) {
       row.setAttribute('aria-selected', String(i === activeIndex))
-      if (i === activeIndex) row.scrollIntoView?.({ block: 'nearest' })
     }
+    const selected = rows[activeIndex]
+    input.setAttribute('aria-activedescendant', selected.id)
+    selected.scrollIntoView?.({ block: 'nearest' })
   }
 
   function execute(item) {
     if (!item) return
-    close(false)
+    close()
     playMechanicalClick(win, prefs)
     item.run?.()
   }
@@ -105,8 +116,8 @@ export function mountPalette(win) {
     list.replaceChildren()
     for (const [i, item] of renderedItems.entries()) {
       const row = node(doc, 'button', 'aw-pal-item')
+      row.id = `${list.id}-${i}`
       row.setAttribute('role', 'option')
-      row.setAttribute('aria-selected', String(i === 0))
       const grp = node(doc, 'span', 'aw-pal-group', item.group)
       const label = node(doc, 'span', 'aw-pal-label', item.title)
       row.append(grp, label)
@@ -115,11 +126,14 @@ export function mountPalette(win) {
         if (item.tagKind) tag.dataset.kind = item.tagKind
         row.append(tag)
       }
-      row.addEventListener('pointerenter', () => highlight(i))
+      row.addEventListener('focus', () => highlight(i))
+      row.addEventListener('pointerenter', () => {
+        if (!list.contains(doc.activeElement)) highlight(i)
+      })
       row.addEventListener('click', () => execute(item))
       list.append(row)
     }
-    activeIndex = 0
+    highlight(0)
     empty.hidden = renderedItems.length > 0
   }
 
@@ -131,12 +145,18 @@ export function mountPalette(win) {
       event.preventDefault()
       event.stopPropagation()
       close(true)
-    } else if (event.key === 'ArrowDown') {
+    } else if (event.key === 'Tab') {
+      const last = list.lastElementChild ?? input
+      const boundary = event.shiftKey ? input : last
+      if (event.target === boundary) {
+        event.preventDefault()
+        const next = event.shiftKey ? last : input
+        next.focus({ preventScroll: true })
+      }
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault()
-      highlight(activeIndex + 1)
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault()
-      highlight(activeIndex - 1)
+      highlight(activeIndex + (event.key === 'ArrowDown' ? 1 : -1))
+      if (list.contains(event.target)) list.children[activeIndex]?.focus({ preventScroll: true })
     } else if (event.key === 'Enter') {
       event.preventDefault()
       execute(renderedItems[activeIndex])
@@ -161,8 +181,9 @@ export function mountPalette(win) {
     if (!backdrop.hidden) return
     returnFocus = anchor || doc.activeElement
     input.value = ''
-    render()
     backdrop.hidden = false
+    input.setAttribute('aria-expanded', 'true')
+    render()
     playMechanicalClick(win, prefs)
     input.focus({ preventScroll: true })
   }
@@ -170,6 +191,8 @@ export function mountPalette(win) {
   function close(restore = true) {
     if (backdrop.hidden) return
     backdrop.hidden = true
+    input.setAttribute('aria-expanded', 'false')
+    input.removeAttribute('aria-activedescendant')
     if (restore && returnFocus?.isConnected && typeof returnFocus.focus === 'function') {
       returnFocus.focus({ preventScroll: true })
     }
@@ -183,6 +206,7 @@ export function mountPalette(win) {
     configure(next) { providers = { ...providers, ...next } },
     isOpen: () => !backdrop.hidden,
     destroy() {
+      close()
       doc.removeEventListener('keydown', onGlobalKey, true)
       backdrop.remove()
       instances.delete(win)

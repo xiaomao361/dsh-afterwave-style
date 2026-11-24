@@ -1,8 +1,79 @@
+import { getPrefs } from './prefs.js'
+
 const dockSlot = 'conversation.composer.dock'
 const contextRoot = '[style*="--dsh-context-"]:not([role="dialog"])'
 const contextButton = contextRoot + ' button[aria-haspopup="dialog"]'
 const fuelOwners = new WeakMap()
 const fuelHints = { warn: '上下文占用偏高，注意适时整理', critical: '上下文即将满载，建议压缩或开启新会话' }
+
+export function parseTokenCount(value) {
+  const match = String(value ?? '').match(/(\d+(?:,\d{3})*(?:\.\d+)?)\s*([kKmMbB])?\s*(?:tok(?:ens?)?|Token)/i)
+  if (!match) return null
+  const base = Number(match[1].replace(/,/g, ''))
+  if (!Number.isFinite(base) || base < 0) return null
+  const unit = (match[2] || '').toLowerCase()
+  const mult = unit === 'b' ? 1e9 : unit === 'm' ? 1e6 : unit === 'k' ? 1e3 : 1
+  return Math.round(base * mult)
+}
+
+export function formatTokens(count) {
+  const n = Number(count || 0)
+  if (!Number.isFinite(n) || n <= 0) return '0'
+  if (n >= 1e6) return (n / 1e6).toFixed(n >= 1e7 ? 1 : 2).replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1') + 'M'
+  if (n >= 1e3) return (n / 1e3).toFixed(n >= 1e5 ? 0 : 1).replace(/\.0$/, '') + 'K'
+  return String(Math.round(n))
+}
+
+function todayKey() {
+  const d = new Date()
+  const p = v => String(v).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}
+
+function recordTokenDelta(win, sessionKey, workspaceKey, observed) {
+  if (!Number.isFinite(observed) || observed <= 0) return
+  const prefs = getPrefs(win)
+  const raw = prefs.get('token.stats')
+  const stats = raw && typeof raw === 'object'
+    ? {
+        total: Number(raw.total || 0),
+        days: raw.days && typeof raw.days === 'object' ? { ...raw.days } : {},
+        workspaces: raw.workspaces && typeof raw.workspaces === 'object' ? { ...raw.workspaces } : {},
+        sessions: raw.sessions && typeof raw.sessions === 'object' ? { ...raw.sessions } : {},
+      }
+    : { total: 0, days: {}, workspaces: {}, sessions: {} }
+
+  const prev = stats.sessions[sessionKey]
+  const prevCount = prev && typeof prev === 'object' ? Number(prev.count || 0) : null
+  stats.sessions[sessionKey] = { count: observed, updatedAt: Date.now() }
+
+  // Only count positive deltas after establishing the session baseline so opening
+  // an old conversation does not attribute its historical total to today.
+  const delta = prevCount === null ? 0 : Math.max(0, observed - prevCount)
+  if (delta > 0) {
+    const day = todayKey()
+    stats.total += delta
+    stats.days[day] = Number(stats.days[day] || 0) + delta
+    const dKeys = Object.keys(stats.days).sort()
+    while (dKeys.length > 160) delete stats.days[dKeys.shift()]
+
+    const wsPrev = stats.workspaces[workspaceKey] && typeof stats.workspaces[workspaceKey] === 'object'
+      ? { total: Number(stats.workspaces[workspaceKey].total || 0), days: { ...(stats.workspaces[workspaceKey].days || {}) }, updatedAt: Date.now() }
+      : { total: 0, days: {}, updatedAt: Date.now() }
+    wsPrev.total += delta
+    wsPrev.days[day] = Number(wsPrev.days[day] || 0) + delta
+    const wDays = Object.keys(wsPrev.days).sort()
+    while (wDays.length > 160) delete wsPrev.days[wDays.shift()]
+    stats.workspaces[workspaceKey] = wsPrev
+  }
+
+  const sKeys = Object.keys(stats.sessions)
+  if (sKeys.length > 150) {
+    sKeys.sort((a, b) => (stats.sessions[a]?.updatedAt || 0) - (stats.sessions[b]?.updatedAt || 0))
+    while (sKeys.length > 150) delete stats.sessions[sKeys.shift()]
+  }
+  if (prevCount === null || delta > 0) prefs.set('token.stats', stats)
+}
 
 export function fuelLevel(value) {
   const found = String(value ?? '').match(/(-?\d+(?:\.\d+)?)\s*[%％]/)
@@ -23,6 +94,14 @@ function watchFuel(seat) {
   let previous
   function refresh() {
     if (fuelOwners.get(dock) !== lamp) return
+    const usageText = reading(dock.querySelector('[data-composer-stat="usage"]'))
+    const parsedTokens = parseTokenCount(usageText)
+    if (parsedTokens !== null) {
+      const content = dock.closest('[data-conversation-content]')
+      const sessionKey = content?.dataset?.conversationSession || 'current'
+      const wsKey = seat.ownerDocument.body?.dataset?.awWorkspaceId || 'default'
+      recordTokenDelta(seat.ownerDocument.defaultView, sessionKey, wsKey, parsedTokens)
+    }
     const meter = dock.querySelector(contextRoot)
     const trigger = meter?.querySelector('button[aria-haspopup="dialog"]') || meter
     const label = trigger?.getAttribute('aria-label') || ''

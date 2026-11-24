@@ -68,19 +68,98 @@ function isBlank(event) {
   return !selection || selection.isCollapsed || !event.currentTarget.contains(selection.anchorNode)
 }
 
-const powerTimers = new WeakMap()
-function powerOn(win) {
-  const { body } = win.document
-  win.clearTimeout(powerTimers.get(body))
+const powerCleanups = new WeakMap()
+function powerOn(win, brandImage) {
+  const doc = win.document
+  const { body } = doc
+  powerCleanups.get(body)?.()
   body.setAttribute('data-aw-power-on', '')
-  const clear = () => {
-    if (powerTimers.get(body) !== timer) return
-    powerTimers.delete(body)
-    win.clearTimeout(timer)
-    body.removeAttribute('data-aw-power-on')
+
+  let curtain = null
+  let observer = null
+  let leaveTimer
+  let hardTimer
+  let removeTimer
+  let scanTimer
+  const reduced = win.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+  function removeCurtain() {
+    observer?.disconnect()
+    observer = null
+    win.clearTimeout(leaveTimer)
+    win.clearTimeout(hardTimer)
+    win.clearTimeout(removeTimer)
+    curtain?.remove()
+    curtain = null
   }
-  const timer = win.setTimeout(clear, 900)
-  powerTimers.set(body, timer)
+
+  function dismissCurtain() {
+    if (!curtain || curtain.dataset.leaving) return
+    observer?.disconnect()
+    observer = null
+    win.clearTimeout(leaveTimer)
+    win.clearTimeout(hardTimer)
+    curtain.dataset.leaving = 'true'
+    removeTimer = win.setTimeout(removeCurtain, 320)
+  }
+
+  const clear = () => {
+    if (powerCleanups.get(body) !== clear) return
+    powerCleanups.delete(body)
+    win.clearTimeout(scanTimer)
+    body.removeAttribute('data-aw-power-on')
+    removeCurtain()
+  }
+
+  // Only show the drydock boot curtain when the host is still hydrating
+  // settings/layout (before the sidebar mounts) so normal reloads stay crisp.
+  const hostReady = () => Boolean(doc.querySelector('[data-slot="sidebar"]'))
+  if (!reduced && !hostReady() && doc.documentElement.dataset.awFocus !== 'on') {
+    const startedAt = Date.now()
+    curtain = doc.createElement('div')
+    curtain.className = 'aw-boot-curtain'
+    curtain.setAttribute('aria-hidden', 'true')
+    const plate = doc.createElement('div')
+    plate.className = 'aw-boot-plate'
+    if (brandImage) {
+      const img = doc.createElement('img')
+      img.className = 'aw-boot-emblem'
+      img.src = brandImage
+      img.alt = ''
+      img.draggable = false
+      plate.append(img)
+    }
+    const title = doc.createElement('div')
+    title.className = 'aw-boot-title'
+    title.textContent = '四号船坞'
+    const meter = doc.createElement('div')
+    meter.className = 'aw-boot-bar'
+    meter.append(doc.createElement('i'))
+    const sub = doc.createElement('div')
+    sub.className = 'aw-boot-sub'
+    sub.textContent = 'DRYDOCK-04 · 正在接入船坞控制台…'
+    plate.append(title, meter, sub)
+    curtain.append(plate)
+    body.append(curtain)
+
+    const checkReady = () => {
+      if (!hostReady()) return
+      observer?.disconnect()
+      observer = null
+      const wait = Math.max(0, 360 - (Date.now() - startedAt))
+      leaveTimer = win.setTimeout(dismissCurtain, wait)
+    }
+    if (win.MutationObserver) {
+      observer = new win.MutationObserver(checkReady)
+      observer.observe(body, { childList: true, subtree: true })
+    }
+    hardTimer = win.setTimeout(dismissCurtain, 2200)
+  }
+
+  scanTimer = win.setTimeout(() => {
+    body.removeAttribute('data-aw-power-on')
+  }, 900)
+  powerCleanups.set(body, clear)
   return clear
 }
 
@@ -104,7 +183,7 @@ export function createIdentityPreview(doc, brandImage, fastenerImage) {
     mark: draw.mark(24), name: draw.name(), field, fastener: fastener.element, play,
     start() {
       play()
-      const stopScan = powerOn(doc.defaultView)
+      const stopScan = powerOn(doc.defaultView, brandImage)
       return () => { stopScan(); fastener.destroy() }
     },
   }
@@ -155,5 +234,5 @@ export function applyIdentity(ctx, React, win, brandImage, fastenerImage) {
     ctx.slots.inject(name, () => ctx.slots.register(options, Component))
   }
 
-  ctx.effect(() => powerOn(win))
+  ctx.effect(() => powerOn(win, brandImage))
 }

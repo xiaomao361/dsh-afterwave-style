@@ -1,22 +1,21 @@
 /* Native readings, their triggers and the host's reserved dock seat stay in
-   place. Apply the capsule only when the host actually supplies a reading. */
+   place. Apply the cast-iron & brass gauge pod only when readings exist. */
 body[data-dsh-afterwave-style] [data-composer-dock] {
-  --aw-meter-glass: linear-gradient(180deg, #2a2e35, #1d2026);
-  --aw-meter-well: rgb(10 12 16 / 62%);
-  --aw-meter-well-edge: rgb(255 238 206 / 10%);
+  --aw-meter-glass: linear-gradient(180deg, #2b2f37, #1c1f25);
+  --aw-meter-well: rgb(9 11 15 / 66%);
+  --aw-meter-well-edge: rgb(255 236 200 / 12%);
   --aw-meter-ink: #efe9de;
   --aw-meter-accent: #eab049;
   --aw-fuel-warn: #f0a42b;
   --aw-fuel-critical: #ff5c72;
-  transition: border-color .2s ease, box-shadow .2s ease;
-  --aw-meter-edge: #535862;
-  --aw-meter-divider: transparent;
-  --aw-meter-shadow: inset 0 1px rgb(255 242 216 / 14%), 0 3px 10px -2px rgb(16 14 10 / 34%);
+  --aw-meter-edge: #6b5a42;
+  --aw-meter-shadow: inset 0 1px 0 rgb(255 238 206 / 16%), 0 4px 12px -2px rgb(16 14 10 / 38%);
+  transition: border-color .2s ease-out, box-shadow .2s ease-out;
 }
 body[data-dsh-afterwave-style][data-ds-dark-theme] [data-composer-dock] {
-  --aw-meter-glass: linear-gradient(180deg, #21252b, #15181d);
-  --aw-meter-edge: #3e434d;
-  --aw-meter-shadow: inset 0 1px rgb(255 242 216 / 9%), 0 4px 14px rgb(0 0 0 / 48%);
+  --aw-meter-glass: linear-gradient(180deg, #22262d, #15181d);
+  --aw-meter-edge: #4e4538;
+  --aw-meter-shadow: inset 0 1px 0 rgb(255 238 206 / 11%), 0 5px 15px rgb(0 0 0 / 54%);
 }
 body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [style*="--dsh-context-"] button) {
   display: flex;
@@ -27,11 +26,11 @@ body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [s
   min-width: 0;
   max-width: 100%;
   gap: 5px;
-  margin: 6px auto 2px;
-  padding: 3px 13px;
+  margin: 7px auto 2px;
+  padding: 3.5px 14px;
   background: var(--aw-meter-glass);
   border: 1px solid var(--aw-meter-edge);
-  border-bottom: 2px solid #101216;
+  border-bottom: 2px solid #0e1014;
   border-radius: 6px;
   box-shadow: var(--aw-meter-shadow);
 }
@@ -40,12 +39,12 @@ body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [s
   content: '';
   position: absolute;
   top: 50%;
-  width: 4px;
-  height: 4px;
-  margin-top: -2px;
+  width: 4.5px;
+  height: 4.5px;
+  margin-top: -2.25px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #f5d896, #966e30);
-  box-shadow: 0 1px 1px rgb(0 0 0 / 60%);
+  background: radial-gradient(circle at 35% 30%, #f5d896, #966e30 72%, #4a3310);
+  box-shadow: 0 1px 1.5px rgb(0 0 0 / 65%);
   pointer-events: none;
 }
 body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [style*="--dsh-context-"] button)::before { left: 5px; }
@@ -62,11 +61,11 @@ body[data-dsh-afterwave-style] [data-composer-dock] [style*="--dsh-context-"] bu
   max-width: 100%;
   padding-inline: 7px;
   border: 1px solid var(--aw-meter-well-edge);
-  border-radius: 3px;
+  border-radius: 3.5px;
   background: var(--aw-meter-well);
-  box-shadow: inset 0 1px 3px rgb(0 0 0 / 55%);
+  box-shadow: inset 0 1.5px 3px rgb(0 0 0 / 58%);
   color: var(--aw-meter-ink);
-  font: 500 11.5px/18px ui-monospace, 'SFMono-Regular', 'PingFang SC', monospace;
+  font: 550 11.5px/18px ui-monospace, 'SFMono-Regular', 'PingFang SC', monospace;
   font-variant-numeric: tabular-nums;
 }
 body[data-dsh-afterwave-style] [data-composer-dock] :is([data-composer-stat], [style*="--dsh-context-"]) svg {
@@ -78,8 +77,8 @@ body[data-dsh-afterwave-style] [data-composer-dock] [style*="--dsh-context-"]:ha
   box-shadow: none;
 }
 body[data-dsh-afterwave-style] [data-composer-dock] button:is(:hover, [aria-expanded="true"]) {
-  background: rgb(234 176 73 / 16%);
-  border-color: rgb(234 176 73 / 45%);
+  background: rgb(234 176 73 / 18%);
+  border-color: rgb(234 176 73 / 48%);
   color: #fff7e6;
 }
 body[data-dsh-afterwave-style] [data-composer-dock] button:focus-visible {
@@ -100,11 +99,11 @@ body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [s
   width: 24px;
   height: 22px;
   padding: 0;
-  border: 1px solid rgb(234 176 73 / 34%);
-  border-radius: 3px;
-  background: linear-gradient(180deg, #36322b, #26231e);
+  border: 1px solid rgb(234 176 73 / 36%);
+  border-radius: 3.5px;
+  background: linear-gradient(180deg, #38332b, #25221c);
   color: var(--aw-meter-accent);
-  box-shadow: inset 0 1px rgb(255 236 196 / 14%);
+  box-shadow: inset 0 1px 0 rgb(255 236 196 / 16%);
   cursor: pointer;
 }
 .aw-copy-readings::before, .aw-copy-readings::after {
@@ -113,7 +112,7 @@ body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [s
   box-sizing: border-box;
   width: 8px;
   height: 9px;
-  border: 1px solid currentColor;
+  border: 1.1px solid currentColor;
   border-radius: 1.5px;
 }
 .aw-copy-readings::before { top: 4px; left: 6px; }
@@ -126,23 +125,23 @@ body[data-dsh-afterwave-style] [data-composer-dock]:has([data-composer-stat], [s
   pointer-events: none;
   white-space: nowrap;
   color: var(--dsw-alias-label-primary);
-  font: 12px/1.5 system-ui, sans-serif;
+  font: 12px/1.5 -apple-system, 'PingFang SC', system-ui, sans-serif;
 }
 .aw-reading-feedback:not(:empty) {
   padding: 3px 9px;
   border: 1px solid var(--dsw-alias-brand-text);
   border-radius: 999px;
   background: var(--dsw-alias-bg-overlay);
-  box-shadow: 0 4px 12px rgb(5 14 27 / 16%);
+  box-shadow: 0 4px 12px rgb(5 14 27 / 22%);
 }
 body[data-dsh-afterwave-style] [role="dialog"]:is([style*="--dsh-stat-"], [style*="--dsh-context-"]) {
-  border: 1px solid var(--dsw-alias-border-l2);
-  border-radius: 10px;
+  border: 1.5px solid #8a6c3e;
+  border-radius: 9px;
   background: var(--dsw-alias-bg-overlay);
-  background: color-mix(in srgb, var(--dsw-alias-bg-overlay) 93%, transparent);
+  background: color-mix(in srgb, var(--dsw-alias-bg-overlay) 94%, transparent);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
-  box-shadow: inset 0 2px var(--dsw-alias-brand-text), 0 12px 36px -8px rgb(4 12 27 / 36%);
+  box-shadow: inset 0 2px var(--dsw-alias-brand-text), 0 14px 36px -8px rgb(4 12 27 / 38%);
   font-variant-numeric: tabular-nums;
 }
 @media (max-width: 600px) {
@@ -180,7 +179,7 @@ body[data-dsh-afterwave-style] [data-composer-dock][data-fuel] {
   height: 7px;
   background: currentColor;
   border-radius: 50%;
-  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 16%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 18%, transparent);
 }
 [data-fuel="critical"] .aw-fuel-lamp::before { border-radius: 1px; transform: rotate(45deg); }
 .aw-fuel-lamp[hidden] { display: none; }
@@ -193,7 +192,7 @@ body[data-dsh-afterwave-style] [data-composer-dock][data-fuel] {
   padding: 4px 9px;
   width: max-content;
   max-width: min(240px, 65vw);
-  font: 12px/1.5 system-ui, sans-serif;
+  font: 12px/1.5 -apple-system, 'PingFang SC', system-ui, sans-serif;
   color: var(--dsw-alias-label-primary);
   background: var(--dsw-alias-bg-overlay);
   border: 1px solid var(--aw-fuel);

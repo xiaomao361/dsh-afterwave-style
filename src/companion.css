@@ -1,91 +1,134 @@
 .aw-companion, .aw-companion-dock {
   --aw-signal: #1b528c;
-  --aw-chip-ink: #26231e;
-  --aw-chip-edge: #a39b8d;
-  --aw-chip-bg: #e7e1d6;
+  --aw-chip-ink: #22201c;
+  --aw-chip-edge: #b4ab9c;
+  --aw-chip-bg: linear-gradient(180deg, #f7f3eb, #eae3d6);
+  --aw-pop-bg: #f6f2ea;
 }
 .aw-companion[data-status='idle'], .aw-companion[data-status='unknown'] { --aw-signal: #6d665b; }
 .aw-companion[data-status='waiting'], .aw-companion-dock[data-status='waiting'] { --aw-signal: #b86c08; }
 .aw-companion[data-status='error'], .aw-companion-dock[data-status='error'] { --aw-signal: #b83227; }
 body[data-ds-dark-theme] :is(.aw-companion,.aw-companion-dock) {
   --aw-signal: #f0a42b;
-  --aw-chip-ink: #ebe6dc; --aw-chip-edge: #464b54; --aw-chip-bg: #20242a;
+  --aw-chip-ink: #ece7de;
+  --aw-chip-edge: #3d434e;
+  --aw-chip-bg: linear-gradient(180deg, #282d36, #1d2128);
+  --aw-pop-bg: #1e2229;
 }
 body[data-ds-dark-theme] :is(.aw-companion,.aw-companion-dock)[data-status='idle'],
 body[data-ds-dark-theme] :is(.aw-companion,.aw-companion-dock)[data-status='unknown'] { --aw-signal: #9c968b; }
 body[data-ds-dark-theme] :is(.aw-companion,.aw-companion-dock)[data-status='waiting'] { --aw-signal: #f5a623; }
 body[data-ds-dark-theme] :is(.aw-companion,.aw-companion-dock)[data-status='error'] { --aw-signal: #ff5c72; }
+
 .aw-companion {
-  position: relative; display: inline-flex; gap: 5px; align-items: center;
+  position: relative; display: inline-flex; gap: 6px; align-items: center;
   -webkit-app-region: no-drag; app-region: no-drag;
 }
 .aw-monitor {
-  display: inline-flex; align-items: center; gap: 5px; min-height: 26px;
-  padding: 0 7px 0 2px; border: 1px solid var(--aw-chip-edge); border-radius: 999px;
-  color: var(--aw-chip-ink); background: var(--aw-chip-bg); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 5.5px; min-height: 27px;
+  padding: 0 9px 0 3px; border: 1px solid var(--aw-chip-edge); border-radius: 999px;
+  color: var(--aw-chip-ink); background: var(--aw-chip-bg);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%), 0 1px 2px rgb(16 20 28 / 10%);
+  white-space: nowrap;
 }
-.aw-monitor-image { width: 24px; height: 24px; object-fit: contain; }
+body[data-ds-dark-theme] .aw-monitor {
+  box-shadow: inset 0 1px 0 rgb(255 240 214 / 10%), 0 1px 3px rgb(0 0 0 / 32%);
+}
+.aw-monitor-image { width: 22px; height: 22px; object-fit: contain; }
 .aw-monitor-label, .aw-companion-details, .aw-companion-action { font-family: inherit; font-size: 12px; line-height: 1.4; }
-.aw-monitor-lamp { width: 5px; height: 5px; flex: none; border-radius: 50%; background: var(--aw-signal); box-shadow: 0 0 5px var(--aw-signal); }
+.aw-monitor-label { font-weight: 550; }
+.aw-monitor-lamp { width: 5.5px; height: 5.5px; flex: none; border-radius: 50%; background: var(--aw-signal); box-shadow: 0 0 6px var(--aw-signal); }
 .aw-companion[data-status='unknown'] .aw-monitor-lamp { border: 1px solid currentColor; background: transparent; box-shadow: none; }
+
 .aw-companion-details {
   position: absolute; z-index: 12; top: calc(100% + 6px); right: 0;
-  display: grid; gap: 5px; width: max-content; max-width: min(210px, 80vw); padding: 9px;
-  border: 1px solid var(--aw-chip-edge); border-radius: 7px; color: var(--aw-chip-ink);
-  background: var(--aw-chip-bg); box-shadow: 0 4px 16px #08121e2e;
+  display: grid; gap: 6px; width: max-content; max-width: min(220px, 80vw); padding: 10px 11px;
+  border: 1px solid var(--aw-chip-edge); border-radius: 10px; color: var(--aw-chip-ink);
+  background: var(--aw-pop-bg);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 48%), 0 12px 28px -8px rgb(12 16 24 / 24%);
 }
-.aw-companion-action { border: 1px solid var(--aw-chip-edge); background: transparent; color: inherit; border-radius: 4px; padding: 4px 8px; }
-.aw-companion-action:hover { background: rgb(77 163 255 / 12%); }
+body[data-ds-dark-theme] .aw-companion-details {
+  box-shadow: inset 0 1px 0 rgb(255 240 214 / 9%), 0 14px 32px -8px rgb(0 0 0 / 58%);
+}
+.aw-companion-action {
+  border: 1px solid var(--aw-chip-edge); background: transparent; color: inherit;
+  border-radius: 5px; padding: 4px 9px; font-weight: 500;
+}
+.aw-companion-action:hover { border-color: var(--aw-signal); color: var(--aw-signal); background: var(--dsw-alias-interactive-bg-hover); }
+
 .aw-companion-dock { position: fixed; z-index: 10; width: 56px; height: 56px; pointer-events: none; }
 .aw-companion-dock[hidden], .aw-dock-bubble[hidden], .aw-dock-menu[hidden], .aw-dock-menu-item[hidden], .aw-companion-action[hidden] { display: none !important; }
 .aw-dock-sticker {
-  display: block; width: 56px; height: 56px; padding: 0; border: 1px solid transparent;
-  border-radius: 50%; background: transparent; pointer-events: auto; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  display: block; width: 56px; height: 56px; padding: 0; border: 1.5px solid transparent;
+  border-radius: 50%; background: transparent; pointer-events: auto; cursor: grab;
+  touch-action: none; user-select: none; -webkit-user-select: none;
 }
 .aw-dock-sticker:focus-visible { outline: 2px solid var(--aw-signal); outline-offset: 2px; }
-.aw-dock-image { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 2px #0c121a38); }
-.aw-companion-dock:is([data-status='error'],[data-status='waiting']) .aw-dock-sticker { border-color: var(--aw-signal); }
-.aw-dock-bubble {
-  position: absolute; box-sizing: border-box; max-width: min(var(--aw-bubble-width, 185px), calc(100vw - 16px)); width: max-content; overflow-wrap: anywhere;
-  background: var(--aw-chip-bg); color: var(--aw-chip-ink); border: 1px solid var(--aw-chip-edge); border-radius: 6px;
-  padding: 4px 8px; font: 12px/1.5 system-ui,sans-serif; pointer-events: none;
+.aw-dock-image { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 3px 5px rgb(12 18 26 / 26%)); }
+.aw-companion-dock:is([data-status='error'],[data-status='waiting']) .aw-dock-sticker {
+  border-color: var(--aw-signal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--aw-signal) 18%, transparent);
 }
+.aw-dock-bubble {
+  position: absolute; box-sizing: border-box; max-width: min(var(--aw-bubble-width, 190px), calc(100vw - 16px)); width: max-content; overflow-wrap: anywhere;
+  background: var(--aw-pop-bg); color: var(--aw-chip-ink); border: 1px solid var(--aw-chip-edge); border-radius: 8px;
+  padding: 5px 9px; font: 500 12px/1.45 -apple-system, "PingFang SC", system-ui, sans-serif;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 48%), 0 6px 18px -6px rgb(12 18 28 / 24%);
+  pointer-events: none;
+}
+body[data-ds-dark-theme] .aw-dock-bubble {
+  box-shadow: inset 0 1px 0 rgb(255 240 214 / 9%), 0 8px 22px -6px rgb(0 0 0 / 56%);
+}
+
 /* A separate, stationary control stays reachable while the character springs. */
 .aw-dock-tools {
-  appearance: none; position: absolute; inset: auto 0 0 auto; pointer-events: auto; cursor: pointer;
-  box-sizing: border-box; width: 24px; height: 24px; padding: 4px; display: grid; place-items: center;
+  appearance: none; position: absolute; inset: auto -1px -1px auto; pointer-events: auto; cursor: pointer;
+  box-sizing: border-box; width: 23px; height: 23px; padding: 0; display: grid; place-items: center;
   color: var(--aw-chip-ink); background: var(--aw-chip-bg); border: 1px solid var(--aw-chip-edge);
-  border-radius: 50%; box-shadow: 0 1px 3px rgb(13 24 39 / 23%);
+  border-radius: 50%; box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%), 0 2px 5px rgb(13 24 39 / 22%);
 }
-.aw-dock-tools::before {
-  content: ''; display: block; width: 12px; height: 12px; background: currentColor;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2.2' stroke-linejoin='round' d='M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.1-3.1a6 6 0 0 1-7.9 7.9l-7.6 7.6a2.1 2.1 0 0 1-3-3l7.6-7.6a6 6 0 0 1 7.9-7.9z'/%3E%3C/svg%3E") center / contain no-repeat;
+body[data-ds-dark-theme] .aw-dock-tools {
+  box-shadow: inset 0 1px 0 rgb(255 240 214 / 12%), 0 2px 6px rgb(0 0 0 / 48%);
 }
+.aw-dock-tools:hover { border-color: var(--aw-signal); color: var(--aw-signal); }
 .aw-companion-dock[data-dragging] .aw-dock-sticker { cursor: grabbing; }
 .aw-companion-dock:has(.aw-dock-menu:not([hidden])) .aw-dock-bubble { visibility: hidden; }
+
 .aw-dock-menu {
   position: absolute; z-index: 1; pointer-events: auto; display: grid; gap: 2px;
   box-sizing: border-box; width: max-content; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px);
   overflow-y: auto; overscroll-behavior: contain; padding: 5px; border-radius: 9px;
   color: var(--dsw-alias-label-primary); background: var(--dsw-alias-bg-layer-2);
-  border: 1px solid var(--dsw-alias-border-l2); box-shadow: 0 4px 18px rgb(9 22 37 / 24%);
-  font: 12px/1.5 -apple-system, "PingFang SC", sans-serif;
+  border: 1.5px solid #8a6c3e;
+  border-bottom: 2.5px solid #594425;
+  box-shadow: inset 0 1px 0 rgb(255 250 240 / 62%), 0 14px 32px -8px rgb(10 14 22 / 34%);
+  font: 500 12px/1.45 -apple-system, "PingFang SC", sans-serif;
+}
+body[data-ds-dark-theme] .aw-dock-menu {
+  border-bottom-color: #14100a;
+  box-shadow: inset 0 1px 0 rgb(255 240 214 / 11%), 0 16px 36px -8px rgb(0 0 0 / 68%);
 }
 .aw-dock-menu-item {
-  display: flex; align-items: center; gap: 8px; appearance: none; border: 0; border-radius: 4px;
-  padding: 5px 9px; color: inherit; background: transparent; text-align: start; cursor: pointer; font: inherit;
+  display: flex; align-items: center; gap: 8px; appearance: none; border: 0; border-radius: 6px;
+  padding: 5.5px 9px; color: inherit; background: transparent; text-align: start; cursor: pointer; font: inherit;
 }
-.aw-dock-menu-item span { display: inline-grid; place-items: center; width: 14px; }
-.aw-dock-menu-item[data-action="waiting"]:enabled { color: #87420a; background: #fff0cd; }
-body[data-ds-dark-theme] .aw-dock-menu-item[data-action="waiting"]:enabled { color: #ffce80; background: #3b2f20; }
+.aw-dock-menu-item span { display: inline-grid; place-items: center; width: 15px; color: var(--dsw-alias-label-secondary); }
+.aw-dock-menu-item:enabled:hover span { color: var(--dsw-alias-brand-text); }
+.aw-dock-menu-item[data-action="waiting"]:enabled { color: #87420a; background: #faecc8; }
+.aw-dock-menu-item[data-action="waiting"]:enabled span { color: currentColor; }
+body[data-ds-dark-theme] .aw-dock-menu-item[data-action="waiting"]:enabled { color: #ffce80; background: #3b2b18; }
 .aw-dock-menu-item:enabled:hover { background: var(--dsw-alias-interactive-bg-hover); }
-.aw-dock-menu-item:disabled { color: var(--dsw-alias-label-caption); cursor: default; }
+.aw-dock-menu-item:disabled { color: var(--dsw-alias-label-caption); opacity: .55; cursor: default; }
 .aw-dock-tools:focus-visible, .aw-dock-menu-item:focus-visible { outline: 2px solid var(--dsw-focus-ring-color); outline-offset: -2px; }
+
 @media (prefers-reduced-motion: no-preference) {
   .aw-dock-sticker[data-bounce="normal"] { animation: aw-dock-bounce 320ms ease-out both; }
   .aw-dock-sticker[data-bounce="bonus"] { animation: aw-dock-bonus 320ms ease-out both; }
   .aw-dock-menu:not([hidden]) { animation: aw-disclose 140ms ease-out; }
-  .aw-monitor, .aw-companion-action, .aw-dock-sticker { transition: background-color .17s ease-out, border-color .17s ease-out; }
+  .aw-monitor, .aw-companion-action, .aw-dock-sticker, .aw-dock-tools {
+    transition: background-color .16s ease-out, border-color .16s ease-out, color .14s ease-out, transform .12s ease-out;
+  }
+  .aw-monitor:active, .aw-dock-tools:active { transform: scale(.96); }
   .aw-companion-dock[data-status='waiting'] .aw-dock-image { animation: aw-dock-nudge .33s ease-in-out 2; }
   .aw-dock-bubble:not([hidden]), .aw-companion-details:not([hidden]) { animation: aw-disclose .15s ease-out; }
 }
@@ -101,13 +144,12 @@ body[data-ds-dark-theme] .aw-dock-menu-item[data-action="waiting"]:enabled { col
   82% { transform: rotate(-3deg); }
 }
 @keyframes aw-dock-nudge { 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
-@media (max-width: 760px) { .aw-monitor-label { display: none; } .aw-header-pending { padding-inline: 5px; } }
+@media (max-width: 760px) { .aw-monitor-label { display: none; } .aw-header-pending { padding-inline: 6px; } }
 @media (forced-colors: active) { .aw-dock-sticker, .aw-monitor, .aw-companion-action, .aw-companion-details { border-color: ButtonText; } }
 
-@container (max-width: 500px) { .aw-monitor-label { display: none; } .aw-header-pending { padding-inline: 5px; } }
+@container (max-width: 500px) { .aw-monitor-label { display: none; } .aw-header-pending { padding-inline: 6px; } }
 
 @media (forced-colors: active) {
   .aw-dock-tools, .aw-dock-menu, .aw-dock-bubble { border-color: ButtonText; background: Canvas; color: CanvasText; box-shadow: none; }
-  .aw-dock-tools::before { forced-color-adjust: none; background: ButtonText; }
   .aw-dock-menu-item:disabled { color: GrayText; }
 }

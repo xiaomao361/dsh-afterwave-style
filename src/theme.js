@@ -69,7 +69,7 @@ const tokens = {
   '--dsw-alias-markdown-code-segment-selected': raised,
   '--dsw-alias-markdown-code-segment-unselected': inset,
   '--dsw-specific-input-major': raised,
-  '--dsw-specific-bubble': pair('#d5dde5', '#212730'),
+  '--dsw-specific-bubble': pair('#d4dce4', '#212730'),
   '--dsw-specific-bubble-highlight': selected,
   // The macOS frame paints five layers outside the sidebar slot. Its fallback
   // fill is scoped to the sidebar column in shell.css (also used by drawers).

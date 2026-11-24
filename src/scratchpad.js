@@ -1,9 +1,11 @@
 import { getPrefs } from './prefs.js'
 import { playMechanicalClick } from './sound.js'
+import { icon } from './icons.js'
 
 const KEY = 'scratchpad'
 const MAX_NOTES = 12
 const MAX_CHARS = 12000
+const conflictMessage = '已保存的便签发生变化。本窗口的修改尚未保存，可先复制。'
 const COLORS = [
   ['paper', '米黄工单'],
   ['amber', '警戒琥珀'],
@@ -81,13 +83,16 @@ export function mountScratchpad(win) {
   const head = node(doc, 'div', 'aw-sp-head')
   const title = node(doc, 'strong', 'aw-sp-title', '船坞便签堆')
   const countBadge = node(doc, 'span', 'aw-sp-count', '1/1')
-  const cycleBtn = node(doc, 'button', 'aw-sp-icon-btn', '↻')
+  const cycleBtn = node(doc, 'button', 'aw-sp-icon-btn')
+  cycleBtn.append(icon(doc, 'cycle', 13))
   cycleBtn.title = '翻到下一张便签'
   cycleBtn.setAttribute('aria-label', '翻到下一张便签')
-  const addBtn = node(doc, 'button', 'aw-sp-icon-btn', '＋')
+  const addBtn = node(doc, 'button', 'aw-sp-icon-btn')
+  addBtn.append(icon(doc, 'plus', 13))
   addBtn.title = '新建一张便签'
   addBtn.setAttribute('aria-label', '新建一张便签')
-  const closeBtn = node(doc, 'button', 'aw-sp-close', '×')
+  const closeBtn = node(doc, 'button', 'aw-sp-close')
+  closeBtn.append(icon(doc, 'close', 13))
   closeBtn.setAttribute('aria-label', '关闭随手便签')
   head.append(title, countBadge, cycleBtn, addBtn, closeBtn)
 
@@ -134,12 +139,17 @@ export function mountScratchpad(win) {
 
   const status = node(doc, 'div', 'aw-sp-status')
   status.setAttribute('role', 'status')
+  const reloadBtn = node(doc, 'button', 'aw-sp-btn aw-sp-reload', '放弃本窗口修改并载入')
+  reloadBtn.hidden = true
 
-  panel.append(head, tabs, area, toolbar, actions, status)
+  panel.append(head, tabs, area, toolbar, actions, status, reloadBtn)
   wrap.append(backTwo, backOne, panel)
   doc.body.append(wrap)
 
-  let data = normalizeStore(prefs.get(KEY))
+  const initial = prefs.get(KEY)
+  let stored = JSON.stringify(initial)
+  let data = normalizeStore(initial)
+  let saved = JSON.stringify(data)
   let returnFocus = null
   let lastCleared = ''
   let lastClearedId = ''
@@ -151,15 +161,44 @@ export function mountScratchpad(win) {
   const activeNote = () => data.notes[activeIndex()] ?? data.notes[0]
 
   function setStatus(msg) {
-    status.textContent = msg
+    const notice = reloadBtn.hidden ? '' : conflictMessage
+    status.textContent = [notice, msg].filter(Boolean).join(' ')
     win.clearTimeout(statusTimer)
-    if (msg) statusTimer = win.setTimeout(() => { status.textContent = '' }, 2200)
+    if (msg) statusTimer = win.setTimeout(() => { status.textContent = notice }, 2200)
+  }
+
+  function showConflict() {
+    reloadBtn.hidden = false
+    setStatus('')
+  }
+
+  function loadStored(value) {
+    win.clearTimeout(saveTimer)
+    stored = JSON.stringify(value)
+    data = normalizeStore(value)
+    saved = JSON.stringify(data)
+    lastCleared = lastClearedId = ''
+    reloadBtn.hidden = true
+    setStatus('')
+    renderStack()
   }
 
   function persistNow() {
     win.clearTimeout(saveTimer)
-    const ok = prefs.set(KEY, data)
+    const snapshot = JSON.stringify(data)
+    if (snapshot === saved) return true
+    if (JSON.stringify(prefs.get(KEY)) !== stored) {
+      showConflict()
+      return false
+    }
+    saved = stored = snapshot
+    if (!reloadBtn.hidden) {
+      reloadBtn.hidden = true
+      setStatus('')
+    }
+    const ok = prefs.set(KEY, JSON.parse(snapshot))
     if (!ok) setStatus('本机存储空间不足，仅在本次窗口内保留。')
+    return ok
   }
 
   function syncMeta() {
@@ -209,7 +248,6 @@ export function mountScratchpad(win) {
 
   function selectNote(id) {
     if (data.activeId === id) return
-    persistNow()
     data.activeId = id
     playMechanicalClick(win, prefs)
     persistNow()
@@ -228,7 +266,6 @@ export function mountScratchpad(win) {
       setStatus(`最多同时堆叠 ${MAX_NOTES} 张便签`)
       return
     }
-    persistNow()
     const nextColor = COLORS[data.notes.length % COLORS.length][0]
     const created = makeNote('', nextColor)
     data.notes.push(created)
@@ -247,9 +284,9 @@ export function mountScratchpad(win) {
     lastCleared = ''
     lastClearedId = ''
     playMechanicalClick(win, prefs)
-    persistNow()
+    const savedNote = persistNow()
     renderStack()
-    setStatus('已移除该张便签')
+    if (savedNote) setStatus('已移除该张便签')
   }
 
   backOne.addEventListener('click', cycleNext)
@@ -260,7 +297,9 @@ export function mountScratchpad(win) {
 
   area.addEventListener('input', () => {
     const cur = activeNote()
-    cur.text = area.value.slice(0, MAX_CHARS)
+    const text = area.value.slice(0, MAX_CHARS)
+    if (cur.text === text) return
+    cur.text = text
     cur.updatedAt = Date.now()
     lastCleared = ''
     lastClearedId = ''
@@ -324,9 +363,9 @@ export function mountScratchpad(win) {
     cur.text = ''
     cur.updatedAt = Date.now()
     area.value = ''
-    persistNow()
+    const cleared = persistNow()
     renderStack()
-    setStatus('已清空（可点击撤销）')
+    if (cleared) setStatus('已清空（可点击撤销）')
   })
 
   undoBtn.addEventListener('click', () => {
@@ -336,9 +375,9 @@ export function mountScratchpad(win) {
     cur.updatedAt = Date.now()
     lastCleared = ''
     lastClearedId = ''
-    persistNow()
+    const restored = persistNow()
     renderStack()
-    setStatus('已恢复便签内容')
+    if (restored) setStatus('已恢复便签内容')
   })
 
   function onKey(event) {
@@ -356,8 +395,7 @@ export function mountScratchpad(win) {
   function open(anchor) {
     if (!wrap.hidden) { close(); return }
     returnFocus = anchor || doc.activeElement
-    data = normalizeStore(prefs.get(KEY))
-    renderStack()
+    if (JSON.stringify(data) === saved) loadStored(prefs.get(KEY))
     wrap.hidden = false
     playMechanicalClick(win, prefs)
     doc.addEventListener('keydown', onKey, true)
@@ -378,12 +416,18 @@ export function mountScratchpad(win) {
   }
 
   closeBtn.addEventListener('click', close)
-  const unsub = prefs.subscribe(key => {
-    if ((key === null || key === KEY) && doc.activeElement !== area) {
-      data = normalizeStore(prefs.get(KEY))
-      renderStack()
-    }
+  reloadBtn.addEventListener('click', () => {
+    loadStored(prefs.get(KEY))
+    area.focus({ preventScroll: true })
   })
+  const unsub = prefs.subscribe(key => {
+    if (key !== null && key !== KEY) return
+    const value = prefs.get(KEY)
+    if (JSON.stringify(value) === stored) return
+    if (JSON.stringify(data) === saved) loadStored(value)
+    else showConflict()
+  })
+  win.addEventListener('pagehide', persistNow)
   renderStack()
 
   const api = {
@@ -395,6 +439,7 @@ export function mountScratchpad(win) {
     destroy() {
       close()
       unsub()
+      win.removeEventListener('pagehide', persistNow)
       win.clearTimeout(saveTimer)
       win.clearTimeout(statusTimer)
       wrap.remove()

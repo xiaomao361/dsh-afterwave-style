@@ -1,6 +1,7 @@
 import { mountExport, exportMarkdown } from './exporter.js'
 import { mountNavigator } from './navigator.js'
 import { attachCodeTools } from './code-tools.js'
+import { icon } from './icons.js'
 
 const slot = 'conversation.session.header.utilities'
 
@@ -9,11 +10,10 @@ function mountCodeDrawer(root, codeTools, win) {
   const trigger = doc.createElement('button')
   trigger.type = 'button'
   trigger.className = 'aw-export-trigger'
-  trigger.textContent = '</>'
+  trigger.append(icon(doc, 'code', 15))
   trigger.title = '本会话代码清单'
   trigger.setAttribute('aria-label', '本会话代码清单')
   trigger.setAttribute('aria-expanded', 'false')
-  trigger.style.font = '700 11px/1 ui-monospace, monospace'
   root.append(trigger)
 
   const drawer = doc.createElement('section')
@@ -28,9 +28,9 @@ function mountCodeDrawer(root, codeTools, win) {
   title.textContent = '本会话代码清单'
   const closeBtn = doc.createElement('button')
   closeBtn.type = 'button'
-  closeBtn.textContent = '×'
+  closeBtn.className = 'aw-code-drawer-close'
+  closeBtn.append(icon(doc, 'close', 13))
   closeBtn.setAttribute('aria-label', '关闭代码清单')
-  closeBtn.style.cssText = 'border:0;background:transparent;color:inherit;cursor:pointer;font-size:15px;'
   head.append(title, closeBtn)
 
   const list = doc.createElement('div')

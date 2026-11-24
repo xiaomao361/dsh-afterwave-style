@@ -167,27 +167,87 @@ body[data-dsh-afterwave-style] [data-composer-card] {
   --dsw-radius-panel: 9px;
   --dsw-specific-input-major: #eee9e0;
   box-sizing: border-box;
-  border: 1.5px solid #9c9486;
-  border-bottom-width: 2px;
+  border: 1.5px solid #8f8778;
+  border-bottom: 2.5px solid #6b6458;
   border-radius: var(--dsw-radius-panel);
   background: var(--dsw-specific-input-major);
-  box-shadow: inset 0 2px 5px rgb(28 24 18 / 8%), 0 0 0 3px rgb(168 160 146 / 38%), 0 6px 16px -8px rgb(22 20 16 / 22%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 252 245 / 68%),
+    inset 0 2px 5px rgb(28 24 18 / 8%),
+    0 0 0 3px rgb(164 156 140 / 40%),
+    0 8px 18px -8px rgb(22 20 16 / 26%);
 }
 
 body[data-dsh-afterwave-style][data-ds-dark-theme] [data-composer-card] {
   --dsw-specific-input-major: #1b1e23;
-  border-color: #3c414b;
-  box-shadow: inset 0 1px rgb(255 240 214 / 8%), 0 0 0 3px rgb(42 46 54 / 58%), 0 8px 18px -8px rgb(0 0 0 / 50%);
+  border-color: #3e4450;
+  border-bottom-color: #0d0f13;
+  box-shadow:
+    inset 0 1px 0 rgb(255 240 214 / 9%),
+    0 0 0 3px rgb(38 42 50 / 62%),
+    0 10px 22px -8px rgb(0 0 0 / 56%);
 }
 
 body[data-dsh-afterwave-style] [data-composer-card]:focus-within {
   border-color: #1b528c;
-  box-shadow: inset 0 -2px rgb(27 82 140 / 55%), 0 0 0 3px rgb(27 82 140 / 16%), 0 6px 16px -8px rgb(22 20 16 / 20%);
+  box-shadow:
+    inset 0 -2px 0 rgb(27 82 140 / 55%),
+    0 0 0 3px rgb(27 82 140 / 18%),
+    0 8px 18px -8px rgb(22 20 16 / 24%);
 }
 
 body[data-dsh-afterwave-style][data-ds-dark-theme] [data-composer-card]:focus-within {
   border-color: #f0a42b;
-  box-shadow: inset 0 1px rgb(255 210 130 / 26%), 0 0 0 3px rgb(240 164 43 / 15%), 0 0 18px -6px rgb(240 164 43 / 32%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 214 138 / 28%),
+    0 0 0 3px rgb(240 164 43 / 16%),
+    0 0 20px -6px rgb(240 164 43 / 34%);
+}
+
+/* Conversation prose, armored code wells, specification tables, and user bubbles. */
+body[data-dsh-afterwave-style] [data-conversation-content] pre:has(> code) {
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-top: 2px solid #8a6c3e;
+  border-radius: 6px;
+  box-shadow: inset 0 1.5px 3px rgb(16 14 10 / 10%);
+}
+
+body[data-dsh-afterwave-style][data-ds-dark-theme] [data-conversation-content] pre:has(> code) {
+  border-top-color: #785d34;
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 48%);
+}
+
+body[data-dsh-afterwave-style] [data-conversation-content] :not(pre) > code {
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+body[data-dsh-afterwave-style] [data-conversation-content] blockquote {
+  margin-inline: 0;
+  padding: 4px 12px;
+  border-inline-start: 3px solid var(--dsw-alias-brand-primary);
+  border-radius: 0 6px 6px 0;
+  background: color-mix(in srgb, var(--dsw-alias-brand-primary) 5%, transparent);
+}
+
+body[data-dsh-afterwave-style] [data-conversation-content] table {
+  font-variant-numeric: tabular-nums;
+}
+
+body[data-dsh-afterwave-style] [data-conversation-content] th {
+  border-bottom: 1.5px solid var(--dsw-alias-border-l3);
+  font-weight: 650;
+  letter-spacing: .02em;
+}
+
+body[data-dsh-afterwave-style] [data-conversation-content] .user-message {
+  border: 1px solid color-mix(in srgb, var(--dsw-alias-brand-primary) 16%, var(--dsw-alias-border-l1));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%), 0 1px 2px rgb(16 20 28 / 6%);
+}
+
+body[data-dsh-afterwave-style][data-ds-dark-theme] [data-conversation-content] .user-message {
+  box-shadow: inset 0 1px 0 rgb(255 240 214 / 7%), 0 2px 5px rgb(0 0 0 / 24%);
 }
 
 body[data-dsh-afterwave-style] [data-conversation-content] [data-composer-card] button[aria-busy] {

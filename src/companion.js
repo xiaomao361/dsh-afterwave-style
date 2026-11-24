@@ -1,7 +1,8 @@
 import { playMechanicalClick } from './sound.js'
 import { toggleScratchpad } from './scratchpad.js'
 import { showPalette } from './palette.js'
-import { getDockTimer, formatClock } from './timer.js'
+import { getDockTimer } from './timer.js'
+import { icon } from './icons.js'
 
 const statusDetails = {
   idle: ['待机', '待命中，随时开干！'],
@@ -211,6 +212,7 @@ function attachDockDrag(win, sticker, dock, prefs, move, refresh, closeTools, si
 let menuSequence = 0
 function createDockMenu(doc, dock, sticker, actions, position, signal) {
   const trigger = control(doc, 'aw-dock-tools')
+  trigger.append(icon(doc, 'wrench', 12))
   trigger.title = '挂件工具盘'
   trigger.setAttribute('aria-label', trigger.title)
   trigger.setAttribute('aria-haspopup', 'menu')
@@ -223,10 +225,10 @@ function createDockMenu(doc, dock, sticker, actions, position, signal) {
   menu.setAttribute('aria-label', trigger.title)
   trigger.setAttribute('aria-controls', menu.id)
   const buttons = new Map()
-  for (const [id, label, icon] of [
-    ['waiting', '待审批会话', '↗'], ['quip', '换一句台词', '✦'],
-    ['scratchpad', '堆叠便签', '▤'], ['timer', '值班番茄钟', '◷'], ['palette', '指令台 Ctrl+K', '⌘'],
-    ['settings', '工装设置', '⚙'], ['reset', '复位位置', '↶'], ['hide', '收起挂件', '−'],
+  for (const [id, label, iconName] of [
+    ['waiting', '待审批会话', 'jump'], ['quip', '换一句台词', 'spark'],
+    ['scratchpad', '堆叠便签', 'notes'], ['timer', '值班番茄钟', 'timer'], ['palette', '指令台 Ctrl+K', 'command'],
+    ['settings', '工装设置', 'wrench'], ['reset', '复位位置', 'reset'], ['hide', '收起挂件', 'minus'],
   ]) {
     const item = control(doc, 'aw-dock-menu-item')
     item.dataset.action = id
@@ -234,7 +236,7 @@ function createDockMenu(doc, dock, sticker, actions, position, signal) {
     item.tabIndex = -1
     const glyph = doc.createElement('span')
     glyph.setAttribute('aria-hidden', 'true')
-    glyph.textContent = icon
+    glyph.append(icon(doc, iconName, 13))
     item.append(glyph, doc.createTextNode(label))
     item.addEventListener('click', () => {
       close(true)

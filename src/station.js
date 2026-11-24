@@ -4,12 +4,16 @@ import { playMechanicalClick } from './sound.js'
 import { showPalette } from './palette.js'
 import { toggleScratchpad } from './scratchpad.js'
 import { getDockTimer, formatClock } from './timer.js'
+import { formatTokens } from './readings.js'
+import { icon } from './icons.js'
 
 const phases = {
   loading: '正在读取会话…', unavailable: '暂时无法读取会话', unselected: '请选择工作区',
 }
 const flagLabels = { waiting: '待处理', running: '运行中', pinned: '置顶' }
 const number = new Intl.NumberFormat('zh-CN')
+const sessionTrendTitle = '会话最近更新时间分布 · 近 12 周'
+let searchPanelId = 0
 
 function node(doc, tag, className, text = '') {
   const el = doc.createElement(tag)
@@ -39,34 +43,42 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
   const workspaceChip = node(doc, 'span', 'aw-ws-chip')
   workspaceChip.hidden = true
   const searchToggle = button(doc, 'aw-find', '查找会话')
-  searchToggle.prepend(node(doc, 'i', 'aw-find-icon'))
+  searchToggle.prepend(icon(doc, 'search', 13))
   searchToggle.setAttribute('aria-expanded', 'false')
   const pending = button(doc, 'aw-pending aw-home-pending', '')
   pending.hidden = true
-  const paletteBtn = button(doc, 'aw-tool-btn', 'Ctrl+K')
-  paletteBtn.title = '打开四号船坞指令台（Ctrl + K）'
+  const isMac = /Mac|iPhone|iPad/i.test(doc.defaultView?.navigator?.platform || '')
+  const paletteBtn = button(doc, 'aw-tool-btn', '')
+  paletteBtn.append(icon(doc, 'command', 13), node(doc, 'span', 'aw-btn-kbd', isMac ? '⌘K' : 'Ctrl+K'))
+  paletteBtn.title = `打开四号船坞指令台（${isMac ? '⌘K' : 'Ctrl+K'}）`
   paletteBtn.setAttribute('aria-label', paletteBtn.title)
   paletteBtn.addEventListener('click', () => showPalette(doc.defaultView, paletteBtn))
-  const padBtn = button(doc, 'aw-tool-btn', '便签')
+  const padBtn = button(doc, 'aw-tool-btn', '')
+  padBtn.append(icon(doc, 'notes', 13), node(doc, 'span', '', '便签'))
   padBtn.title = '打开堆叠随手便签'
   padBtn.setAttribute('aria-label', padBtn.title)
   padBtn.addEventListener('click', () => toggleScratchpad(doc.defaultView, padBtn))
-  const timerBtn = button(doc, 'aw-tool-btn', '◷ 番茄')
+  const timerBtn = button(doc, 'aw-tool-btn', '')
+  const timerLabel = node(doc, 'span', '', '番茄')
+  timerBtn.append(icon(doc, 'timer', 13), timerLabel)
   timerBtn.title = '打开值班番茄钟'
   timerBtn.setAttribute('aria-label', timerBtn.title)
   const dockTimer = getDockTimer(doc.defaultView)
   timerBtn.addEventListener('click', () => dockTimer.openPanel(timerBtn))
   const stopTimerSub = dockTimer.subscribe(snap => {
-    timerBtn.textContent = snap.running ? `◷ ${formatClock(snap.remaining)}` : '◷ 番茄'
+    timerLabel.textContent = snap.running ? formatClock(snap.remaining) : '番茄'
   })
   const settings = button(doc, 'aw-settings', '')
+  settings.append(icon(doc, 'wrench', 14))
   settings.title = '工装设置'
   settings.setAttribute('aria-label', settings.title)
   settings.hidden = !showControls
   settings.addEventListener('click', () => { playMechanicalClick(doc.defaultView, prefs); showControls?.(settings) })
+  const toolWell = node(doc, 'div', 'aw-tool-well')
+  toolWell.append(paletteBtn, padBtn, timerBtn)
   const tools = node(doc, 'div', 'aw-head-tools')
-  tools.append(paletteBtn, padBtn, timerBtn, searchToggle, settings)
-  head.append(title, workspaceChip, pending, tools)
+  tools.append(toolWell, searchToggle, settings)
+  head.append(title, workspaceChip, tools)
 
   const face = node(doc, 'div', 'aw-face')
   const metrics = node(doc, 'dl', 'aw-metrics')
@@ -79,12 +91,17 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
   })
   const figure = node(doc, 'figure', 'aw-trend')
   const trendHead = node(doc, 'div', 'aw-trend-head')
-  const trendTitle = node(doc, 'figcaption', 'aw-trend-title', '出坞记录 · 近 12 周')
+  const trendTitle = node(doc, 'figcaption', 'aw-trend-title', '会话最近更新时间分布 · 近 20 周')
   const modeSwitch = node(doc, 'div', 'aw-trend-modes')
   modeSwitch.setAttribute('role', 'group')
   modeSwitch.setAttribute('aria-label', '热力图视图')
   let heatMode = 'sessions'
-  const modeButtons = [['sessions', '会话'], ['typing', '打字']].map(([mode, text]) => {
+  const modeButtons = [
+    ['sessions', '会话'],
+    ['typing-ws', '本区打字'],
+    ['typing-all', '全局打字'],
+    ['tokens', 'Token'],
+  ].map(([mode, text]) => {
     const btn = button(doc, 'aw-trend-mode', text)
     btn.setAttribute('aria-pressed', String(mode === heatMode))
     btn.addEventListener('click', () => {
@@ -98,15 +115,57 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
     return [mode, btn]
   })
   trendHead.append(trendTitle, modeSwitch)
+  const heatBody = node(doc, 'div', 'aw-heat-body')
+  const weekdays = node(doc, 'div', 'aw-heat-axis')
+  weekdays.setAttribute('aria-hidden', 'true')
+  for (const label of ['一', '', '三', '', '五', '', '日']) weekdays.append(node(doc, 'span', '', label))
   const heatmapGrid = node(doc, 'ol', 'aw-heatmap')
-  const cells = Array.from({ length: 84 }, (_, idx) => {
-    const isLast7 = idx >= 77
+  const cells = Array.from({ length: 140 }, (_, idx) => {
+    const isLast7 = idx >= 133
     const cell = node(doc, 'li', isLast7 ? 'aw-heat-cell aw-column' : 'aw-heat-cell')
     cell.dataset.level = '0'
     heatmapGrid.append(cell)
     return cell
   })
-  figure.append(trendHead, heatmapGrid)
+  heatBody.append(weekdays, heatmapGrid)
+  const heatFoot = node(doc, 'div', 'aw-heat-foot')
+  const heatSummary = node(doc, 'span', 'aw-heat-summary', 'BLUEPRINT // 20W')
+  const heatTip = node(doc, 'div', 'aw-heat-tip')
+  heatTip.hidden = true
+  heatTip.setAttribute('aria-hidden', 'true')
+  const legend = node(doc, 'div', 'aw-heat-legend')
+  legend.setAttribute('aria-hidden', 'true')
+  legend.append(node(doc, 'span', '', '少'))
+  for (const lvl of ['0', '1', '2', '3', '4']) {
+    const swatch = node(doc, 'i', 'aw-heat-swatch')
+    swatch.dataset.level = lvl
+    legend.append(swatch)
+  }
+  legend.append(node(doc, 'span', '', '多'))
+  heatFoot.append(heatSummary, legend)
+  figure.append(trendHead, heatBody, heatFoot, heatTip)
+  let defaultSummary = 'BLUEPRINT // 20W'
+  for (const cell of cells) {
+    cell.addEventListener('pointerenter', () => {
+      const text = cell.dataset.tip || cell.title
+      if (!text) return
+      heatSummary.textContent = text
+      heatTip.textContent = text
+      heatTip.hidden = false
+      const figRect = figure.getBoundingClientRect()
+      const cellRect = cell.getBoundingClientRect()
+      if (figRect.width > 0 && cellRect.width > 0) {
+        const cx = cellRect.left - figRect.left + cellRect.width / 2
+        const top = cellRect.top - figRect.top - 26
+        heatTip.style.left = Math.max(8, Math.min(cx, figRect.width - 8)) + 'px'
+        heatTip.style.top = Math.max(4, top) + 'px'
+      }
+    })
+  }
+  heatmapGrid.addEventListener('pointerleave', () => {
+    heatTip.hidden = true
+    heatSummary.textContent = defaultSummary
+  })
   const telemetry = node(doc, 'div', 'aw-dashboard-readings')
   telemetry.append(metrics, figure)
   const stage = button(doc, 'aw-mascot-stage', '')
@@ -133,7 +192,7 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
   }
   const unsubscribe = prefs.subscribe(key => {
     if (key === null || ['focus', 'portrait', 'opacity'].includes(key)) applyPrefs()
-    if (key === null || key === 'typing.stats') renderHeatmap()
+    if (key === null || key === 'typing.stats' || key === 'token.stats') renderHeatmap()
   })
   applyPrefs()
   let phraseIndex = Math.floor(Math.random() * 3)
@@ -157,10 +216,12 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
   const empty = node(doc, 'span', 'aw-last-empty')
   const stamp = node(doc, 'span', 'aw-stencil', 'DRYDOCK-04 // HULL-A2')
   stamp.setAttribute('aria-hidden', 'true')
-  foot.append(footLabel, resume, empty, stamp)
+  foot.append(pending, footLabel, resume, empty, stamp)
 
   const drawer = node(doc, 'div', 'aw-session-search')
+  drawer.id = `aw-session-search-${++searchPanelId}`
   drawer.hidden = true
+  for (const trigger of [searchToggle, pending]) trigger.setAttribute('aria-controls', drawer.id)
   const controls = node(doc, 'div', 'aw-query-controls')
   const query = node(doc, 'input', 'aw-query')
   query.type = 'search'
@@ -180,35 +241,53 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
   notice.setAttribute('role', 'status')
   controls.append(query, select)
   drawer.append(controls, results, notice)
-  panel.append(hardware, head, face, foot, drawer)
+  panel.append(hardware, head, foot, drawer, face)
 
   let current
   let workspace
+  let waiting = []
+  let searchAnchor
   const ready = () => current?.phase === 'ready'
   function open(id) {
     if (panel.isConnected && ready() && current.sessions.some(session => session.id === id)) openSession?.(id)
   }
-  pending.addEventListener('click', () => open(current?.sessions?.find(session => session.waiting)?.id))
+  pending.addEventListener('click', () => {
+    if (waiting.length === 1) open(waiting[0].id)
+    else if (waiting.length > 1) showSearch(searchAnchor === pending ? undefined : pending)
+  })
   resume.addEventListener('click', () => open(current?.sessions?.[0]?.id))
 
-  function showSearch(shown) {
-    face.hidden = foot.hidden = shown
-    drawer.hidden = !shown
-    searchToggle.setAttribute('aria-expanded', String(shown))
-    searchToggle.lastChild.textContent = shown ? '收起' : '查找会话'
-    if (shown) {
+  function syncSearchTriggers() {
+    searchToggle.setAttribute('aria-expanded', String(searchAnchor === searchToggle))
+    searchToggle.lastChild.textContent = searchAnchor === searchToggle ? '收起' : '查找会话'
+    if (waiting.length > 1 || searchAnchor === pending) {
+      pending.setAttribute('aria-expanded', String(searchAnchor === pending))
+    } else pending.removeAttribute('aria-expanded')
+  }
+
+  function showSearch(anchor) {
+    if (anchor === pending || searchAnchor === pending) {
+      query.value = ''
+      select.value = anchor === pending ? 'waiting' : 'all'
+    }
+    searchAnchor = anchor
+    face.hidden = Boolean(anchor)
+    drawer.hidden = !anchor
+    syncSearchTriggers()
+    if (anchor) {
       updateMatches()
       query.focus()
     }
   }
-  searchToggle.addEventListener('click', () => showSearch(drawer.hidden))
+  searchToggle.addEventListener('click', () => showSearch(searchAnchor === searchToggle ? undefined : searchToggle))
   drawer.addEventListener('keydown', event => {
     if (event.isComposing || event.keyCode === 229) return
     if (event.key === 'Escape') {
       event.preventDefault()
       event.stopPropagation()
-      showSearch(false)
-      searchToggle.focus()
+      const trigger = searchAnchor?.hidden ? searchToggle : searchAnchor
+      showSearch()
+      trigger?.focus()
     } else if (event.key === 'Enter' && event.target === query) {
       event.preventDefault()
       results.querySelector('button')?.click()
@@ -259,8 +338,8 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
   function buildFallbackDates() {
     const now = new Date()
     const pad = v => String(v).padStart(2, '0')
-    return Array.from({ length: 84 }, (_, i) => {
-      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i - 83)
+    return Array.from({ length: 140 }, (_, i) => {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i - 139)
       return { date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, count: 0 }
     })
   }
@@ -268,25 +347,52 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
   function renderHeatmap() {
     const available = ready()
     const typingRaw = prefs.get('typing.stats')
-    const typingDays = typingRaw && typeof typingRaw === 'object' && typingRaw.days ? typingRaw.days : {}
-    const totalTyped = typingRaw && Number.isFinite(typingRaw.total) ? typingRaw.total : 0
+    const globalDays = typingRaw && typeof typingRaw === 'object' && typingRaw.days ? typingRaw.days : {}
+    const totalGlobal = typingRaw && Number.isFinite(typingRaw.total) ? typingRaw.total : 0
+    const wsKey = current?.workspaceId ? String(current.workspaceId) : 'default'
+    const wsEntry = typingRaw && typeof typingRaw === 'object' && typingRaw.workspaces ? typingRaw.workspaces[wsKey] : null
+    const wsDays = wsEntry && typeof wsEntry.days === 'object' ? wsEntry.days : {}
+    const totalWs = wsEntry && Number.isFinite(wsEntry.total) ? wsEntry.total : 0
+
+    const tokenRaw = prefs.get('token.stats')
+    const tokenGlobalDays = tokenRaw && typeof tokenRaw === 'object' && tokenRaw.days ? tokenRaw.days : {}
+    const tokenGlobalTotal = tokenRaw && Number.isFinite(tokenRaw.total) ? tokenRaw.total : 0
+    const tokenWsEntry = tokenRaw && typeof tokenRaw === 'object' && tokenRaw.workspaces ? tokenRaw.workspaces[wsKey] : null
+    const tokenWsDays = tokenWsEntry && typeof tokenWsEntry.days === 'object' ? tokenWsEntry.days : {}
+    const tokenWsTotal = tokenWsEntry && Number.isFinite(tokenWsEntry.total) ? tokenWsEntry.total : 0
 
     let series
-    if (heatMode === 'typing') {
-      trendTitle.textContent = totalTyped ? `打字里程 · 累计 ${number.format(totalTyped)} 字` : '打字里程 · 近 12 周'
-      const base = available && current.heatmap?.length === 84 ? current.heatmap : buildFallbackDates()
-      series = base.map(item => ({ date: item.date, count: Number(typingDays[item.date] || 0) }))
+    if (heatMode === 'typing-ws') {
+      trendTitle.textContent = '本区打字里程 · 近 20 周'
+      defaultSummary = `本区累计 ${number.format(totalWs)} 字`
+      const base = available && current.heatmap?.length === 140 ? current.heatmap : buildFallbackDates()
+      series = base.map(item => ({ date: item.date, count: Number(wsDays[item.date] || 0) }))
+    } else if (heatMode === 'typing-all') {
+      trendTitle.textContent = '全局打字里程 · 近 20 周'
+      defaultSummary = `全船坞累计 ${number.format(totalGlobal)} 字`
+      const base = available && current.heatmap?.length === 140 ? current.heatmap : buildFallbackDates()
+      series = base.map(item => ({ date: item.date, count: Number(globalDays[item.date] || 0) }))
+    } else if (heatMode === 'tokens') {
+      trendTitle.textContent = 'Token 消耗分布 · 近 20 周'
+      defaultSummary = tokenGlobalTotal ? `已记录累计 ${formatTokens(tokenGlobalTotal)} tok（本区 ${formatTokens(tokenWsTotal)}）` : '暂未记录到新增 Token 消耗'
+      const base = available && current.heatmap?.length === 140 ? current.heatmap : buildFallbackDates()
+      series = base.map(item => ({ date: item.date, count: Number(tokenGlobalDays[item.date] || 0) }))
     } else {
-      trendTitle.textContent = '出坞记录 · 近 12 周'
-      if (available && current.heatmap?.length === 84) {
+      trendTitle.textContent = '会话最近更新时间分布 · 近 20 周'
+      const activeDays = available && current.heatmap ? current.heatmap.filter(d => d.count > 0).length : 0
+      defaultSummary = available
+        ? (tokenWsTotal ? `近 20 周活跃 ${activeDays} 天 · 本区已记录 ${formatTokens(tokenWsTotal)} tok` : `近 20 周活跃 ${activeDays} 天`)
+        : 'BLUEPRINT // 20W'
+      if (available && current.heatmap?.length === 140) {
         series = current.heatmap
       } else if (available && current.days?.length === 7) {
-        const prefix = Array.from({ length: 77 }, () => null)
+        const prefix = Array.from({ length: 133 }, () => null)
         series = [...prefix, ...current.days]
       } else {
-        series = Array.from({ length: 84 }, () => null)
+        series = Array.from({ length: 140 }, () => null)
       }
     }
+    if (heatTip.hidden) heatSummary.textContent = defaultSummary
 
     const peak = Math.max(1, ...series.map(d => d?.count || 0))
     for (let i = 0; i < cells.length; i++) {
@@ -295,14 +401,22 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
       if (!day) {
         cell.dataset.level = '0'
         cell.title = '数据未就绪'
+        cell.dataset.tip = '数据未就绪'
         cell.setAttribute('aria-label', '数据未就绪')
         cell.toggleAttribute('data-empty', true)
       } else {
         cell.dataset.level = heatLevel(day.count, peak)
-        const desc = heatMode === 'typing'
-          ? `${day.date}，输入 ${number.format(day.count)} 字`
-          : `${day.date}，${day.count} 个会话最后更新`
+        const tokCount = heatMode === 'typing-all' || heatMode === 'tokens'
+          ? Number(tokenGlobalDays[day.date] || 0)
+          : Number(tokenWsDays[day.date] || tokenGlobalDays[day.date] || 0)
+        const tokLabel = tokCount > 0 ? `${formatTokens(tokCount)} tok` : '暂无 Token 记录'
+        const desc = heatMode === 'tokens'
+          ? `${day.date} · 消耗 ${tokLabel}`
+          : heatMode === 'sessions'
+            ? `${day.date}，${day.count} 个会话最后更新 · ${tokLabel}`
+            : `${day.date}，输入 ${number.format(day.count)} 字 · ${tokLabel}`
         cell.title = desc
+        cell.dataset.tip = desc
         cell.setAttribute('aria-label', desc)
         cell.toggleAttribute('data-empty', !day.count)
       }
@@ -320,7 +434,7 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
     if (changedWorkspace || !available || !sessions.length) {
       query.value = ''
       select.value = 'all'
-      if (!drawer.hidden) showSearch(false)
+      if (searchAnchor) showSearch()
     }
     if (workspaceName) title.title = workspaceName
     else title.removeAttribute('title')
@@ -334,17 +448,20 @@ function makeOverview(doc, { onOpenSession: openSession, assets, prefs, showCont
     }
     values[2].parentElement.dataset.active = String(available && activity.running > 0)
     renderHeatmap()
-    const waiting = sessions.filter(session => session.waiting)
+    waiting = sessions.filter(session => session.waiting)
     pending.hidden = !waiting.length || !openSession
-    pending.textContent = '待处理 · ' + waiting.length + ' ↗'
-    pending.setAttribute('aria-label', '打开待处理会话，共 ' + waiting.length + ' 个')
-    pending.title = waiting.length ? '打开待处理会话 · ' + waiting[0].title : ''
+    const multiple = waiting.length > 1
+    pending.textContent = '待处理 · ' + waiting.length + (multiple ? ' ▾' : ' ↗')
+    pending.setAttribute('aria-label', (multiple ? '查看待处理会话列表，共 ' : '打开待处理会话，共 ') + waiting.length + ' 个')
+    pending.title = multiple ? '查看待处理会话列表' : (waiting[0]?.title ?? '')
+    syncSearchTriggers()
     const recent = sessions[0]
     searchToggle.disabled = !openSession || !sessions.length
     resume.hidden = !recent || !openSession
     empty.hidden = !resume.hidden
     empty.textContent = !available ? phases[activity?.phase] ?? phases.loading :
       recent ? recent.title : '暂无历史会话'
+    footLabel.textContent = resume.hidden ? '上次会话' : '继续上次会话'
     latestTitle.textContent = recent?.title ?? ''
     resume.title = recent ? '继续上次会话 · ' + recent.title : ''
     resume.setAttribute('aria-label', resume.title)

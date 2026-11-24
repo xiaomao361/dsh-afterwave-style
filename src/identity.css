@@ -43,13 +43,13 @@
 
 /* Weathered concrete grain + wide drydock structural grid + hull draft marks. */
 .aw-paper-field {
-  --aw-grid: rgb(56 48 38 / 5.5%);
-  --aw-grid-axis: rgb(56 48 38 / 10.5%);
+  --aw-grid: rgb(56 48 38 / 5.8%);
+  --aw-grid-axis: rgb(56 48 38 / 11%);
   --aw-field-signal: #5c5346;
   --aw-field-rust: #9e4819;
-  --aw-rail-opacity: .28;
-  --aw-draft-opacity: .34;
-  --aw-concrete-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23c)' opacity='.065'/%3E%3C/svg%3E");
+  --aw-rail-opacity: .3;
+  --aw-draft-opacity: .36;
+  --aw-concrete-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.74' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23c)' opacity='.072'/%3E%3C/svg%3E");
   position: absolute;
   z-index: -1;
   inset: 0;
@@ -58,8 +58,8 @@
   color: var(--aw-field-signal);
   background:
     var(--aw-concrete-noise),
-    radial-gradient(ellipse 55% 40% at 0% 100%, rgb(138 66 24 / 7%), transparent 70%),
-    radial-gradient(ellipse 48% 35% at 100% 100%, rgb(28 32 38 / 7%), transparent 70%),
+    radial-gradient(ellipse 58% 42% at 0% 100%, rgb(142 66 22 / 9%), transparent 70%),
+    radial-gradient(ellipse 50% 38% at 100% 100%, rgb(24 28 34 / 9%), transparent 70%),
     linear-gradient(90deg, var(--aw-grid-axis) 1px, transparent 1px) 0 0 / 224px 224px,
     linear-gradient(var(--aw-grid-axis) 1px, transparent 1px) 0 0 / 224px 224px,
     linear-gradient(90deg, var(--aw-grid) 1px, transparent 1px) 0 0 / 56px 56px,
@@ -164,14 +164,14 @@ body[data-ds-dark-theme] .aw-paper-field {
   appearance: none;
   box-sizing: border-box;
   position: absolute;
-  left: 18px;
-  bottom: 14px;
+  left: 16px;
+  bottom: 12px;
   display: block;
   padding: 0;
   border: 0;
   border-radius: 10px;
-  width: 162px;
-  height: 68px;
+  width: 168px;
+  height: 70px;
   background: transparent;
   line-height: 0;
   cursor: pointer;
@@ -217,6 +217,115 @@ body[data-ds-dark-theme] .aw-dock-fastener {
 @container aw-fastener-zone (width < 600px) or (height < 480px) { .aw-dock-fastener { display: none; } }
 @media (height < 520px) { .aw-draft-mark, .aw-paper-track { display: none; } }
 
+/* Drydock boot curtain covers the bare host loading text while settings hydrate. */
+.aw-boot-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(56 48 38 / 6%) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(rgb(56 48 38 / 6%) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(165deg, #e1dbd0, #d4cdc0);
+  transition: opacity 280ms ease-out, transform 300ms ease-out;
+}
+body[data-ds-dark-theme] .aw-boot-curtain {
+  background:
+    linear-gradient(90deg, rgb(232 216 190 / 4%) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(rgb(232 216 190 / 4%) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(165deg, #181b20, #101216);
+}
+.aw-boot-curtain::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  height: 3px;
+  background: repeating-linear-gradient(-45deg, #d89022 0 7px, #2b2d30 7px 14px);
+  opacity: .88;
+}
+.aw-boot-curtain[data-leaving='true'] {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+.aw-boot-plate {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  min-width: 248px;
+  padding: 24px 32px 22px;
+  border: 1.5px solid #8c8476;
+  border-bottom: 3px solid #6b6458;
+  border-radius: 9px;
+  background: linear-gradient(168deg, #eee9e0, #dbd4c7);
+  box-shadow: inset 0 1px rgb(255 250 240 / 78%), 0 18px 40px -14px rgb(20 16 10 / 36%);
+  animation: aw-boot-in 260ms cubic-bezier(.2,.75,.25,1) both;
+}
+body[data-ds-dark-theme] .aw-boot-plate {
+  border-color: #464b55;
+  border-bottom-color: #0b0d10;
+  background: linear-gradient(168deg, #252930, #181b20);
+  box-shadow: inset 0 1px rgb(255 236 196 / 10%), 0 22px 48px -12px rgb(0 0 0 / 72%);
+}
+.aw-boot-emblem {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgb(20 16 10 / 32%));
+}
+.aw-boot-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #1c1f24;
+  font: 700 18px/1.2 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  letter-spacing: .14em;
+}
+body[data-ds-dark-theme] .aw-boot-title { color: #f3ece0; }
+.aw-boot-title::after {
+  content: 'BAY·04';
+  padding: 2px 6px;
+  border: 1px solid #8a6c3e;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #3c3326, #262018);
+  color: #f0be6a;
+  font: 700 10px/1.15 ui-monospace, 'SFMono-Regular', monospace;
+  letter-spacing: .08em;
+}
+.aw-boot-bar {
+  width: 184px;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(28 31 36 / 14%);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 24%);
+}
+body[data-ds-dark-theme] .aw-boot-bar { background: rgb(255 255 255 / 10%); }
+.aw-boot-bar i {
+  display: block;
+  width: 46%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1b528c, #e89c28);
+  animation: aw-boot-sweep 950ms ease-in-out infinite;
+}
+.aw-boot-sub {
+  color: #57524a;
+  font: 600 11px/1.4 ui-monospace, 'SFMono-Regular', 'PingFang SC', monospace;
+  letter-spacing: .04em;
+}
+body[data-ds-dark-theme] .aw-boot-sub { color: #a9a49a; }
+@keyframes aw-boot-in {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes aw-boot-sweep {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(260%); }
+}
+
 /* The scan layer is pointer-transparent and never takes up any layout space. */
 @media (prefers-reduced-motion: no-preference) {
   body[data-dsh-afterwave-style][data-aw-power-on]::after {
@@ -228,8 +337,8 @@ body[data-ds-dark-theme] .aw-dock-fastener {
     top: 0;
     height: 2px;
     pointer-events: none;
-    background: linear-gradient(90deg, transparent, #4ea6ff 55%, #fff 78%, #f5a623 90%, transparent);
-    box-shadow: 0 0 12px rgb(77 163 255 / 70%);
+    background: linear-gradient(90deg, transparent, #b87a24 48%, #f6cf86 76%, #d86e34 92%, transparent);
+    box-shadow: 0 0 10px rgb(232 156 40 / 55%);
     animation: aw-power-scan 760ms cubic-bezier(.32,.67,.3,1) both;
   }
   body[data-dsh-afterwave-style][data-aw-power-on] .aw-brand-mark img {

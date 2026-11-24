@@ -140,6 +140,26 @@ test('uncommitted composition is excluded and a stale pending write cannot repla
   assert.match(q('.aw-tw-backup-note').textContent, /另一窗口/)
 })
 
+test('clearing or sending an old editor draft preserves a newer backup until that backup is recovered', t => {
+  const { prefs, q, write, tools, win, editor } = fixture(t)
+  write('本窗口草稿')
+  win.dispatchEvent(new win.Event('pagehide'))
+  const key = 'dsh-afterwave-style.typing.draft.first'
+  const newer = { at: Date.now() + 10, text: '另一窗口的新草稿' }
+  win.localStorage.setItem(key, JSON.stringify(newer))
+  win.dispatchEvent(new win.StorageEvent('storage', { key, storageArea: win.localStorage }))
+
+  tools.sent()
+  assert.deepEqual(prefs.get('typing.draft.first'), newer)
+  write('')
+  assert.deepEqual(prefs.get('typing.draft.first'), newer)
+  assert.match(q('.aw-tw-backup-note').textContent, /已保留/)
+  q('.aw-tw-recover').click()
+  assert.equal(editor.value, newer.text)
+  write('')
+  assert.equal(prefs.get('typing.draft.first'), undefined)
+})
+
 test('automatic eviction retains the 20 most recently saved sessions and counts the 20 KiB limit in UTF-8', t => {
   const { prefs, write, switchTo, q, win } = fixture(t)
   for (let i = 0; i <= 20; i++) { switchTo('session-' + i); write('草稿 ' + i) }
